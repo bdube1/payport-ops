@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800;900&family=Nunito:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --font-display: 'Rubik', sans-serif;
+  --font: 'Nunito', sans-serif;
+  --font-mono: 'SF Mono', 'Consolas', 'Monaco', monospace;
+  --green: #34AD54;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --purple: #8b5cf6;
+}
+
+/* Dark theme ("Corporate Midnight") — from the approved sign-in design.
+   Change values here only. */
+[data-theme="dark"] {
+  --blue: #4B5EED;          /* Primary / Brand (indigo) */
+  --blue-dark: #2A3BC7;     /* Primary Hover */
+  --accent-info: #5164F2;
+  --bg: #05060F;             /* Background */
+  --bg-card: #14182F;        /* Surface */
+  --bg-2: #12162E;           /* Muted / Subtle BG */
+  --bg-card-2: #12162E;
+  --sidebar-bg: #0B1024;
+  --text: #F2F3FA;           /* Text Primary */
+  --text-2: #9498B8;         /* Text Secondary */
+  --border: #262B47;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --grad-1: #0B1024;
+  --grad-2: #0E1430;
+  --badge-green: rgba(52,173,84,0.15);
+  --badge-red: rgba(239,68,68,0.15);
+  --badge-amber: rgba(245,158,11,0.15);
+  --badge-blue: rgba(96,165,250,0.15);
+  --badge-gray: rgba(148,163,187,0.15);
+  --badge-purple: rgba(139,92,246,0.18);
+}
+
+/* Light theme ("Slate Light") — from the approved sign-in design. This is
+   also the default: any element rendered before the theme attribute is
+   set by JS (e.g. first paint) falls back to :root here, not dark. */
+[data-theme="light"], :root {
+  --blue: #3D52E8;          /* Primary / Brand (indigo) */
+  --blue-dark: #2A3BC7;     /* Primary Hover */
+  --accent-info: #4257E8;
+  --bg: #FFFFFF;             /* Background */
+  --bg-card: #FFFFFF;        /* Surface */
+  --bg-2: #EEF0F6;           /* Muted / Subtle BG */
+  --bg-card-2: #EEF0F6;
+  --sidebar-bg: #F7F8FC;
+  --text: #171A2E;           /* Text Primary */
+  --text-2: #5B5F79;         /* Text Secondary */
+  --border: #E5E7F2;
+  --shadow: 0 4px 24px rgba(15,23,42,0.08);
+  --grad-1: #C3D0F7;
+  --grad-2: #E3E9FB;
+  --badge-green: rgba(52,173,84,0.12);
+  --badge-red: rgba(239,68,68,0.12);
+  --badge-amber: rgba(245,158,11,0.12);
+  --badge-blue: rgba(37,99,235,0.10);
+  --badge-gray: rgba(100,116,139,0.12);
+  --badge-purple: rgba(139,92,246,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.25s, color 0.25s;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); }
+
+.spinner {
+  width: 24px; height: 24px;
+  border: 2.5px solid rgba(124,58,237,0.2);
+  border-top: 2.5px solid var(--blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.btn { padding: 8px 16px; border-radius: 8px; font-family: var(--font-display); font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; text-decoration: none; }
+.btn-primary { background: linear-gradient(135deg, var(--blue), var(--blue-dark)); color: white; }
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-ghost { background: var(--bg-card-2); color: var(--text-2); border: 1px solid var(--border); }
+.btn-ghost:hover { color: var(--text); border-color: var(--blue); }
+.btn-danger { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.btn-success { background: rgba(52,173,84,0.1); color: var(--green); border: 1px solid rgba(52,173,84,0.3); }
+
+input, select, textarea {
+  font-family: var(--font);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--blue); }
+
+/* Badges */
+.badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.04em; display: inline-flex; align-items: center; gap: 4px; }
+.badge-green { background: var(--badge-green); color: var(--green); }
+.badge-red { background: var(--badge-red); color: var(--red); }
+.badge-amber { background: var(--badge-amber); color: var(--amber); }
+.badge-blue { background: var(--badge-blue); color: var(--accent-info); }
+.badge-gray { background: var(--badge-gray); color: var(--text-2); }
+.badge-purple { background: var(--badge-purple); color: var(--purple); }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; }
+th { font-size: 11px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg-2); }
+td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text); }
+tr:hover td { background: rgba(124,58,237,0.05); }
+
+/* Card */
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+  .sidebar-collapsed { transform: translateX(-100%); }
+}
+@media (min-width: 769px) {
+  .show-mobile { display: none !important; }
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.25); border-radius: 3px; }

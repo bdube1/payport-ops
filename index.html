@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payport Ops Console</title>
+    <script>
+      // Set the theme attribute before any CSS or React loads, so there's
+      // never a flash of unstyled content. Default is light -- only becomes
+      // dark if the user has explicitly chosen it before.
+      (function () {
+        var saved = localStorage.getItem('ops_theme');
+        document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
