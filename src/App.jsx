@@ -43,6 +43,7 @@ import ReconExceptionsPage from './pages/platform/ReconExceptionsPage';
 import BankMessagesPage from './pages/platform/BankMessagesPage';
 import IntegrationsPage from './pages/platform/IntegrationsPage';
 import MarketsPage from './pages/platform/MarketsPage';
+import ChannelsProductsPage from './pages/platform/ChannelsProductsPage';
 import CasesPage from './pages/compliance/CasesPage';
 import RulesPage from './pages/compliance/RulesPage';
 import ScreeningPage from './pages/compliance/ScreeningPage';
@@ -144,6 +145,7 @@ export default function App() {
                                     <Route path="/bank-messages" element={<BankMessagesPage />} />
                                     <Route path="/integrations" element={<IntegrationsPage />} />
                                     <Route path="/markets" element={<MarketsPage />} />
+                                    <Route path="/channels" element={<ChannelsProductsPage />} />
                                     <Route path="/compliance-authorities" element={<AuthoritiesAdminPage />} />
                                     <Route path="/compliance/cases" element={<CasesPage />} />
                                     <Route path="/compliance/rules" element={<RulesPage />} />

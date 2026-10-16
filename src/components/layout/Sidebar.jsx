@@ -55,7 +55,8 @@ const sections = [
             { to: '/recon-exceptions', icon: FileWarning, label: 'Recon Exceptions' },
             { to: '/bank-messages', icon: FileSpreadsheet, label: 'Bank Messages (ISO 20022)' },
             { to: '/integrations', icon: Plug, label: 'Integrations' },
-            { to: '/markets', icon: Globe, label: 'Markets' },
+            { to: '/markets', icon: Globe, label: 'Markets & Currencies' },
+            { to: '/channels', icon: Plug, label: 'Channels & Product Lines' },
         ],
     },
     {
@@ -79,7 +80,7 @@ const sections = [
     {
         key: 'management', label: 'MANAGEMENT',
         items: [
-            { to: '/products', icon: Package, label: 'Products' },
+            { to: '/products', icon: Package, label: 'Products & Payment Methods' },
             { to: '/bundles', icon: Grid, label: 'Bundle Manager' },
             { to: '/config', icon: Settings, label: 'Configuration' },
             { to: '/users', icon: Users, label: 'Staff Users & Access' },

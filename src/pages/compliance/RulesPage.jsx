@@ -1,4 +1,4 @@
-import { complianceApi } from '../../lib/api';
+import { complianceApi, platformControlsApi } from '../../lib/api';
 import { Page, Section, Table, Notice, useLoad, Badge, Act, FormButton } from '../../components/kit';
 
 const TYPES = ['VELOCITY_COUNT', 'VELOCITY_AMOUNT', 'STRUCTURING', 'LARGE_TRANSACTION', 'SANCTIONS', 'TX_LIMIT', 'PERIOD_LIMIT', 'CDD_THRESHOLD', 'SCREENING_HEALTH'];
@@ -6,6 +6,7 @@ const TYPES = ['VELOCITY_COUNT', 'VELOCITY_AMOUNT', 'STRUCTURING', 'LARGE_TRANSA
 function decide(r, approve) {
     if (r.action_type === 'COMPLIANCE_PARAMETER_CHANGE') return complianceApi.decideParameterChange(r.id, approve, '');
     if (r.action_type === 'COMPLIANCE_AUTHORITY_GRANT') return complianceApi.decideAuthority(r.id, approve, '');
+    if (r.action_type === 'SERVICE_LINE_LICENCE') return platformControlsApi.decideLicence(r.id, approve, '');
     return complianceApi.decideRuleChange(r.id, approve, '');
 }
 

@@ -37,6 +37,7 @@ export const ROUTE_ROLES = {
     '/bank-messages': ['ADMIN', 'FINANCE'],
     '/integrations':  ['ADMIN', 'OPS'],
     '/markets':       ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
+    '/channels':      ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
     '/compliance-authorities': ['ADMIN'],
     // Compliance console: COMPLIANCE only (ADMIN deliberately excluded, as on the backend).
     '/compliance':    ['COMPLIANCE'],

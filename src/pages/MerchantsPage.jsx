@@ -1,7 +1,8 @@
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Building2, CheckCircle, XCircle, PauseCircle, PlayCircle, Copy, RefreshCw, Percent, FileText, MessageSquarePlus, Edit3, Eye, Search } from 'lucide-react';
 import {
-    getMerchants, approveMerchant, rejectMerchant, suspendMerchant, reactivateMerchant,
+    getMerchants, rejectMerchant, suspendMerchant, reactivateMerchant,
     getDefaultCommission, setDefaultCommission, setMerchantCommission, formatDate,
     getMerchantDocuments, getMerchantDocumentUrl, requestMerchantInfo, getMerchantReviewNotes,
     startMerchantReview, updateMerchantDetails, api,
@@ -345,7 +346,7 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
           {(merchant.status === 'PENDING' || merchant.status === 'UNDER_REVIEW' || merchant.status === 'UPDATE_REQUIRED') && (
             <>
               <button onClick={() => onApprove(merchant)} className="btn btn-primary" style={{ fontSize: 12.5 }}>
-                <CheckCircle size={13} /> Approve
+                <CheckCircle size={13} /> Review (KYB)
               </button>
               <button onClick={() => onReject(merchant)} className="btn btn-danger" style={{ fontSize: 12.5 }}>
                 <XCircle size={13} /> Reject
@@ -360,6 +361,7 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
 }
 
 export default function MerchantsPage() {
+  const navigate = useNavigate();
   const [merchants, setMerchants] = useState([]);
   const [statusFilter, setStatusFilter] = useState('PENDING');
   const [search, setSearch] = useState('');
@@ -390,18 +392,9 @@ export default function MerchantsPage() {
 
   useEffect(() => { load(); }, [statusFilter, debouncedSearch]);
 
-  const handleApprove = async (m) => {
-    if (!confirm(`Approve ${m.businessName}? A test API key will be generated immediately.`)) return;
-    setBusyId(m.id);
-    try {
-      const res = await approveMerchant(m.id);
-      const data = res.data?.data;
-      setApprovalResult({ businessName: m.businessName, testApiKey: data.testApiKey });
-      load();
-    } catch (e) {
-      toast.error(e.response?.data?.message || 'Failed to approve');
-    } finally { setBusyId(null); }
-  };
+  // Approval is four-eyes (recommend, then a different person decides) with server-side sanctions
+  // screening: it happens on the KYB review screen, never with one click here.
+  const handleApprove = (m) => navigate(`/kyb?merchant=${m.id}`);
 
   const handleReject = async (reason) => {
     setBusyId(rejectTarget.id);
@@ -496,7 +489,7 @@ export default function MerchantsPage() {
                 {m.status === 'PENDING' && (
                   <>
                     <button className="btn btn-primary" disabled={busyId === m.id} onClick={() => handleApprove(m)} style={{ fontSize: 12.5 }}>
-                      <CheckCircle size={14} /> Approve
+                      <CheckCircle size={14} /> Review (KYB)
                     </button>
                     <button className="btn btn-danger" disabled={busyId === m.id} onClick={() => setRejectTarget(m)} style={{ fontSize: 12.5 }}>
                       <XCircle size={14} /> Reject

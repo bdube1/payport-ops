@@ -6,7 +6,6 @@ import { Page, Section, Table, Notice, useLoad, Badge, Act, FormButton, KeyValue
 const CHECKLIST = [
     ['registration_documents_verified', 'Registration documents verified'],
     ['directors_identified', 'Directors and beneficial owners identified'],
-    ['sanctions_screened', 'Sanctions screening clear'],
     ['business_activity_acceptable', 'Business activity acceptable'],
     ['bank_account_verified', 'Bank account verified'],
 ];
@@ -21,7 +20,7 @@ function KybCase({ merchantId }) {
             <Section title={`KYB case: merchant #${merchantId}`} right={<>
                 <Act label="Assign to me" kind="ghost" run={() => platformApi.kybAssign(merchantId)} done={refresh} />
                 <FormButton label="Recommend" title="Recommendation (first person)"
-                    intro="The recommender cannot also decide. Approval needs a CLEAR sanctions screening; the server checks it again."
+                    intro="The recommender cannot also decide. Sanctions screening is not a tick-box: the server screens the merchant itself and refuses an approval unless the result is CLEAR (an incomplete screening is never treated as clear)."
                     fields={[
                         { name: 'recommendation', label: 'Recommendation', type: 'select', required: true, options: ['APPROVE', 'REJECT'] },
                         ...CHECKLIST.map(([name, label]) => ({ name, label, type: 'checkbox' })),
