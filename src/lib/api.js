@@ -387,3 +387,44 @@ export const platformControlsApi = {
     decideFxRate: (id, approve, note) => api.post(`/admin/fx/rates/${id}/decide`, { approve, note }),
     fxQuote: (from, to, amountMinor) => api.get('/fx/quote', { params: { from, to, amountMinor } }),
 };
+
+// ===== Phase 8: wallets, agents, POS, WhatsApp, provider settlements; ledger views =====
+export const walletsAdminApi = {
+    search: (q) => api.get('/admin/wallets', { params: q ? { q } : {} }),
+    totals: () => api.get('/admin/wallets/totals'),
+    statement: (ref) => api.get(`/admin/wallets/${encodeURIComponent(ref)}/statement`),
+    setStatus: (ref, status, reason) => api.post(`/admin/wallets/${encodeURIComponent(ref)}/status`, { status, reason }),
+    setTier: (ref, tier, reason) => api.post(`/admin/wallets/${encodeURIComponent(ref)}/tier`, { tier, reason }),
+    refund: (reference, reason) => api.post(`/admin/wallets/refunds/${encodeURIComponent(reference)}`, { reason }),
+};
+
+export const agentsAdminApi = {
+    list: () => api.get('/admin/agents'),
+    decide: (id, approve, reason, commissionBps) => api.post(`/admin/agents/${id}/decide`, { approve, reason, commissionBps }),
+    setStatus: (id, status, reason) => api.post(`/admin/agents/${id}/status`, { status, reason }),
+    deposits: (status) => api.get('/admin/agents/float-deposits', { params: status ? { status } : {} }),
+    recordDeposit: (agentId, amountMinor, currency, bankReference) => api.post('/admin/agents/float-deposits', { agentId, amountMinor, currency, bankReference }),
+    decideDeposit: (id, approve, note) => api.post(`/admin/agents/float-deposits/${id}/decide`, { approve, note }),
+};
+
+export const posAdminApi = {
+    terminals: () => api.get('/admin/pos/terminals'),
+    setStatus: (terminalId, active, reason) => api.post(`/admin/pos/terminals/${encodeURIComponent(terminalId)}/status`, { active, reason }),
+};
+
+export const whatsappAdminApi = { status: () => api.get('/admin/whatsapp') };
+
+export const providerSettlementApi = {
+    rules: () => api.get('/admin/provider-settlement-rules'),
+    propose: (body) => api.post('/admin/provider-settlement-rules', body),
+    decide: (id, approve) => api.post(`/admin/provider-settlement-rules/${id}/decide`, { approve }),
+    retire: (id) => api.post(`/admin/provider-settlement-rules/${id}/retire`),
+};
+
+export const ledgerApi = {
+    trialBalance: () => api.get('/admin/ledger/trial-balance'),
+    accounts: (params) => api.get('/admin/ledger/accounts', { params }),
+    categories: () => api.get('/admin/ledger/categories'),
+    integrity: () => api.get('/admin/ledger/integrity'),
+    runIntegrity: () => api.post('/admin/ledger/integrity/run'),
+};

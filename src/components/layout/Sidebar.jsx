@@ -8,7 +8,7 @@ import {
     Wallet, Settings, Users, FileText, ScrollText, LogOut, Moon, Sun,
     Grid, Building2, Landmark, ShieldAlert, ClipboardCheck, MessageCircleQuestion, FileSpreadsheet,
     UserCircle, FileBarChart, LayoutGrid, Percent, ChevronDown,
-    Inbox, BadgeCheck, Banknote, Plug, Globe, Scale, Gavel, Search, FileWarning, Lock, KeyRound
+    Inbox, BadgeCheck, Banknote, Plug, Globe, Scale, Gavel, Search, FileWarning, Lock, KeyRound, HandCoins, MonitorSmartphone, BookOpen, WalletCards
 } from 'lucide-react';
 
 // Always visible, never collapsed -- these aren't grouped under any of
@@ -57,6 +57,11 @@ const sections = [
             { to: '/integrations', icon: Plug, label: 'Integrations' },
             { to: '/markets', icon: Globe, label: 'Markets & Currencies' },
             { to: '/channels', icon: Plug, label: 'Channels & Product Lines' },
+            { to: '/customer-wallets', icon: WalletCards, label: 'Customer Wallets' },
+            { to: '/agents', icon: HandCoins, label: 'Agents & Float' },
+            { to: '/pos-terminals', icon: MonitorSmartphone, label: 'POS & WhatsApp' },
+            { to: '/provider-settlement-rules', icon: Banknote, label: 'Provider Settlement Rules' },
+            { to: '/ledger', icon: BookOpen, label: 'Ledger' },
         ],
     },
     {

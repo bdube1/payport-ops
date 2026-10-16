@@ -43,6 +43,11 @@ import ReconExceptionsPage from './pages/platform/ReconExceptionsPage';
 import BankMessagesPage from './pages/platform/BankMessagesPage';
 import IntegrationsPage from './pages/platform/IntegrationsPage';
 import MarketsPage from './pages/platform/MarketsPage';
+import CustomerWalletsPage from './pages/platform/CustomerWalletsPage';
+import AgentsPage from './pages/platform/AgentsPage';
+import PosTerminalsPage from './pages/platform/PosTerminalsPage';
+import ProviderSettlementRulesPage from './pages/platform/ProviderSettlementRulesPage';
+import LedgerPage from './pages/platform/LedgerPage';
 import ChannelsProductsPage from './pages/platform/ChannelsProductsPage';
 import CasesPage from './pages/compliance/CasesPage';
 import RulesPage from './pages/compliance/RulesPage';
@@ -146,6 +151,11 @@ export default function App() {
                                     <Route path="/integrations" element={<IntegrationsPage />} />
                                     <Route path="/markets" element={<MarketsPage />} />
                                     <Route path="/channels" element={<ChannelsProductsPage />} />
+                                    <Route path="/customer-wallets" element={<CustomerWalletsPage />} />
+                                    <Route path="/agents" element={<AgentsPage />} />
+                                    <Route path="/pos-terminals" element={<PosTerminalsPage />} />
+                                    <Route path="/provider-settlement-rules" element={<ProviderSettlementRulesPage />} />
+                                    <Route path="/ledger" element={<LedgerPage />} />
                                     <Route path="/compliance-authorities" element={<AuthoritiesAdminPage />} />
                                     <Route path="/compliance/cases" element={<CasesPage />} />
                                     <Route path="/compliance/rules" element={<RulesPage />} />

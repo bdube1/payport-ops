@@ -38,6 +38,12 @@ export const ROUTE_ROLES = {
     '/integrations':  ['ADMIN', 'OPS'],
     '/markets':       ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
     '/channels':      ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
+    // Phase 8
+    '/customer-wallets': ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
+    '/agents':        ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
+    '/pos-terminals': ['ADMIN', 'OPS', 'COMPLIANCE'],
+    '/provider-settlement-rules': ['ADMIN', 'FINANCE', 'COMPLIANCE'],
+    '/ledger':        ['ADMIN', 'FINANCE', 'COMPLIANCE'],
     '/compliance-authorities': ['ADMIN'],
     // Compliance console: COMPLIANCE only (ADMIN deliberately excluded, as on the backend).
     '/compliance':    ['COMPLIANCE'],
