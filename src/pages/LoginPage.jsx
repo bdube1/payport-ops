@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth.jsx';
 import { useTheme } from '../lib/theme.jsx';
 import { opsLogin, forgotPassword } from '../lib/api';
+import { homeFor } from '../lib/permissions';
 
 const REMEMBER_KEY = 'ops_remembered_email';
 
@@ -124,7 +125,7 @@ export default function LoginPage() {
       if (remember) localStorage.setItem(REMEMBER_KEY, email.trim().toLowerCase());
       else localStorage.removeItem(REMEMBER_KEY);
       login({ email, fullName: authUser.fullName || authUser.name || email, role: authUser.role }, data.token || data.accessToken);
-      navigate(data.mustChangePassword ? '/reset-password?forced=1' : '/dashboard', { replace: true });
+      navigate(data.mustChangePassword ? '/reset-password?forced=1' : homeFor(authUser.role), { replace: true });
     } catch (e) {
       setError(e.response?.data?.message || 'Invalid credentials or insufficient privileges');
     } finally { setLoading(false); }

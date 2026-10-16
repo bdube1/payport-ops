@@ -4,7 +4,7 @@ import { getUsers, createUser, updateUser, deactivateUser, unlockUser, formatDat
 import toast from 'react-hot-toast';
 import { useAuth } from '../lib/auth.jsx';
 
-const ROLES = ['OPS', 'FINANCE', 'ADMIN'];
+const ROLES = ['OPS', 'FINANCE', 'COMPLIANCE', 'ADMIN'];
 
 function UserModal({ user, onSave, onClose }) {
   const editing = !!user?.id;

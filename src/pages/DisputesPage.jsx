@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { AlertTriangle, RefreshCw, Plus } from 'lucide-react';
 import { getDisputes, openDispute, resolveDispute, formatAmount, formatDate } from '../lib/api';
 import toast from 'react-hot-toast';
+import DisputeTimelines from '../components/DisputeTimelines';
 
 const STATUS_BADGE = { OPEN: 'badge-amber', NEEDS_RESPONSE: 'badge-amber', WON: 'badge-green', LOST: 'badge-red' };
 
@@ -9,6 +10,7 @@ function OpenDisputeModal({ onClose, onDone }) {
     const [sessionId, setSessionId] = useState('');
     const [amount, setAmount] = useState('');
     const [reason, setReason] = useState('');
+    const [type, setType] = useState('COMPLAINT');
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
 
@@ -18,7 +20,7 @@ function OpenDisputeModal({ onClose, onDone }) {
         setSubmitting(true);
         try {
             const cents = Math.round(parseFloat(amount) * 100);
-            await openDispute(Number(sessionId), cents, reason);
+            await openDispute(Number(sessionId), cents, reason, type);
             toast.success('Dispute opened');
             onDone();
             onClose();
@@ -43,6 +45,13 @@ function OpenDisputeModal({ onClose, onDone }) {
                 <label style={{ fontSize: 12.5, fontWeight: 700, display: 'block', marginBottom: 6 }}>Disputed amount</label>
                 <input type="number" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} required
                     style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)', marginBottom: 14 }} />
+
+                <label style={{ fontSize: 12.5, fontWeight: 700, display: 'block', marginBottom: 6 }}>Type (sets the regulatory deadlines)</label>
+                <select value={type} onChange={e => setType(e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)', marginBottom: 14 }}>
+                    <option value="COMPLAINT">Complaint (acknowledge 48h, resolve 10 working days)</option>
+                    <option value="ERROR">Error (resolve within 48h, else notify RBZ)</option>
+                    <option value="CHARGEBACK">Card chargeback</option>
+                </select>
 
                 <label style={{ fontSize: 12.5, fontWeight: 700, display: 'block', marginBottom: 6 }}>Reason</label>
                 <input value={reason} onChange={e => setReason(e.target.value)} placeholder="Fraud claim, item not received, etc."
@@ -172,6 +181,8 @@ export default function DisputesPage() {
                     </table>
                 </div>
             )}
+
+            <div style={{ marginTop: 20 }}><DisputeTimelines /></div>
 
             {showOpen && <OpenDisputeModal onClose={() => setShowOpen(false)} onDone={load} />}
             {resolveTarget && <ResolveModal dispute={resolveTarget} onClose={() => setResolveTarget(null)} onDone={load} />}

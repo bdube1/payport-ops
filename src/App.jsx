@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material';
 import { useTheme } from './lib/theme.jsx';
 import { useAuth } from './lib/auth.jsx';
-import { canAccess } from './lib/permissions';
+import { canAccess, homeFor } from './lib/permissions';
 import { buildMuiTheme } from './lib/muiTheme';
 import Sidebar from './components/layout/Sidebar';
 import LoginPage from './pages/LoginPage';
@@ -35,6 +35,25 @@ import LogsPage from './pages/LogsPage';
 import StatementPage from './pages/StatementPage';
 // NEW: Import Bundle Manager Page
 import BundleManagerPage from './pages/BundleManagerPage';
+import WorkQueuesPage from './pages/platform/WorkQueuesPage';
+import KybPage from './pages/platform/KybPage';
+import DestinationsPage from './pages/platform/DestinationsPage';
+import SettlementBatchesPage from './pages/platform/SettlementBatchesPage';
+import ReconExceptionsPage from './pages/platform/ReconExceptionsPage';
+import BankMessagesPage from './pages/platform/BankMessagesPage';
+import IntegrationsPage from './pages/platform/IntegrationsPage';
+import MarketsPage from './pages/platform/MarketsPage';
+import CasesPage from './pages/compliance/CasesPage';
+import RulesPage from './pages/compliance/RulesPage';
+import ScreeningPage from './pages/compliance/ScreeningPage';
+import ReportsPage from './pages/compliance/ReportsPage';
+import AuditPage from './pages/compliance/AuditPage';
+import AuthoritiesAdminPage from './pages/compliance/AuthoritiesAdminPage';
+
+function HomeRedirect() {
+    const { user } = useAuth();
+    return <Navigate to={homeFor(user?.role)} replace />;
+}
 
 function PrivateRoute({ children }) {
     const { user } = useAuth();
@@ -49,8 +68,9 @@ function PrivateRoute({ children }) {
     //    infinite loop (a blank white screen, not an error).
     // 2. If role data is missing/unrecognized, fail OPEN, not closed. A bug
     //    in how the role got read should never mean nobody can use the app.
-    if (user.role && !canAccess(user.role, location.pathname) && location.pathname !== '/dashboard') {
-        return <Navigate to="/dashboard" replace />;
+    const home = homeFor(user.role);
+    if (user.role && !canAccess(user.role, location.pathname) && location.pathname !== home) {
+        return <Navigate to={home} replace />;
     }
     return children;
 }
@@ -89,7 +109,7 @@ export default function App() {
                                 transition: 'margin-left 0.3s',
                             }} id="main-content">
                                 <Routes>
-                                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                                    <Route path="/" element={<HomeRedirect />} />
                                     <Route path="/dashboard" element={<DashboardPage />} />
                                     <Route path="/transactions" element={<TransactionsPage />} />
                                     <Route path="/transactions/:ref" element={<TransactionDetailPage />} />
@@ -116,6 +136,20 @@ export default function App() {
                                     <Route path="/statement" element={<StatementPage />} />
                                     {/* NEW: Bundle Manager Route */}
                                     <Route path="/bundles" element={<BundleManagerPage />} />
+                                    <Route path="/work-queues" element={<WorkQueuesPage />} />
+                                    <Route path="/kyb" element={<KybPage />} />
+                                    <Route path="/destinations" element={<DestinationsPage />} />
+                                    <Route path="/settlement-batches" element={<SettlementBatchesPage />} />
+                                    <Route path="/recon-exceptions" element={<ReconExceptionsPage />} />
+                                    <Route path="/bank-messages" element={<BankMessagesPage />} />
+                                    <Route path="/integrations" element={<IntegrationsPage />} />
+                                    <Route path="/markets" element={<MarketsPage />} />
+                                    <Route path="/compliance-authorities" element={<AuthoritiesAdminPage />} />
+                                    <Route path="/compliance/cases" element={<CasesPage />} />
+                                    <Route path="/compliance/rules" element={<RulesPage />} />
+                                    <Route path="/compliance/screening" element={<ScreeningPage />} />
+                                    <Route path="/compliance/reports" element={<ReportsPage />} />
+                                    <Route path="/compliance/audit" element={<AuditPage />} />
                                 </Routes>
                             </main>
                         </div>

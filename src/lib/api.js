@@ -52,7 +52,8 @@ api.interceptors.response.use(
         // This used to also fire on any timeout or network error, which is
         // exactly why a slow eSolutions balance check was silently logging
         // people out of the whole portal.
-        if (err.response?.status === 401 || err.response?.status === 403) {
+        // 403 is a real answer (this role may not do that), never a reason to log out.
+        if (err.response?.status === 401) {
             redirectToLogin();
             return Promise.reject(err);
         }
@@ -96,7 +97,7 @@ export const markSettlementPaid = (id, payoutReference) => api.post(`/admin/sett
 
 // Disputes
 export const getDisputes = () => api.get('/admin/disputes');
-export const openDispute = (checkoutSessionId, amountCents, reason) => api.post('/admin/disputes', { checkoutSessionId, amountCents, reason });
+export const openDispute = (checkoutSessionId, amountCents, reason, type = 'COMPLAINT') => api.post('/admin/disputes', { checkoutSessionId, amountCents, reason, type });
 export const resolveDispute = (id, status, evidenceNotes) => api.post(`/admin/disputes/${id}/resolve`, { status, evidenceNotes });
 
 export const getQueries = () => api.get('/admin/queries');
@@ -261,4 +262,107 @@ export const STATUS_CONFIG = {
     REFUND_PENDING: { label: 'Refund Pending', badge: 'badge-amber' },
     REFUNDED: { label: 'Refunded', badge: 'badge-blue' },
     MANUAL_FULFILMENT: { label: 'Manual', badge: 'badge-amber' },
+};
+
+
+// ─── Phase 4-7: platform, finance, compliance, markets ─────────────────────────
+// Thin wrappers; the backend enforces every permission and four-eyes rule.
+export const platformApi = {
+    workQueues: () => api.get('/admin/platform/work-queues'),
+    kyb: (merchantId) => api.get(`/admin/platform/kyb/${merchantId}`),
+    kybAssign: (merchantId) => api.post(`/admin/platform/kyb/${merchantId}/assign`),
+    kybRecommend: (merchantId, recommendation, checklist, note) => api.post(`/admin/platform/kyb/${merchantId}/recommend`, { recommendation, checklist, note }),
+    kybDecide: (merchantId, accept, note) => api.post(`/admin/platform/kyb/${merchantId}/decide`, { accept, note }),
+    destinations: (status) => api.get('/admin/platform/settlement-destinations', { params: status ? { status } : {} }),
+    verifyDestination: (id, approve, note) => api.post(`/admin/platform/settlement-destinations/${id}/verify`, { approve, note }),
+    enable: (merchantId, country, currency, enabled) => api.post(`/admin/platform/merchants/${merchantId}/enablements`, { country, currency, enabled }),
+    readiness: (merchantId) => api.get(`/admin/platform/merchants/${merchantId}/readiness`),
+};
+
+export const financeApi = {
+    exceptions: (category) => api.get('/admin/finance/recon/exceptions', { params: category ? { category } : {} }),
+    resolveException: (id, resolution, note) => api.post(`/admin/finance/recon/exceptions/${id}/resolve`, { resolution, note }),
+    importStatement: (provider, format, file) => {
+        const f = new FormData(); f.append('file', file);
+        return api.post('/admin/finance/recon/statements', f, { params: { provider, format }, headers: { 'Content-Type': 'multipart/form-data' } });
+    },
+    eligible: (currency) => api.get('/admin/finance/settlement/eligible', { params: { currency } }),
+    draftBatch: (currency) => api.post('/admin/finance/settlement/batches', { currency }),
+    batch: (id) => api.get(`/admin/finance/settlement/batches/${id}`),
+    approveBatch: (id) => api.post(`/admin/finance/settlement/batches/${id}/approve`),
+    cancelBatch: (id) => api.post(`/admin/finance/settlement/batches/${id}/cancel`),
+    instructBatch: (id) => api.post(`/admin/finance/settlement/batches/${id}/instruct`),
+    payoutResults: (file) => {
+        const f = new FormData(); f.append('file', file);
+        return api.post('/admin/finance/settlement/payout-results', f, { headers: { 'Content-Type': 'multipart/form-data' } });
+    },
+    isoSchemas: () => api.get('/admin/finance/iso20022/schemas'),
+    isoUpload: (kind, file) => {
+        const f = new FormData(); f.append('file', file);
+        return api.post(`/admin/finance/iso20022/${kind}`, f, { headers: { 'Content-Type': 'multipart/form-data' } });
+    },
+    bankStatements: () => api.get('/admin/finance/iso20022/statements'),
+    bankEntries: (id) => api.get(`/admin/finance/iso20022/statements/${id}/entries`),
+    isoMessages: (type) => api.get('/admin/finance/iso20022/messages', { params: type ? { type } : {} }),
+};
+
+export const integrationsApi = {
+    list: () => api.get('/admin/integrations'),
+    get: (code) => api.get(`/admin/integrations/${code}`),
+    suspend: (code, reason) => api.post(`/admin/integrations/${code}/suspend`, { reason }),
+    resume: (code, note) => api.post(`/admin/integrations/${code}/resume`, { note }),
+    verification: (code, body) => api.post(`/admin/integrations/${code}/verifications`, body),
+};
+
+export const marketsApi = { list: () => api.get('/admin/markets') };
+
+export const disputeTimelinesApi = {
+    list: () => api.get('/admin/dispute-timelines'),
+    settings: () => api.get('/admin/dispute-timelines/settings'),
+    acknowledge: (id) => api.post(`/admin/dispute-timelines/${id}/acknowledge`),
+    update: (id, kind, note) => api.post(`/admin/dispute-timelines/${id}/updates`, { kind, note }),
+};
+
+const C = '/admin/compliance';
+export const complianceApi = {
+    alerts: (status = 'OPEN') => api.get(`${C}/alerts`, { params: { status } }),
+    caseFromAlerts: (alertIds) => api.post(`${C}/cases`, { alertIds }),
+    cases: (status) => api.get(`${C}/cases`, { params: status ? { status } : {} }),
+    case: (id) => api.get(`${C}/cases/${id}`),
+    assign: (id, assignee) => api.post(`${C}/cases/${id}/assign`, { assignee }),
+    note: (id, note) => api.post(`${C}/cases/${id}/notes`, { note }),
+    propose: (id, outcome, rationale) => api.post(`${C}/cases/${id}/propose`, { outcome, rationale }),
+    decide: (id, accept, note) => api.post(`${C}/cases/${id}/decide`, { accept, note }),
+    rules: () => api.get(`${C}/rules`),
+    createRule: (body) => api.post(`${C}/rules`, body),
+    ruleChange: (code, body) => api.post(`${C}/rules/${code}/change-requests`, body),
+    ruleChanges: () => api.get(`${C}/rule-changes`),
+    decideRuleChange: (id, approve, note) => api.post(`${C}/rule-changes/${id}/decide`, { approve, note }),
+    parameters: () => api.get(`${C}/parameters`),
+    parameterChange: (key, body) => api.post(`${C}/parameters/${encodeURIComponent(key)}/change-requests`, body),
+    decideParameterChange: (id, approve, note) => api.post(`${C}/parameter-changes/${id}/decide`, { approve, note }),
+    screeningStatus: () => api.get(`${C}/screening/status`),
+    screeningLists: () => api.get(`${C}/screening/lists`),
+    refreshUn: () => api.post(`${C}/screening/lists/UN-CONSOLIDATED/refresh`),
+    screeningRuns: (subjectKey) => api.get(`${C}/screening/runs`, { params: { subjectKey } }),
+    screeningCheck: (names, identifiers) => api.post(`${C}/screening/check`, { names, identifiers }),
+    reports: () => api.get(`${C}/reports`),
+    report: (id) => api.get(`${C}/reports/${id}`),
+    reportFields: (id, values) => api.patch(`${C}/reports/${id}/fields`, values),
+    approveReport: (id) => api.post(`${C}/reports/${id}/approve`),
+    reportSubmitted: (id, fiuReference) => api.post(`${C}/reports/${id}/submitted`, { fiuReference }),
+    prepareCtr: (from, to) => api.post(`${C}/reports/ctr`, null, { params: { from, to } }),
+    templates: () => api.get(`${C}/report-templates`),
+    createTemplate: (body) => api.post(`${C}/report-templates`, body),
+    activateTemplate: (id) => api.post(`${C}/report-templates/${id}/activate`),
+    authorities: () => api.get(`${C}/authorities`),
+    decideAuthority: (id, approve, note) => api.post(`${C}/authority-requests/${id}/decide`, { approve, note }),
+    auditVerify: () => api.get(`${C}/audit/verify`),
+    audit: (subject) => api.get(`${C}/audit`, { params: { subject } }),
+};
+
+export const complianceAdminApi = {
+    list: () => api.get('/admin/compliance-authorities'),
+    request: (holder, authority, reason) => api.post('/admin/compliance-authorities/requests', { holder, authority, reason }),
+    revoke: (holder, authority, reason) => api.post('/admin/compliance-authorities/revoke', { holder, authority, reason }),
 };

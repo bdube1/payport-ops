@@ -7,12 +7,14 @@ import {
     LayoutDashboard, ArrowUpDown, AlertTriangle, BarChart2, Package,
     Wallet, Settings, Users, FileText, ScrollText, LogOut, Moon, Sun,
     Grid, Building2, Landmark, ShieldAlert, ClipboardCheck, MessageCircleQuestion, FileSpreadsheet,
-    UserCircle, FileBarChart, LayoutGrid, Percent, ChevronDown
+    UserCircle, FileBarChart, LayoutGrid, Percent, ChevronDown,
+    Inbox, BadgeCheck, Banknote, Plug, Globe, Scale, Gavel, Search, FileWarning, Lock, KeyRound
 } from 'lucide-react';
 
 // Always visible, never collapsed -- these aren't grouped under any of
 // the four named sections, so they stay outside the accordion entirely.
 const topNav = [
+    { to: '/work-queues', icon: Inbox, label: 'Work Queues' },
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/transactions', icon: ArrowUpDown, label: 'Transactions' },
     { to: '/attention', icon: AlertTriangle, label: 'Attention Queue' },
@@ -42,6 +44,29 @@ const sections = [
             { to: '/reconciliation', icon: ClipboardCheck, label: 'Reconciliation' },
             { to: '/statement-reconciliation', icon: FileSpreadsheet, label: 'Statement Reconciliation' },
             { to: '/queries', icon: MessageCircleQuestion, label: 'Merchant Queries' },
+        ],
+    },
+    {
+        key: 'platform', label: 'APPROVALS & FINANCE',
+        items: [
+            { to: '/kyb', icon: BadgeCheck, label: 'KYB Review' },
+            { to: '/destinations', icon: Landmark, label: 'Payout Destinations' },
+            { to: '/settlement-batches', icon: Banknote, label: 'Settlement Batches' },
+            { to: '/recon-exceptions', icon: FileWarning, label: 'Recon Exceptions' },
+            { to: '/bank-messages', icon: FileSpreadsheet, label: 'Bank Messages (ISO 20022)' },
+            { to: '/integrations', icon: Plug, label: 'Integrations' },
+            { to: '/markets', icon: Globe, label: 'Markets' },
+        ],
+    },
+    {
+        key: 'compliance', label: 'COMPLIANCE',
+        items: [
+            { to: '/compliance/cases', icon: Scale, label: 'Alerts & Cases' },
+            { to: '/compliance/rules', icon: Gavel, label: 'Rules & Parameters' },
+            { to: '/compliance/screening', icon: Search, label: 'Sanctions Screening' },
+            { to: '/compliance/reports', icon: FileText, label: 'FIU Reports' },
+            { to: '/compliance/audit', icon: Lock, label: 'Audit' },
+            { to: '/compliance-authorities', icon: KeyRound, label: 'Compliance Authorities' },
         ],
     },
     {
