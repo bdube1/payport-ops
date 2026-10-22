@@ -23,8 +23,11 @@ export default function IntegrationsPage() {
                             <FormButton label="Resume" kind="success" title={`Resume ${r.code}`} fields={[{ name: 'note', label: 'Note', type: 'textarea', required: true }]}
                                 onSubmit={v => integrationsApi.resume(r.code, v.note)} onDone={reload} />
                             <FormButton label="Record test" kind="ghost" title={`Verification evidence: ${r.code}`}
+                                intro="Records the result of a test you ran against this provider (evidence only). It does not switch anything on: product lines are switched on under Channels & Product Lines, payment methods under Products & Payment Methods."
                                 fields={[{ name: 'environment', label: 'Environment', type: 'select', options: ['SANDBOX', 'PRODUCTION'], required: true },
-                                    { name: 'flow', label: 'Flow (one the provider declares)', type: 'text', required: true },
+                                    (r.operations || []).length
+                                        ? { name: 'flow', label: 'Flow tested', type: 'select', options: r.operations, required: true }
+                                        : { name: 'flow', label: 'Flow (one the provider declares)', type: 'text', required: true },
                                     { name: 'pass', label: 'Passed', type: 'checkbox' }, { name: 'evidence', label: 'Evidence (references, logs, screenshots location)', type: 'textarea', required: true }]}
                                 onSubmit={v => integrationsApi.verification(r.code, { environment: v.environment, flow: v.flow, pass: !!v.pass, evidence: v.evidence })} onDone={reload} />
                         </div>) },
