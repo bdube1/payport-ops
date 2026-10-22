@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Lock, Eye, EyeOff, CheckCircle } from 'lucide-react';
-import { resetPassword } from '../lib/api';
+import { resetPassword, changeOwnPassword } from '../lib/api';
 import { useAuth } from '../lib/auth.jsx';
 
 // Mirrors the backend policy exactly (AuthService.validatePasswordPolicy) so
@@ -23,6 +23,10 @@ export default function ResetPasswordPage() {
   const { logout } = useAuth();
   const token = params.get('token');
   const forced = params.get('forced') === '1';
+  // Forced change right after login (no email link): the signed-in user proves the current password
+  // and changes it through /account/change-password, which also clears mustChangePassword.
+  const signedInChange = forced && !token;
+  const [current, setCurrent] = useState('');
 
   const [newPassword, setNewPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -38,15 +42,18 @@ export default function ResetPasswordPage() {
     setError('');
     if (issues.length > 0) { setError('Password does not meet the requirements below.'); return; }
     if (newPassword !== confirm) { setError('Passwords do not match.'); return; }
-    if (!token) { setError('Missing reset token. Use the link from your email.'); return; }
+    if (signedInChange && !current) { setError('Enter your current password.'); return; }
+    if (!signedInChange && !token) { setError('Missing reset token. Use the link from your email.'); return; }
 
     setLoading(true);
     try {
-      await resetPassword(token, newPassword);
+      if (signedInChange) await changeOwnPassword(current, newPassword);
+      else await resetPassword(token, newPassword);
       setDone(true);
       setTimeout(() => { logout(); navigate('/login', { replace: true }); }, 2000);
     } catch (e) {
-      setError(e.response?.data?.message || 'Could not reset password. The link may have expired.');
+      setError(e.response?.data?.error?.message || e.response?.data?.message
+        || (signedInChange ? 'Could not change the password.' : 'Could not reset password. The link may have expired.'));
     } finally { setLoading(false); }
   };
 
@@ -58,8 +65,8 @@ export default function ResetPasswordPage() {
         {done ? (
           <div style={{ textAlign: 'center' }}>
             <CheckCircle size={40} color="var(--green)" style={{ marginBottom: 12 }} />
-            <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)', margin: '0 0 8px' }}>Password Reset</h2>
-            <p style={{ color: 'var(--text-2)', fontSize: 14 }}>Redirecting you to sign in…</p>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)', margin: '0 0 8px' }}>{signedInChange ? 'Password Changed' : 'Password Reset'}</h2>
+            <p style={{ color: 'var(--text-2)', fontSize: 14 }}>Redirecting you to sign in with your new password…</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -78,12 +85,23 @@ export default function ResetPasswordPage() {
               </div>
             )}
 
+            {signedInChange && (
+              <>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Current Password</label>
+                <input
+                  type={show ? 'text' : 'password'} value={current} onChange={e => setCurrent(e.target.value)}
+                  autoFocus autoComplete="current-password"
+                  style={{ width: '100%', padding: '12px 14px', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--text)', fontSize: 14, outline: 'none', boxSizing: 'border-box', marginBottom: 14 }}
+                />
+              </>
+            )}
+
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>New Password</label>
             <div style={{ position: 'relative', marginBottom: 14 }}>
               <Lock size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-2)' }} />
               <input
                 type={show ? 'text' : 'password'} value={newPassword} onChange={e => setNewPassword(e.target.value)}
-                autoFocus
+                autoFocus={!signedInChange} autoComplete="new-password"
                 style={{ width: '100%', padding: '12px 42px', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--text)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
               />
               <button type="button" onClick={() => setShow(s => !s)} style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-2)', cursor: 'pointer', padding: 0 }}>
