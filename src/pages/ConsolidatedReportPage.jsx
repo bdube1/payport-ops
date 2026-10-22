@@ -47,7 +47,6 @@ export default function ConsolidatedReportPage() {
                     <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>
                         <FileBarChart size={22} /> Consolidated Report
                     </h1>
-                    <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 4 }}>One system-wide summary -- merchants, consumers, and settlements together.</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                     {[7, 30, 90].map(d => (

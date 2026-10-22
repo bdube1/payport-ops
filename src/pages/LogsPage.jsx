@@ -68,7 +68,6 @@ export default function LogsPage() {
           <h1 style={{ fontSize: 22, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 10 }}>
             <ScrollText size={22} /> System Logs
           </h1>
-          <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 4 }}>Full audit trail and notification history — click any row for full detail</p>
         </div>
         <button onClick={() => tab === 'Audit Trail' ? loadAudit(searchRef) : loadNotif()} className="btn btn-ghost">
           <RefreshCw size={14} /> Refresh

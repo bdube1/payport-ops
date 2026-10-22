@@ -54,9 +54,6 @@ function UserModal({ user, onSave, onClose }) {
             <select value={form.role} onChange={e => set('role', e.target.value)} style={{ width: '100%' }}>
               {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
-            <p style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 4 }}>
-              CUSTOMER = consumer app | OPS = ops console | FINANCE = read-only reports | ADMIN = full access
-            </p>
           </div>
           {!editing && (
             <div>
@@ -164,7 +161,7 @@ export default function UsersPage() {
           <h1 style={{ fontSize: 22, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 10 }}>
             <Users size={22} /> Staff Users & Access
           </h1>
-          <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 4 }}>{users.length} staff accounts -- for consumer accounts, see the Consumers section</p>
+          <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 4 }}>{users.length} staff accounts</p>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
           <button onClick={load} className="btn btn-ghost"><RefreshCw size={14} /></button>

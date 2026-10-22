@@ -228,8 +228,7 @@ export default function WalletBalancePage() {
                 <div>
                     <h1 style={{ fontSize: 24, fontWeight: 800 }}>Float Balances</h1>
                     <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 4 }}>
-                        Monitor your airtime float and bill payment wallet balances across all providers
-                        {lastRefresh && ` · Last refreshed ${lastRefresh.toLocaleTimeString()}`}
+                        {lastRefresh && `Last refreshed ${lastRefresh.toLocaleTimeString()}`}
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
@@ -292,9 +291,6 @@ export default function WalletBalancePage() {
                     <Zap size={20} color="var(--green)" />
                     Airtime Providers
                 </h2>
-                <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 4 }}>
-                    Monitor your airtime float across mobile network providers
-                </p>
             </div>
 
             {/* Airtime Provider Cards */}
@@ -426,8 +422,7 @@ export default function WalletBalancePage() {
                     Bill Payments Wallet (eSolutions)
                 </h2>
                 <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 4 }}>
-                    Monitor your ZESA, DStv, TelOne and other bill payment floats
-                    {lastEsolutionsRefresh && ` · Last refreshed ${lastEsolutionsRefresh.toLocaleTimeString()}`}
+                    {lastEsolutionsRefresh && `Last refreshed ${lastEsolutionsRefresh.toLocaleTimeString()}`}
                 </p>
             </div>
 

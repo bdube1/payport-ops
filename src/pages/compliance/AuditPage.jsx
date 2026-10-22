@@ -26,7 +26,6 @@ export default function AuditPage() {
                 ]} />
             </Section>
             <Section title="Designated authorities">
-                <p style={{ fontSize: 12.5, color: 'var(--text-2)', marginTop: 0 }}>Grants are requested by an administrator and approved by a compliance officer other than the holder (Rules page, requests list).</p>
                 <Table rows={authorities.value} />
             </Section>
         </Page>

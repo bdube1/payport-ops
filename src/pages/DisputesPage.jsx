@@ -35,7 +35,6 @@ function OpenDisputeModal({ onClose, onDone }) {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }} onClick={onClose}>
             <form onSubmit={submit} onClick={e => e.stopPropagation()} style={{ background: 'var(--bg-card)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 420, border: '1px solid var(--border)' }}>
                 <h2 style={{ fontSize: 17, fontWeight: 800, marginBottom: 4 }}>Open a dispute</h2>
-                <p style={{ fontSize: 12.5, color: 'var(--text-2)', marginBottom: 18 }}>Based on what the card network (via ZimSwitch) reports — not something a merchant self-reports.</p>
                 {error && <div style={{ background: 'var(--badge-red)', color: 'var(--red)', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 14 }}>{error}</div>}
 
                 <label style={{ fontSize: 12.5, fontWeight: 700, display: 'block', marginBottom: 6 }}>Checkout session ID</label>
@@ -137,7 +136,6 @@ export default function DisputesPage() {
                     <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>
                         <AlertTriangle size={22} /> Disputes
                     </h1>
-                    <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 4 }}>Card network chargebacks, tracked against the checkout session they concern</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                     <button className="btn btn-primary" onClick={() => setShowOpen(true)}><Plus size={14} /> Open dispute</button>

@@ -112,7 +112,7 @@ export default function ConsumersPage() {
                     <h1 style={{ fontSize: 22, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 10 }}>
                         <Users size={22} /> Consumers
                     </h1>
-                    <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 4 }}>{consumers.length} registered Payport Pay / mobile app users</p>
+                    <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 4 }}>{consumers.length} consumers</p>
                 </div>
                 <button onClick={load} className="btn btn-ghost"><RefreshCw size={14} /> Refresh</button>
             </div>

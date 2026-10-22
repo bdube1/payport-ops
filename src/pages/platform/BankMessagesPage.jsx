@@ -18,7 +18,7 @@ export default function BankMessagesPage() {
                   <FormButton label="Upload pain.002 status report" kind="ghost" title="Payout status report (pain.002.001.10)" fields={[{ name: 'file', label: 'XML file', type: 'file', accept: '.xml', required: true }]}
                       onSubmit={v => financeApi.isoUpload('pain002', v.file)} onDone={refresh} />
               </>}>
-            {missing.length > 0 && <Notice kind="error">Schemas not installed: {missing.join(', ')}. These messages are refused until they are.</Notice>}
+            {missing.length > 0 && <Notice kind="error">Schemas not installed: {missing.join(', ')}.</Notice>}
             <Section title="Statements">
                 <Table rows={statements.value} onRow={r => setOpen(r.id)} columns={[
                     { key: 'id', label: 'ID' }, { key: 'country', label: 'Market' }, { key: 'entity_code', label: 'Entity' }, { key: 'statement_id', label: 'Statement' },

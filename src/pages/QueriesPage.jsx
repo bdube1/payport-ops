@@ -205,7 +205,6 @@ export default function QueriesPage() {
                     <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>
                         <MessageCircleQuestion size={22} /> Merchant Queries
                     </h1>
-                    <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 4 }}>Questions merchants have raised about specific transactions.</p>
                 </div>
                 <button className="btn btn-ghost" onClick={load}><RefreshCw size={14} /> Refresh</button>
             </div>
