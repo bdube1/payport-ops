@@ -28,7 +28,33 @@ export const ROUTE_ROLES = {
     '/reconciliation':['ADMIN', 'OPS'],
     '/queries':       ['ADMIN', 'OPS'],
     '/logs':          ['ADMIN', 'OPS'],
+    // Phase 4-7
+    '/work-queues':   ['ADMIN', 'OPS', 'FINANCE'],
+    '/kyb':           ['ADMIN', 'OPS'],
+    '/destinations':  ['ADMIN', 'OPS', 'FINANCE'],
+    '/settlement-batches': ['ADMIN', 'FINANCE'],
+    '/recon-exceptions':   ['ADMIN', 'FINANCE'],
+    '/bank-messages': ['ADMIN', 'FINANCE'],
+    '/integrations':  ['ADMIN', 'OPS'],
+    '/markets':       ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
+    '/channels':      ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
+    // Phase 8
+    '/customer-wallets': ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
+    '/agents':        ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
+    '/pos-terminals': ['ADMIN', 'OPS', 'COMPLIANCE'],
+    '/provider-settlement-rules': ['ADMIN', 'FINANCE', 'COMPLIANCE'],
+    '/ledger':        ['ADMIN', 'FINANCE', 'COMPLIANCE'],
+    '/compliance-authorities': ['ADMIN'],
+    // Compliance console: COMPLIANCE only (ADMIN deliberately excluded, as on the backend).
+    '/compliance':    ['COMPLIANCE'],
 };
+
+/** Where each role lands after login. */
+export function homeFor(role) {
+    if (role === 'COMPLIANCE') return '/compliance/cases';
+    if (role === 'OPS' || role === 'FINANCE') return '/work-queues';
+    return '/dashboard';
+}
 
 /** Finds the ROUTE_ROLES entry for a given path, matching sub-paths too
  *  (e.g. /transactions/PP-WEB-123 matches the /transactions entry). */

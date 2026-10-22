@@ -7,12 +7,14 @@ import {
     LayoutDashboard, ArrowUpDown, AlertTriangle, BarChart2, Package,
     Wallet, Settings, Users, FileText, ScrollText, LogOut, Moon, Sun,
     Grid, Building2, Landmark, ShieldAlert, ClipboardCheck, MessageCircleQuestion, FileSpreadsheet,
-    UserCircle, FileBarChart, LayoutGrid, Percent, ChevronDown
+    UserCircle, FileBarChart, LayoutGrid, Percent, ChevronDown,
+    Inbox, BadgeCheck, Banknote, Plug, Globe, Scale, Gavel, Search, FileWarning, Lock, KeyRound, HandCoins, MonitorSmartphone, BookOpen, WalletCards
 } from 'lucide-react';
 
 // Always visible, never collapsed -- these aren't grouped under any of
 // the four named sections, so they stay outside the accordion entirely.
 const topNav = [
+    { to: '/work-queues', icon: Inbox, label: 'Work Queues' },
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/transactions', icon: ArrowUpDown, label: 'Transactions' },
     { to: '/attention', icon: AlertTriangle, label: 'Attention Queue' },
@@ -45,6 +47,35 @@ const sections = [
         ],
     },
     {
+        key: 'platform', label: 'APPROVALS & FINANCE',
+        items: [
+            { to: '/kyb', icon: BadgeCheck, label: 'KYB Review' },
+            { to: '/destinations', icon: Landmark, label: 'Payout Destinations' },
+            { to: '/settlement-batches', icon: Banknote, label: 'Settlement Batches' },
+            { to: '/recon-exceptions', icon: FileWarning, label: 'Recon Exceptions' },
+            { to: '/bank-messages', icon: FileSpreadsheet, label: 'Bank Messages (ISO 20022)' },
+            { to: '/integrations', icon: Plug, label: 'Integrations' },
+            { to: '/markets', icon: Globe, label: 'Markets & Currencies' },
+            { to: '/channels', icon: Plug, label: 'Channels & Product Lines' },
+            { to: '/customer-wallets', icon: WalletCards, label: 'Customer Wallets' },
+            { to: '/agents', icon: HandCoins, label: 'Agents & Float' },
+            { to: '/pos-terminals', icon: MonitorSmartphone, label: 'POS & WhatsApp' },
+            { to: '/provider-settlement-rules', icon: Banknote, label: 'Provider Settlement Rules' },
+            { to: '/ledger', icon: BookOpen, label: 'Ledger' },
+        ],
+    },
+    {
+        key: 'compliance', label: 'COMPLIANCE',
+        items: [
+            { to: '/compliance/cases', icon: Scale, label: 'Alerts & Cases' },
+            { to: '/compliance/rules', icon: Gavel, label: 'Rules & Parameters' },
+            { to: '/compliance/screening', icon: Search, label: 'Sanctions Screening' },
+            { to: '/compliance/reports', icon: FileText, label: 'FIU Reports' },
+            { to: '/compliance/audit', icon: Lock, label: 'Audit' },
+            { to: '/compliance-authorities', icon: KeyRound, label: 'Compliance Authorities' },
+        ],
+    },
+    {
         key: 'consumers', label: 'CONSUMERS',
         items: [
             { to: '/consumers/dashboard', icon: LayoutGrid, label: 'Consumers Dashboard' },
@@ -54,7 +85,7 @@ const sections = [
     {
         key: 'management', label: 'MANAGEMENT',
         items: [
-            { to: '/products', icon: Package, label: 'Products' },
+            { to: '/products', icon: Package, label: 'Products & Payment Methods' },
             { to: '/bundles', icon: Grid, label: 'Bundle Manager' },
             { to: '/config', icon: Settings, label: 'Configuration' },
             { to: '/users', icon: Users, label: 'Staff Users & Access' },

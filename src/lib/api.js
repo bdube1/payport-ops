@@ -52,7 +52,8 @@ api.interceptors.response.use(
         // This used to also fire on any timeout or network error, which is
         // exactly why a slow eSolutions balance check was silently logging
         // people out of the whole portal.
-        if (err.response?.status === 401 || err.response?.status === 403) {
+        // 403 is a real answer (this role may not do that), never a reason to log out.
+        if (err.response?.status === 401) {
             redirectToLogin();
             return Promise.reject(err);
         }
@@ -96,7 +97,7 @@ export const markSettlementPaid = (id, payoutReference) => api.post(`/admin/sett
 
 // Disputes
 export const getDisputes = () => api.get('/admin/disputes');
-export const openDispute = (checkoutSessionId, amountCents, reason) => api.post('/admin/disputes', { checkoutSessionId, amountCents, reason });
+export const openDispute = (checkoutSessionId, amountCents, reason, type = 'COMPLAINT') => api.post('/admin/disputes', { checkoutSessionId, amountCents, reason, type });
 export const resolveDispute = (id, status, evidenceNotes) => api.post(`/admin/disputes/${id}/resolve`, { status, evidenceNotes });
 
 export const getQueries = () => api.get('/admin/queries');
@@ -261,4 +262,169 @@ export const STATUS_CONFIG = {
     REFUND_PENDING: { label: 'Refund Pending', badge: 'badge-amber' },
     REFUNDED: { label: 'Refunded', badge: 'badge-blue' },
     MANUAL_FULFILMENT: { label: 'Manual', badge: 'badge-amber' },
+};
+
+
+// ─── Phase 4-7: platform, finance, compliance, markets ─────────────────────────
+// Thin wrappers; the backend enforces every permission and four-eyes rule.
+export const platformApi = {
+    workQueues: () => api.get('/admin/platform/work-queues'),
+    kyb: (merchantId) => api.get(`/admin/platform/kyb/${merchantId}`),
+    kybAssign: (merchantId) => api.post(`/admin/platform/kyb/${merchantId}/assign`),
+    kybRecommend: (merchantId, recommendation, checklist, note) => api.post(`/admin/platform/kyb/${merchantId}/recommend`, { recommendation, checklist, note }),
+    kybDecide: (merchantId, accept, note) => api.post(`/admin/platform/kyb/${merchantId}/decide`, { accept, note }),
+    destinations: (status) => api.get('/admin/platform/settlement-destinations', { params: status ? { status } : {} }),
+    verifyDestination: (id, approve, note) => api.post(`/admin/platform/settlement-destinations/${id}/verify`, { approve, note }),
+    enable: (merchantId, country, currency, enabled) => api.post(`/admin/platform/merchants/${merchantId}/enablements`, { country, currency, enabled }),
+    readiness: (merchantId) => api.get(`/admin/platform/merchants/${merchantId}/readiness`),
+};
+
+export const financeApi = {
+    exceptions: (category) => api.get('/admin/finance/recon/exceptions', { params: category ? { category } : {} }),
+    resolveException: (id, resolution, note) => api.post(`/admin/finance/recon/exceptions/${id}/resolve`, { resolution, note }),
+    importStatement: (provider, format, file) => {
+        const f = new FormData(); f.append('file', file);
+        return api.post('/admin/finance/recon/statements', f, { params: { provider, format }, headers: { 'Content-Type': 'multipart/form-data' } });
+    },
+    eligible: (currency) => api.get('/admin/finance/settlement/eligible', { params: { currency } }),
+    draftBatch: (currency) => api.post('/admin/finance/settlement/batches', { currency }),
+    batch: (id) => api.get(`/admin/finance/settlement/batches/${id}`),
+    approveBatch: (id) => api.post(`/admin/finance/settlement/batches/${id}/approve`),
+    cancelBatch: (id) => api.post(`/admin/finance/settlement/batches/${id}/cancel`),
+    instructBatch: (id) => api.post(`/admin/finance/settlement/batches/${id}/instruct`),
+    payoutResults: (file) => {
+        const f = new FormData(); f.append('file', file);
+        return api.post('/admin/finance/settlement/payout-results', f, { headers: { 'Content-Type': 'multipart/form-data' } });
+    },
+    isoSchemas: () => api.get('/admin/finance/iso20022/schemas'),
+    isoUpload: (kind, file) => {
+        const f = new FormData(); f.append('file', file);
+        return api.post(`/admin/finance/iso20022/${kind}`, f, { headers: { 'Content-Type': 'multipart/form-data' } });
+    },
+    bankStatements: () => api.get('/admin/finance/iso20022/statements'),
+    bankEntries: (id) => api.get(`/admin/finance/iso20022/statements/${id}/entries`),
+    isoMessages: (type) => api.get('/admin/finance/iso20022/messages', { params: type ? { type } : {} }),
+};
+
+export const integrationsApi = {
+    list: () => api.get('/admin/integrations'),
+    get: (code) => api.get(`/admin/integrations/${code}`),
+    suspend: (code, reason) => api.post(`/admin/integrations/${code}/suspend`, { reason }),
+    resume: (code, note) => api.post(`/admin/integrations/${code}/resume`, { note }),
+    verification: (code, body) => api.post(`/admin/integrations/${code}/verifications`, body),
+};
+
+export const marketsApi = { list: () => api.get('/admin/markets') };
+
+export const disputeTimelinesApi = {
+    list: () => api.get('/admin/dispute-timelines'),
+    settings: () => api.get('/admin/dispute-timelines/settings'),
+    acknowledge: (id) => api.post(`/admin/dispute-timelines/${id}/acknowledge`),
+    update: (id, kind, note) => api.post(`/admin/dispute-timelines/${id}/updates`, { kind, note }),
+};
+
+export const complianceApi = {
+    alerts: (status = 'OPEN') => api.get(`/admin/compliance/alerts`, { params: { status } }),
+    caseFromAlerts: (alertIds) => api.post(`/admin/compliance/cases`, { alertIds }),
+    cases: (status) => api.get(`/admin/compliance/cases`, { params: status ? { status } : {} }),
+    case: (id) => api.get(`/admin/compliance/cases/${id}`),
+    assign: (id, assignee) => api.post(`/admin/compliance/cases/${id}/assign`, { assignee }),
+    note: (id, note) => api.post(`/admin/compliance/cases/${id}/notes`, { note }),
+    propose: (id, outcome, rationale) => api.post(`/admin/compliance/cases/${id}/propose`, { outcome, rationale }),
+    decide: (id, accept, note) => api.post(`/admin/compliance/cases/${id}/decide`, { accept, note }),
+    rules: () => api.get(`/admin/compliance/rules`),
+    createRule: (body) => api.post(`/admin/compliance/rules`, body),
+    ruleChange: (code, body) => api.post(`/admin/compliance/rules/${code}/change-requests`, body),
+    ruleChanges: () => api.get(`/admin/compliance/rule-changes`),
+    decideRuleChange: (id, approve, note) => api.post(`/admin/compliance/rule-changes/${id}/decide`, { approve, note }),
+    parameters: () => api.get(`/admin/compliance/parameters`),
+    parameterChange: (key, body) => api.post(`/admin/compliance/parameters/${encodeURIComponent(key)}/change-requests`, body),
+    decideParameterChange: (id, approve, note) => api.post(`/admin/compliance/parameter-changes/${id}/decide`, { approve, note }),
+    screeningStatus: () => api.get(`/admin/compliance/screening/status`),
+    screeningLists: () => api.get(`/admin/compliance/screening/lists`),
+    refreshUn: () => api.post(`/admin/compliance/screening/lists/UN-CONSOLIDATED/refresh`),
+    screeningRuns: (subjectKey) => api.get(`/admin/compliance/screening/runs`, { params: { subjectKey } }),
+    screeningCheck: (names, identifiers) => api.post(`/admin/compliance/screening/check`, { names, identifiers }),
+    reports: () => api.get(`/admin/compliance/reports`),
+    report: (id) => api.get(`/admin/compliance/reports/${id}`),
+    reportFields: (id, values) => api.patch(`/admin/compliance/reports/${id}/fields`, values),
+    approveReport: (id) => api.post(`/admin/compliance/reports/${id}/approve`),
+    reportSubmitted: (id, fiuReference) => api.post(`/admin/compliance/reports/${id}/submitted`, { fiuReference }),
+    prepareCtr: (from, to) => api.post(`/admin/compliance/reports/ctr`, null, { params: { from, to } }),
+    templates: () => api.get(`/admin/compliance/report-templates`),
+    createTemplate: (body) => api.post(`/admin/compliance/report-templates`, body),
+    activateTemplate: (id) => api.post(`/admin/compliance/report-templates/${id}/activate`),
+    authorities: () => api.get(`/admin/compliance/authorities`),
+    decideAuthority: (id, approve, note) => api.post(`/admin/compliance/authority-requests/${id}/decide`, { approve, note }),
+    auditVerify: () => api.get(`/admin/compliance/audit/verify`),
+    audit: (subject) => api.get(`/admin/compliance/audit`, { params: { subject } }),
+};
+
+export const complianceAdminApi = {
+    list: () => api.get('/admin/compliance-authorities'),
+    request: (holder, authority, reason) => api.post('/admin/compliance-authorities/requests', { holder, authority, reason }),
+    revoke: (holder, authority, reason) => api.post('/admin/compliance-authorities/revoke', { holder, authority, reason }),
+};
+
+// ─── Platform controls: markets, currencies, channels, product lines, FX (no code changes) ──
+export const platformControlsApi = {
+    marketSettings: () => api.get('/admin/markets/settings'),
+    marketRequests: () => api.get('/admin/markets/requests'),
+    requestMarketChange: (country, changes, currencies, reason) => api.post(`/admin/markets/${country}/change-requests`, { changes, currencies, reason }),
+    requestNewMarket: (market, reason) => api.post('/admin/markets', { market, reason }),
+    decideMarketRequest: (id, approve, note) => api.post(`/admin/markets/requests/${id}/decide`, { approve, note }),
+    suspendMarket: (country, reason) => api.post(`/admin/markets/${country}/suspend`, { reason }),
+    disableCurrency: (currency, reason) => api.post(`/admin/markets/currencies/${currency}/disable`, { reason }),
+    stopLiveCurrency: (currency, reason) => api.post(`/admin/markets/currencies/${currency}/live-off`, { reason }),
+    channels: () => api.get('/admin/channels'),
+    setChannel: (code, enabled, reason) => api.post(`/admin/channels/${code}`, { enabled, reason }),
+    serviceLines: () => api.get('/admin/service-lines'),
+    requestLicence: (code, body) => api.post(`/admin/service-lines/${code}/licence-requests`, body),
+    decideLicence: (id, approve, note) => api.post(`/admin/service-lines/licence-requests/${id}/decide`, { approve, note }),
+    setServiceLine: (code, enabled, reason) => api.post(`/admin/service-lines/${code}`, { enabled, reason }),
+    fxRates: () => api.get('/admin/fx/rates'),
+    proposeFxRate: (body) => api.post('/admin/fx/rates', body),
+    decideFxRate: (id, approve, note) => api.post(`/admin/fx/rates/${id}/decide`, { approve, note }),
+    fxQuote: (from, to, amountMinor) => api.get('/fx/quote', { params: { from, to, amountMinor } }),
+};
+
+// ===== Phase 8: wallets, agents, POS, WhatsApp, provider settlements; ledger views =====
+export const walletsAdminApi = {
+    search: (q) => api.get('/admin/wallets', { params: q ? { q } : {} }),
+    totals: () => api.get('/admin/wallets/totals'),
+    statement: (ref) => api.get(`/admin/wallets/${encodeURIComponent(ref)}/statement`),
+    setStatus: (ref, status, reason) => api.post(`/admin/wallets/${encodeURIComponent(ref)}/status`, { status, reason }),
+    setTier: (ref, tier, reason) => api.post(`/admin/wallets/${encodeURIComponent(ref)}/tier`, { tier, reason }),
+    refund: (reference, reason) => api.post(`/admin/wallets/refunds/${encodeURIComponent(reference)}`, { reason }),
+};
+
+export const agentsAdminApi = {
+    list: () => api.get('/admin/agents'),
+    decide: (id, approve, reason, commissionBps) => api.post(`/admin/agents/${id}/decide`, { approve, reason, commissionBps }),
+    setStatus: (id, status, reason) => api.post(`/admin/agents/${id}/status`, { status, reason }),
+    deposits: (status) => api.get('/admin/agents/float-deposits', { params: status ? { status } : {} }),
+    recordDeposit: (agentId, amountMinor, currency, bankReference) => api.post('/admin/agents/float-deposits', { agentId, amountMinor, currency, bankReference }),
+    decideDeposit: (id, approve, note) => api.post(`/admin/agents/float-deposits/${id}/decide`, { approve, note }),
+};
+
+export const posAdminApi = {
+    terminals: () => api.get('/admin/pos/terminals'),
+    setStatus: (terminalId, active, reason) => api.post(`/admin/pos/terminals/${encodeURIComponent(terminalId)}/status`, { active, reason }),
+};
+
+export const whatsappAdminApi = { status: () => api.get('/admin/whatsapp') };
+
+export const providerSettlementApi = {
+    rules: () => api.get('/admin/provider-settlement-rules'),
+    propose: (body) => api.post('/admin/provider-settlement-rules', body),
+    decide: (id, approve) => api.post(`/admin/provider-settlement-rules/${id}/decide`, { approve }),
+    retire: (id) => api.post(`/admin/provider-settlement-rules/${id}/retire`),
+};
+
+export const ledgerApi = {
+    trialBalance: () => api.get('/admin/ledger/trial-balance'),
+    accounts: (params) => api.get('/admin/ledger/accounts', { params }),
+    categories: () => api.get('/admin/ledger/categories'),
+    integrity: () => api.get('/admin/ledger/integrity'),
+    runIntegrity: () => api.post('/admin/ledger/integrity/run'),
 };

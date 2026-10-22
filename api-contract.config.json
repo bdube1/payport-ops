@@ -1,0 +1,1 @@
+{"src":["src"],"clients":{"api":"/api/v1"},"functions":{"apiGet":["GET","/api/v1"],"apiPut":["PUT","/api/v1"],"apiPostFormData":["POST","/api/v1"]}}
