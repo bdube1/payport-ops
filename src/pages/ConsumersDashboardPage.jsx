@@ -45,7 +45,6 @@ export default function ConsumersDashboardPage() {
                     <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>
                         <Users size={22} /> Consumers Dashboard
                     </h1>
-                    <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 4 }}>Payport Pay and mobile app users -- signed-up consumers, not merchants.</p>
                 </div>
                 <button className="btn btn-ghost" onClick={load}><RefreshCw size={14} /> Refresh</button>
             </div>

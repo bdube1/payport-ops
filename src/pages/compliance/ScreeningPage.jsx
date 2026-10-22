@@ -20,7 +20,7 @@ export default function ScreeningPage() {
             {status.error && <Notice kind="error">{status.error}</Notice>}
             {s && (s.complete
                 ? <Notice kind="ok">Screening is complete: every required list is loaded and current.</Notice>
-                : <Notice kind="error">Screening is INCOMPLETE: {s.reason}. Merchant approvals are held; payments raise SCREENING_UNAVAILABLE alerts.</Notice>)}
+                : <Notice kind="error">Screening is INCOMPLETE: {s.reason}.</Notice>)}
             <Section title="Lists">
                 <Table rows={s?.lists} columns={[
                     { key: 'code', label: 'List' }, { key: 'list_kind', label: 'Kind' }, { key: 'required_for_clear', label: 'Required' }, { key: 'version', label: 'Version' },

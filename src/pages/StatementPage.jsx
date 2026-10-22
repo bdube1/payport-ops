@@ -279,7 +279,6 @@ export default function StatementPage() {
         <div style={{ padding: 28, maxWidth: 1200 }}>
             <div style={{ marginBottom: 28 }}>
                 <h1 style={{ fontSize: 22, fontWeight: 800 }}>Customer Statements</h1>
-                <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 4 }}>Generate a full transaction history for any customer</p>
             </div>
 
             {/* Search */}

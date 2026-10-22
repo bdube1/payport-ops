@@ -150,14 +150,6 @@ export default function ReconciliationPage() {
             <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>
                 <ShieldCheck size={22} /> Reconciliation
             </h1>
-            <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 4, marginBottom: 8, maxWidth: 680 }}>
-                Checks whether each checkout session's recorded status and amount actually agree with its own
-                underlying transaction record.
-            </p>
-            <p style={{ color: 'var(--text-faint)', fontSize: 12.5, marginBottom: 24, maxWidth: 680, lineHeight: 1.6 }}>
-                This checks Payport's own records against each other. For a specific transaction's status directly
-                with a provider, use the lookups below.
-            </p>
 
             <NetOneLookup />
 

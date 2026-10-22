@@ -47,7 +47,6 @@ export default function CommissionReportPage() {
                     <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>
                         <Percent size={22} /> Commission Report
                     </h1>
-                    <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 4 }}>What Payport has collected in commission, all-time, and where it's coming from.</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                     <button onClick={exportCsv} className="btn btn-ghost"><Download size={14} /> Export CSV</button>

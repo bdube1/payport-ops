@@ -43,7 +43,6 @@ export default function MerchantsDashboardPage() {
                     <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>
                         <Building2 size={22} /> Merchants Dashboard
                     </h1>
-                    <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 4 }}>How the merchant vertical is performing, across every business on the platform.</p>
                 </div>
                 <button className="btn btn-ghost" onClick={load}><RefreshCw size={14} /> Refresh</button>
             </div>

@@ -25,7 +25,6 @@ function RejectModal({ merchant, onConfirm, onClose }) {
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{ background: 'var(--bg-card)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 440, border: '1px solid var(--border)' }}>
         <h2 style={{ fontSize: 17, fontWeight: 800, marginBottom: 6 }}>Reject {merchant.businessName}</h2>
-        <p style={{ fontSize: 13, color: 'var(--text-2)', marginBottom: 16 }}>This reason is stored on the application and nothing is sent to the applicant automatically in Phase 0.</p>
         <textarea
           value={reason} onChange={e => setReason(e.target.value)} rows={3} placeholder="Why is this application being rejected?"
           style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)', fontSize: 14, resize: 'vertical', boxSizing: 'border-box' }}
@@ -430,7 +429,6 @@ export default function MerchantsPage() {
           <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>
             <Building2 size={22} /> Merchants
           </h1>
-          <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 4 }}>Review and manage merchant applications — Phase 0 of the Merchants Module</p>
         </div>
         <button className="btn btn-ghost" onClick={load}><RefreshCw size={14} /> Refresh</button>
       </div>

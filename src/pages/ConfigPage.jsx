@@ -118,9 +118,6 @@ export default function ConfigPage() {
         <h1 style={{ fontSize: 22, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Settings size={22} /> System Configuration
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 4 }}>
-          Manage products, network prefixes, and payment methods. Changes take effect immediately.
-        </p>
       </div>
 
       {/* Tabs */}

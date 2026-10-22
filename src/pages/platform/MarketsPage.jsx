@@ -36,7 +36,6 @@ function CurrencyActions({ c, reload, role }) {
 }
 
 function Market({ m, reload, role }) {
-    const r = m.readiness || {};
     return (
         <Section title={`${m.name} (${m.country})`} right={<>
             <Badge value={m.status} />
@@ -65,10 +64,6 @@ function Market({ m, reload, role }) {
                 fields={[{ name: 'reason', label: 'Reason', type: 'textarea', required: true }]} onSubmit={v => platformControlsApi.suspendMarket(m.country, v.reason)} onDone={reload} />}
         </>}>
             {(m.problems || []).length > 0 && <Notice kind="error">Configuration problems: {m.problems.join('; ')}</Notice>}
-            {m.status !== 'LIVE' && (r.readyForLive
-                ? <Notice kind="ok">Ready to go live: an administrator can request status LIVE.</Notice>
-                : <Notice kind="warn">Before going live: {(r.blockers || []).join('; ')}</Notice>)}
-            {(r.warnings || []).length > 0 && <Notice kind="info">Approver should know: {r.warnings.join('; ')}</Notice>}
             <KeyValues obj={{ 'Legal entity': `${m.legal_entity} (${m.legal_name})`, Timezone: m.timezone, 'Phone code': '+' + m.phone_country_code,
                 'Sponsor bank': `${m.bank_name}${m.bank_bic ? ' · ' + m.bank_bic : ''}`, 'Payout format': m.payout_format,
                 'Statement format': m.statement_format + (m.statement_guideline ? ` + ${m.statement_guideline} guideline` : ''),

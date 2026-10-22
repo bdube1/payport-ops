@@ -84,7 +84,6 @@ export default function SettlementsPage() {
                     <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>
                         <Landmark size={22} /> Settlements
                     </h1>
-                    <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 4 }}>Daily payout batches across every merchant</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                     <button className="btn btn-primary" onClick={runNow} disabled={running}>

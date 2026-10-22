@@ -77,7 +77,6 @@ export default function MerchantStatementPage() {
                     <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>
                         <FileText size={22} /> Merchant Statement
                     </h1>
-                    <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 4 }}>A merchant's transactions for a given period, ready to export.</p>
                 </div>
                 <button onClick={exportCsv} disabled={!transactions || transactions.length === 0} className="btn btn-primary">
                     <Download size={14} /> Export CSV

@@ -71,7 +71,6 @@ export default function AttentionQueuePage() {
               </span>
             )}
           </div>
-          <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 4 }}>Transactions requiring manual action</p>
         </div>
         <button onClick={load} className="btn btn-ghost">
           <RefreshCw size={14} /> Refresh

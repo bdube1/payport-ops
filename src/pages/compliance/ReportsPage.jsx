@@ -25,7 +25,6 @@ function ReportEditor({ id, templates, onChange }) {
             {r && <>
                 <KeyValues obj={{ Type: r.report_type, Status: r.status, Deadline: r.deadline, 'Due': r.due_at, 'Prepared by': r.prepared_by, 'Approved by': r.approved_by, 'FIU reference': r.fiu_reference }} />
                 {missing.length > 0 && <Notice kind="warn">Missing before approval: {missing.join(', ')}</Notice>}
-                <Notice kind="info">Confidential. Do not tell the customer or anyone outside Compliance that a report exists (tipping off is an offence).</Notice>
                 {(def?.sections || []).map(sec => (
                     <div key={sec.id || sec.title} style={{ marginTop: 14 }}>
                         <h3 style={{ fontSize: 13, margin: '0 0 8px' }}>{sec.label || sec.title || sec.id}</h3>
