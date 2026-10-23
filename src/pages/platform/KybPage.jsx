@@ -40,8 +40,8 @@ function KybCase({ merchantId }) {
                 <FormButton label="Enable / disable currency" title="Market enablement"
                     intro="Live payments only in currencies enabled here. A sandbox market's currency can never be enabled for live money."
                     fields={[
-                        { name: 'country', label: 'Country (blank = the currency\'s market)', type: 'text' },
-                        { name: 'currency', label: 'Currency', type: 'text', required: true },
+                        { name: 'country', label: 'Country', type: 'country' },
+                        { name: 'currency', label: 'Currency', type: 'currency', required: true },
                         { name: 'enabled', label: 'Enabled for live payments', type: 'checkbox', initial: true },
                     ]}
                     onSubmit={v => platformApi.enable(merchantId, v.country || null, v.currency.toUpperCase(), !!v.enabled)} onDone={refresh} />}>

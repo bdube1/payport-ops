@@ -1,6 +1,17 @@
 import { useState } from 'react';
 import { complianceApi } from '../../lib/api';
 import { Page, Section, Table, Notice, useLoad, Badge, Act, FormButton } from '../../components/kit';
+import { parseCsv } from '../../lib/csv';
+
+const split = (v) => String(v || '').split(/[;|]/).map(x => x.trim()).filter(Boolean);
+async function entriesFromFile(code, file) {
+    const rows = parseCsv(await file.text());
+    if (!rows.length) throw new Error('The file has no entries');
+    return rows.map((r, i) => ({
+        listCode: code, entryRef: r.entryref || r.ref || r.id || `${code}-${i + 1}`, entityType: (r.entitytype || r.type || 'INDIVIDUAL').toUpperCase(),
+        name: r.name, aliases: split(r.aliases), identifiers: split(r.identifiers || r.id_numbers), country: r.country || null,
+    })).filter(e => e.name);
+}
 
 export default function ScreeningPage() {
     const status = useLoad(() => complianceApi.screeningStatus());
@@ -12,6 +23,14 @@ export default function ScreeningPage() {
         <Page title="Sanctions screening" subtitle="UN Security Council Consolidated List, fetched hourly over verified HTTPS, with a version and hash for every load. If a required list is missing or older than the allowed age, screening is INCOMPLETE and never counts as clear."
               actions={<>
                   <Act label="Fetch UN list now" run={() => complianceApi.refreshUn()} done={(r) => { status.reload(); }} />
+                  <FormButton label="Add list" kind="ghost" title="New screening list" fields={[
+                      { name: 'code', label: 'List code (e.g. OFAC-SDN, LOCAL-PEP)', required: true }, { name: 'name', label: 'Name', required: true },
+                      { name: 'source', label: 'Source', required: true }]}
+                      onSubmit={v => complianceApi.createScreeningList(v.code.trim().toUpperCase(), v.name, v.source)} onDone={() => status.reload()} />
+                  <FormButton label="Load entries" kind="ghost" title="Load list entries from a CSV file" submitLabel="Load" fields={[
+                      { name: 'code', label: 'List', type: 'select', required: true, options: (s?.lists || []).map(l => l.code) },
+                      { name: 'file', label: 'CSV file (columns: name, entityType, country, identifiers, aliases, entryRef)', type: 'file', accept: '.csv,text/csv', required: true }]}
+                      onSubmit={async v => complianceApi.loadScreeningList(v.code, await entriesFromFile(v.code, v.file))} onDone={() => status.reload()} />
                   <FormButton label="Check names" kind="ghost" title="Ad-hoc screening check" fields={[
                       { name: 'names', label: 'Names (one per line)', type: 'textarea', required: true }, { name: 'identifiers', label: 'ID / passport numbers (one per line)', type: 'textarea' }]}
                       onSubmit={v => complianceApi.screeningCheck(v.names.split('\n').map(x => x.trim()).filter(Boolean), (v.identifiers || '').split('\n').map(x => x.trim()).filter(Boolean))}

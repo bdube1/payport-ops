@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { RefreshCw, AlertTriangle, CheckCircle, Settings, Wallet, Zap, X, Clock } from 'lucide-react';
-import { getSingleWalletBalance, getVendorBalance } from '../lib/api';
+import { getSingleWalletBalance, getVendorBalance, opsExtraApi } from '../lib/api';
 
 const PROVIDERS = [
     { code: 'NETONE_USD', name: 'NetOne', currency: 'USD', symbol: '$', color: '#e53e3e', endpoint: 'Airtime Providers' },
@@ -53,6 +53,14 @@ export default function WalletBalancePage() {
         try { return JSON.parse(localStorage.getItem('esolutions_float_thresholds') || '{}'); }
         catch { return {}; }
     });
+    // Shared thresholds from the gateway (every ops user sees the same values); the browser copy is a fallback.
+    useEffect(() => {
+        opsExtraApi.floatThresholds().then(r => {
+            const server = r.data?.data || {};
+            setThresholds(t => ({ ...t, ...Object.fromEntries(Object.entries(server).filter(([k]) => !k.startsWith('ESOL:'))) }));
+            setEsolutionsThresholds(t => ({ ...t, ...Object.fromEntries(Object.entries(server).filter(([k]) => k.startsWith('ESOL:')).map(([k, v]) => [k.slice(5), v])) }));
+        }).catch(() => {});
+    }, []);
     const [editingThreshold, setEditingThreshold] = useState(null);
     const [thresholdInput, setThresholdInput] = useState('');
 
@@ -179,10 +187,12 @@ export default function WalletBalancePage() {
             const updated = { ...esolutionsThresholds, [code]: val };
             setEsolutionsThresholds(updated);
             localStorage.setItem('esolutions_float_thresholds', JSON.stringify(updated));
+            opsExtraApi.updateFloatThresholds({ ['ESOL:' + code]: val }).catch(() => {});
         } else {
             const updated = { ...thresholds, [code]: val };
             setThresholds(updated);
             localStorage.setItem('float_thresholds', JSON.stringify(updated));
+            opsExtraApi.updateFloatThresholds({ [code]: val }).catch(() => {});
         }
         setEditingThreshold(null);
     };

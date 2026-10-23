@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ShieldCheck, Play, AlertCircle, Search, Radio, Smartphone, Wallet, CreditCard, Landmark, Signal } from 'lucide-react';
 import { runReconciliation, queryNetOneTransaction, queryEcoCashTransaction, queryOmariTransaction, queryZimSwitchTransaction, queryOneMoneyTransaction, queryEconetTransaction } from '../lib/api';
 import toast from 'react-hot-toast';
+import { CurrencySelect } from '../components/kit';
 
 const TYPE_LABEL = {
     STATUS_MISMATCH: 'Status mismatch',
@@ -109,7 +110,9 @@ function ProviderLookup({ icon: Icon, title, description, fields, queryFn, rende
             </h2>
             <p style={{ fontSize: 12.5, color: 'var(--text-2)', marginBottom: 16 }}>{description}</p>
             <form onSubmit={lookup} style={{ display: 'flex', gap: 8, marginBottom: error || result ? 16 : 0, flexWrap: 'wrap' }}>
-                {fields.map(f => (
+                {fields.map(f => f.type === 'currency' ? (
+                    <CurrencySelect key={f.name} value={values[f.name]} onChange={v => setValues(s => ({ ...s, [f.name]: v }))} style={{ minWidth: 120, padding: 10, borderRadius: 10 }} />
+                ) : (
                     <input
                         key={f.name}
                         value={values[f.name]}
@@ -240,7 +243,7 @@ export default function ReconciliationPage() {
                 description="Look up what Econet themselves have on file for a specific airtime/bundle delivery, for the case where a request timed out and the final outcome is unknown."
                 fields={[
                     { name: 'reference', placeholder: 'Payport reference' },
-                    { name: 'currency', placeholder: 'Currency', defaultValue: 'USD', required: false },
+                    { name: 'currency', placeholder: 'Currency', defaultValue: 'USD', required: false, type: 'currency' },
                 ]}
                 queryFn={(reference, currency) => queryEconetTransaction(reference, currency)}
                 renderResult={(r) => (

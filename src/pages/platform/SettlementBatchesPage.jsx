@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { financeApi } from '../../lib/api';
-import { Page, Section, Table, Notice, useLoad, Badge, Act, FormButton, KeyValues, minor } from '../../components/kit';
+import { Page, Section, Table, Notice, useLoad, Badge, Act, FormButton, KeyValues, minor, CurrencySelect } from '../../components/kit';
 
 function download(name, content) {
     const url = URL.createObjectURL(new Blob([content], { type: name.endsWith('.xml') ? 'application/xml' : 'text/csv' }));
@@ -52,7 +52,7 @@ export default function SettlementBatchesPage() {
             </Section>
             {batchId && <Batch id={batchId} />}
             <Section title={`Eligible now: ${(eligible.value || []).length} sessions, net ${minor(total, currency)}`} right={
-                <select value={currency} onChange={e => setCurrency(e.target.value)}>{['USD', 'ZWG'].map(c => <option key={c}>{c}</option>)}</select>}>
+                <CurrencySelect value={currency} onChange={setCurrency} />}>
                 {eligible.error && <Notice kind="error">{eligible.error}</Notice>}
                 <Table rows={eligible.value} columns={[
                     { key: 'sessionId', label: 'Session' }, { key: 'merchantId', label: 'Merchant' }, { key: 'gross', label: 'Gross', render: r => minor(r.gross, r.currency) },

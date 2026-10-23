@@ -1,7 +1,8 @@
+import { CurrencySelect } from '../components/kit';
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Download, RefreshCw, X, AlertTriangle } from 'lucide-react';
-import { searchTransactions, formatDate, STATUS_CONFIG } from '../lib/api';
+import { searchTransactions, formatDate, STATUS_CONFIG, opsExtraApi } from '../lib/api';
 
 const STATUSES = ['', 'INITIATED', 'PAYMENT_PENDING', 'PAYMENT_CONFIRMED', 'FULFILMENT_PENDING', 'FULFILMENT_RETRY', 'FULFILMENT_FAILED', 'COMPLETED', 'PAYMENT_FAILED', 'PAYMENT_TIMEOUT', 'REFUND_PENDING', 'REFUNDED', 'MANUAL_FULFILMENT'];
 const PRODUCTS = ['', 'AIRTIME_ECONET', 'AIRTIME_NETONE', 'AIRTIME_TELECEL', 'ZESA_TOKEN', 'DSTV_RENEWAL', 'TELONE_BILL'];
@@ -53,7 +54,21 @@ export default function TransactionsPage() {
 
     const hasFilters = Object.values(filters).some(v => v);
 
-    const exportCSV = () => {
+    // Every record matching the filters, from the gateway; falls back to the page on screen.
+    const exportCSV = async () => {
+        try {
+            const params = Object.fromEntries(['customerPhone', 'recipientIdentifier', 'status', 'productTypeCode', 'dateFrom', 'dateTo']
+                .filter(k => filters[k]).map(k => [k, filters[k]]));
+            const r = await opsExtraApi.exportTransactionsCsv(params);
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(r.data instanceof Blob ? r.data : new Blob([r.data], { type: 'text/csv' }));
+            a.download = `payport-transactions-${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            return;
+        } catch { /* fall through to the page export */ }
+        exportPageCSV();
+    };
+    const exportPageCSV = () => {
         if (!txs.length) return;
         const headers = ['Reference', 'Status', 'Customer Phone', 'Recipient', 'Product', 'Amount', 'Currency', 'Payment Method', 'Provider Ref', 'Date'];
         const rows = txs.map(t => [
@@ -142,7 +157,7 @@ export default function TransactionsPage() {
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: 10 }}>
-                    <button onClick={exportCSV} className="btn btn-ghost" disabled={!txs.length}>
+                    <button onClick={exportCSV} className="btn btn-ghost">
                         <Download size={14} /> CSV
                     </button>
                     <button onClick={exportPDF} className="btn btn-ghost" disabled={!txs.length}>
@@ -195,11 +210,7 @@ export default function TransactionsPage() {
                     ))}
                     <div>
                         <label style={{ fontSize: 11, color: 'var(--text-2)', fontWeight: 600, display: 'block', marginBottom: 5 }}>Currency</label>
-                        <select value={filters.currency} onChange={e => updateFilter('currency', e.target.value)} style={{ width: '100%' }}>
-                            <option value="">All currencies</option>
-                            <option value="USD">USD</option>
-                            <option value="ZWG">ZWG</option>
-                        </select>
+                        <CurrencySelect value={filters.currency} onChange={v => updateFilter('currency', v)} allLabel="All currencies" style={{ width: '100%' }} />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                         <label style={{ fontSize: 12.5, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', paddingBottom: 9 }}>

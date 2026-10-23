@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ChevronLeft, RefreshCw, DollarSign, Clock, CheckCircle, XCircle, Loader, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
-import { getTransaction, getTransactionTimeline, retryFulfilment, completeRefund, formatDate, STATUS_CONFIG } from '../lib/api'
+import { getTransaction, getTransactionTimeline, retryFulfilment, completeRefund, formatDate, STATUS_CONFIG, opsExtraApi } from '../lib/api'
 import toast from 'react-hot-toast'
 
 function fmt(amountCents, currency = 'USD') {
@@ -53,6 +53,21 @@ export default function TransactionDetailPage() {
         }
     }
 
+    const handleStartRefund = async () => {
+        const reason = window.prompt('Reason for the refund')
+        if (!reason || !reason.trim()) return
+        setRefunding(true)
+        try {
+            await opsExtraApi.startRefund(ref, reason.trim())
+            toast.success('Refund started')
+            await load()
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Could not start the refund')
+        } finally {
+            setRefunding(false)
+        }
+    }
+
     const handleRefund = async () => {
         if (!refundReference.trim()) { toast.error('Please enter the refund reference'); return }
         setRefunding(true)
@@ -88,7 +103,8 @@ export default function TransactionDetailPage() {
     // The backend's own state machine already rejects this transition
     // (neither status has a path to REFUND_PENDING at all), so this was
     // purely a frontend bug offering an action that would always fail.
-    const canRefund = ['FULFILMENT_FAILED', 'MANUAL_FULFILMENT'].includes(txn.status)
+    const canRefund = ['FULFILMENT_FAILED', 'MANUAL_FULFILMENT', 'REFUND_PENDING'].includes(txn.status)
+    const canStartRefund = txn.status === 'COMPLETED'
 
     // Retry only makes sense within a reasonable window of the original
     // attempt -- a fulfilment failure from weeks ago isn't something a
@@ -142,6 +158,11 @@ export default function TransactionDetailPage() {
                         <span style={{ fontSize: 11.5, color: 'var(--text-2)' }}>
                             Retry no longer available — past the 24-hour window
                         </span>
+                    )}
+                    {canStartRefund && (
+                        <button onClick={handleStartRefund} disabled={refunding} className="btn btn-danger btn-sm">
+                            <DollarSign size={13} /> Start refund
+                        </button>
                     )}
                     {canRefund && !showRefundForm && (
                         <button onClick={() => setShowRefundForm(true)} className="btn btn-danger btn-sm">

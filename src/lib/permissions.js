@@ -36,6 +36,7 @@ export const ROUTE_ROLES = {
     '/recon-exceptions':   ['ADMIN', 'FINANCE'],
     '/bank-messages': ['ADMIN', 'FINANCE'],
     '/integrations':  ['ADMIN', 'OPS'],
+    '/provider-tools': ['ADMIN', 'OPS', 'FINANCE'],
     '/markets':       ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
     '/channels':      ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
     // Phase 8
