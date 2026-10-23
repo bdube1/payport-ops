@@ -479,4 +479,8 @@ export const providerToolsApi = {
     netoneEndUser: (mobile) => api.get('/admin/netone/end-user-balance', { params: { mobile } }),
     netonePinStock: () => api.get('/admin/netone/pin-stock'),
     netoneBundles: (currency) => api.get('/admin/netone/data-bundles', { params: { currency } }),
+    omariStart: (msisdn, amount, currency) => api.post('/omari/admin/test-flow', { msisdn, amount, currency }),
+    omariConfirm: (reference, otp, msisdn) => api.post('/omari/admin/test-payment', { reference, otp, msisdn }),
+    omariQuery: (reference) => api.get(`/omari/admin/query/${encodeURIComponent(reference)}`),
+    omariVoid: (reference) => api.post('/omari/admin/void', { reference }),
 };

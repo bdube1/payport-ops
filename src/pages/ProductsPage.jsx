@@ -35,6 +35,16 @@ async function apiPut(path, body) {
     return res.json()
 }
 
+async function apiDelete(path) {
+    const res = await fetch(`${API_BASE}/api/v1${path}`, { method: 'DELETE', headers: authHeaders() })
+    if (!res.ok) {
+        let msg = `HTTP ${res.status}`
+        try { const j = await res.json(); msg = j.message || j.error?.message || msg } catch { /* no body */ }
+        throw new Error(msg)
+    }
+    return res.status === 204 ? null : res.json().catch(() => null)
+}
+
 async function apiGet(path) {
     const res = await fetch(`${API_BASE}/api/v1${path}`, { headers: authHeaders() })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -258,6 +268,16 @@ function ProductRow({ product, onRefresh }) {
                 >
                     {saving.active ? <Loader size={12} style={{ animation: 'spin 1s linear infinite' }} /> : product.isActive ? 'Active' : 'Inactive'}
                 </button>
+                <button
+                    onClick={async e => {
+                        e.stopPropagation()
+                        if (!window.confirm(`Delete ${product.name}? This cannot be undone.`)) return
+                        try { await apiDelete(`/admin/config/products/${product.id}`); await onRefresh() }
+                        catch (err) { alert(`Could not delete ${product.name}: ${err.message}`) }
+                    }}
+                    title="Delete product"
+                    style={{ padding: '5px 10px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--red)', cursor: 'pointer', fontWeight: 700, fontSize: 12, flexShrink: 0 }}
+                >Delete</button>
             </div>
 
             {/* Expanded detail */}
