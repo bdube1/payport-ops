@@ -48,6 +48,13 @@ const sections = [
         ],
     },
     {
+        key: 'agents', label: 'AGENTS',
+        items: [
+            { to: '/agents/dashboard', icon: LayoutGrid, label: 'Agents Dashboard' },
+            { to: '/agents', icon: HandCoins, label: 'Agents & Float', end: true },
+        ],
+    },
+    {
         key: 'platform', label: 'APPROVALS & FINANCE',
         items: [
             { to: '/kyb', icon: BadgeCheck, label: 'KYB Review' },
@@ -60,8 +67,8 @@ const sections = [
             { to: '/markets', icon: Globe, label: 'Markets & Currencies' },
             { to: '/channels', icon: Plug, label: 'Channels & Product Lines' },
             { to: '/customer-wallets', icon: WalletCards, label: 'Customer Wallets' },
-            { to: '/agents', icon: HandCoins, label: 'Agents & Float' },
-            { to: '/pos-terminals', icon: MonitorSmartphone, label: 'POS & WhatsApp' },
+            { to: '/ussd-whatsapp', icon: MessageCircleQuestion, label: 'USSD & WhatsApp' },
+            { to: '/pos-terminals', icon: MonitorSmartphone, label: 'POS Terminals' },
             { to: '/provider-settlement-rules', icon: Banknote, label: 'Provider Settlement Rules' },
             { to: '/ledger', icon: BookOpen, label: 'Ledger' },
         ],
@@ -149,7 +156,14 @@ export default function Sidebar() {
         }}>
             {/* Logo — same lockup image used on the website and consumer app */}
             <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
-                <img src="/images/brand/lockup.png" alt="Payport" style={{ height: 70, width: 'auto', objectFit: 'contain', display: 'block', marginBottom: 6 }} />
+                {dark ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, height: 70, marginBottom: 6 }}>
+                        <img src="/images/brand/mark.png" alt="" style={{ height: 46, width: 'auto' }} />
+                        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 26, color: 'var(--text)', letterSpacing: '-0.01em' }}>Payport</span>
+                    </div>
+                ) : (
+                    <img src="/images/brand/lockup.png" alt="Payport" style={{ height: 70, width: 'auto', objectFit: 'contain', display: 'block', marginBottom: 6 }} />
+                )}
                 <p style={{ fontSize: 9.5, color: 'var(--text-2)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Operations Console</p>
             </div>
 

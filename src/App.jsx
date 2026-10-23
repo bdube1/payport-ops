@@ -47,6 +47,7 @@ import MarketsPage from './pages/platform/MarketsPage';
 import CustomerWalletsPage from './pages/platform/CustomerWalletsPage';
 import AgentsPage from './pages/platform/AgentsPage';
 import PosTerminalsPage from './pages/platform/PosTerminalsPage';
+import UssdWhatsAppPage from './pages/platform/UssdWhatsAppPage';
 import ProviderSettlementRulesPage from './pages/platform/ProviderSettlementRulesPage';
 import LedgerPage from './pages/platform/LedgerPage';
 import ChannelsProductsPage from './pages/platform/ChannelsProductsPage';
@@ -154,8 +155,10 @@ export default function App() {
                                     <Route path="/markets" element={<MarketsPage />} />
                                     <Route path="/channels" element={<ChannelsProductsPage />} />
                                     <Route path="/customer-wallets" element={<CustomerWalletsPage />} />
-                                    <Route path="/agents" element={<AgentsPage />} />
+                                    <Route path="/agents" element={<AgentsPage view="list" />} />
+                                    <Route path="/agents/dashboard" element={<AgentsPage view="dashboard" />} />
                                     <Route path="/pos-terminals" element={<PosTerminalsPage />} />
+                                    <Route path="/ussd-whatsapp" element={<UssdWhatsAppPage />} />
                                     <Route path="/provider-settlement-rules" element={<ProviderSettlementRulesPage />} />
                                     <Route path="/ledger" element={<LedgerPage />} />
                                     <Route path="/compliance-authorities" element={<AuthoritiesAdminPage />} />

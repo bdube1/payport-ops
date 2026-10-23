@@ -5,8 +5,9 @@ import {
     getMerchants, rejectMerchant, suspendMerchant, reactivateMerchant,
     getDefaultCommission, setDefaultCommission, setMerchantCommission, formatDate,
     getMerchantDocuments, getMerchantDocumentUrl, requestMerchantInfo, getMerchantReviewNotes, opsExtraApi,
-    startMerchantReview, updateMerchantDetails, api,
+    startMerchantReview, updateMerchantDetails, api, merchantUsersApi,
 } from '../lib/api';
+import { ShowOnce } from '../components/kit';
 import toast from 'react-hot-toast';
 
 const STATUS_BADGE = {
@@ -178,9 +179,29 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
   const [infoNote, setInfoNote] = useState('');
   const [busy, setBusy] = useState(false);
 
+  const [logins, setLogins] = useState(null);
+  const [secret, setSecret] = useState(null);
+
   const load = () => {
     getMerchantDocuments(merchant.id).then(res => setDocs(res.data?.data || res.data || []));
     getMerchantReviewNotes(merchant.id).then(res => setNotes(res.data?.data || res.data || []));
+    merchantUsersApi.list(merchant.id).then(res => setLogins(res.data?.data || [])).catch(() => setLogins([]));
+  };
+
+  const resetLogin = async (u) => {
+    if (!window.confirm(`Reset the password for ${u.email}?`)) return;
+    try {
+      const r = await merchantUsersApi.resetPassword(merchant.id, u.id);
+      const d = r.data?.data || {};
+      setSecret({
+        title: 'Temporary password',
+        note: d.emailed ? 'This was also emailed to the user. It is shown only once.' : 'Email could not be sent. Give this to the user; it is shown only once.',
+        items: [{ label: 'Sign-in email', value: d.email }, { label: 'Temporary password', value: d.temporaryPassword }],
+      });
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Could not reset the password');
+    }
   };
 
   useEffect(load, [merchant.id]);
@@ -235,6 +256,7 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
             <h2 style={{ fontSize: 19, fontWeight: 800, marginBottom: 4 }}>{merchant.businessName}</h2>
+            {merchant.applicationReference && <div style={{ fontSize: 12.5, color: 'var(--text-2)', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Application {merchant.applicationReference}</div>}
             <span className={`badge ${STATUS_BADGE[merchant.status] || 'badge-gray'}`}>{merchant.status}</span>
             {merchant.riskScore > 0 && (
               <span className="badge badge-amber" style={{ marginLeft: 8 }}>Risk score: {merchant.riskScore}</span>
@@ -295,6 +317,25 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
                 <span style={{ fontWeight: 600 }}>{d.documentType?.replace(/_/g, ' ')}</span>
                 <span style={{ color: 'var(--text-faint)' }}>— {d.originalFilename}</span>
               </a>
+            ))}
+          </div>
+        )}
+
+        <h3 style={{ fontSize: 13, fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-2)', marginBottom: 10 }}>Portal logins</h3>
+        {logins === null ? (
+          <p style={{ fontSize: 12.5, color: 'var(--text-faint)', marginBottom: 20 }}>Loading…</p>
+        ) : logins.length === 0 ? (
+          <p style={{ fontSize: 12.5, color: 'var(--text-faint)', marginBottom: 20 }}>No logins.</p>
+        ) : (
+          <div style={{ marginBottom: 20 }}>
+            {logins.map(u => (
+              <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12.5, padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
+                <span style={{ fontWeight: 600 }}>{u.fullName}</span>
+                <span style={{ color: 'var(--text-2)', flex: 1 }}>{u.email} · {u.role}</span>
+                {u.accountLocked && <span className="badge badge-red">LOCKED</span>}
+                {u.mustChangePassword && <span className="badge badge-amber">TEMPORARY PASSWORD</span>}
+                <button className="btn btn-ghost" style={{ padding: '4px 10px', fontSize: 11.5 }} onClick={() => resetLogin(u)}>Reset password</button>
+              </div>
             ))}
           </div>
         )}
@@ -361,6 +402,7 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
           <button onClick={onClose} className="btn btn-ghost" style={{ fontSize: 12.5, marginLeft: 'auto' }}>Close</button>
         </div>
       </div>
+      {secret && <ShowOnce {...secret} onClose={() => setSecret(null)} />}
     </div>
   );
 }
@@ -414,7 +456,7 @@ export default function MerchantsPage() {
   };
 
   const handleSuspend = async (m) => {
-    if (!confirm(`Suspend ${m.businessName}? They will not be able to process payments until reactivated.`)) return;
+    if (!window.confirm(`Suspend ${m.businessName}?`)) return;
     setBusyId(m.id);
     try { await suspendMerchant(m.id); toast.success('Merchant suspended'); load(); }
     catch (e) { toast.error(e.response?.data?.message || 'Failed to suspend'); }
@@ -422,6 +464,7 @@ export default function MerchantsPage() {
   };
 
   const handleReactivate = async (m) => {
+    if (!window.confirm(`Reactivate ${m.businessName}?`)) return;
     setBusyId(m.id);
     try { await reactivateMerchant(m.id); toast.success('Merchant reactivated'); load(); }
     catch (e) { toast.error(e.response?.data?.message || 'Failed to reactivate'); }
@@ -443,7 +486,7 @@ export default function MerchantsPage() {
 
       <input
         value={search} onChange={e => setSearch(e.target.value)}
-        placeholder="Search by business name, registration number, email, or phone…"
+        placeholder="Search by application reference, business name, registration number, email or phone…"
         style={{ width: '100%', maxWidth: 420, marginBottom: 14 }}
       />
 
@@ -471,6 +514,7 @@ export default function MerchantsPage() {
                   <span className={`badge ${STATUS_BADGE[m.status] || 'badge-gray'}`}>{m.status}</span>
                 </div>
                 <div style={{ fontSize: 12.5, color: 'var(--text-2)', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {m.applicationReference && <span style={{ fontFamily: 'var(--font-mono)' }}>Application {m.applicationReference}</span>}
                   <span>Reg #{m.registrationNumber} {m.businessCategory ? `· ${m.businessCategory}` : ''}</span>
                   <span>{m.contactEmail} · {m.contactPhone}</span>
                   <span>Applied {formatDate(m.createdAt)}</span>

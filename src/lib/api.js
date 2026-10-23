@@ -407,10 +407,22 @@ export const agentsAdminApi = {
     recordDeposit: (agentId, amountMinor, currency, bankReference) => api.post('/admin/agents/float-deposits', { agentId, amountMinor, currency, bankReference }),
     decideDeposit: (id, approve, note) => api.post(`/admin/agents/float-deposits/${id}/decide`, { approve, note }),
     dashboard: () => api.get('/admin/agents/dashboard'),
-    onboardable: () => api.get('/admin/agents/onboardable-merchants'),
     onboard: (body) => api.post('/admin/agents', body),
     detail: (id) => api.get(`/admin/agents/${id}`),
     update: (id, body) => api.put(`/admin/agents/${id}`, body),
+    createLogin: (id, fullName, email) => api.post(`/admin/agents/${id}/users`, { fullName, email }),
+    resetLogin: (id, userId) => api.post(`/admin/agents/${id}/users/${userId}/reset-password`),
+};
+
+export const merchantUsersApi = {
+    list: (merchantId) => api.get(`/admin/merchants/${merchantId}/users`),
+    resetPassword: (merchantId, userId) => api.post(`/admin/merchants/${merchantId}/users/${userId}/reset-password`),
+};
+
+export const ussdAdminApi = {
+    networks: () => api.get('/admin/ussd/networks'),
+    update: (code, body) => api.put(`/admin/ussd/networks/${code}`, body),
+    newKey: (code) => api.post(`/admin/ussd/networks/${code}/access-key`),
 };
 
 export const posAdminApi = {
@@ -418,7 +430,11 @@ export const posAdminApi = {
     setStatus: (terminalId, active, reason) => api.post(`/admin/pos/terminals/${encodeURIComponent(terminalId)}/status`, { active, reason }),
 };
 
-export const whatsappAdminApi = { status: () => api.get('/admin/whatsapp') };
+export const whatsappAdminApi = {
+    status: () => api.get('/admin/whatsapp'),
+    saveSettings: (body) => api.put('/admin/whatsapp/settings', body),
+    test: (to) => api.post('/admin/whatsapp/test', { to }),
+};
 
 export const providerSettlementApi = {
     rules: () => api.get('/admin/provider-settlement-rules'),
@@ -463,4 +479,8 @@ export const providerToolsApi = {
     netoneEndUser: (mobile) => api.get('/admin/netone/end-user-balance', { params: { mobile } }),
     netonePinStock: () => api.get('/admin/netone/pin-stock'),
     netoneBundles: (currency) => api.get('/admin/netone/data-bundles', { params: { currency } }),
+    omariStart: (msisdn, amount, currency) => api.post('/omari/admin/test-flow', { msisdn, amount, currency }),
+    omariConfirm: (reference, otp, msisdn) => api.post('/omari/admin/test-payment', { reference, otp, msisdn }),
+    omariQuery: (reference) => api.get(`/omari/admin/query/${encodeURIComponent(reference)}`),
+    omariVoid: (reference) => api.post('/omari/admin/void', { reference }),
 };

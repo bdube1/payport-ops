@@ -43,6 +43,7 @@ export const ROUTE_ROLES = {
     '/customer-wallets': ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
     '/agents':        ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
     '/pos-terminals': ['ADMIN', 'OPS', 'COMPLIANCE'],
+    '/ussd-whatsapp': ['ADMIN', 'OPS', 'COMPLIANCE'],
     '/provider-settlement-rules': ['ADMIN', 'FINANCE', 'COMPLIANCE'],
     '/ledger':        ['ADMIN', 'FINANCE', 'COMPLIANCE'],
     '/compliance-authorities': ['ADMIN'],
