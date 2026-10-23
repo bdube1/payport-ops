@@ -280,6 +280,7 @@ export const platformApi = {
 };
 
 export const financeApi = {
+    rerunStatement: (id) => api.post(`/admin/finance/recon/statements/${id}/run`),
     exceptions: (category) => api.get('/admin/finance/recon/exceptions', { params: category ? { category } : {} }),
     resolveException: (id, resolution, note) => api.post(`/admin/finance/recon/exceptions/${id}/resolve`, { resolution, note }),
     importStatement: (provider, format, file) => {
@@ -343,6 +344,8 @@ export const complianceApi = {
     screeningStatus: () => api.get(`/admin/compliance/screening/status`),
     screeningLists: () => api.get(`/admin/compliance/screening/lists`),
     refreshUn: () => api.post(`/admin/compliance/screening/lists/UN-CONSOLIDATED/refresh`),
+    createScreeningList: (code, name, source) => api.post(`/admin/compliance/screening/lists`, { code, name, source }),
+    loadScreeningList: (code, entries) => api.post(`/admin/compliance/screening/lists/${encodeURIComponent(code)}/load`, { entries }),
     screeningRuns: (subjectKey) => api.get(`/admin/compliance/screening/runs`, { params: { subjectKey } }),
     screeningCheck: (names, identifiers) => api.post(`/admin/compliance/screening/check`, { names, identifiers }),
     reports: () => api.get(`/admin/compliance/reports`),
@@ -403,6 +406,11 @@ export const agentsAdminApi = {
     deposits: (status) => api.get('/admin/agents/float-deposits', { params: status ? { status } : {} }),
     recordDeposit: (agentId, amountMinor, currency, bankReference) => api.post('/admin/agents/float-deposits', { agentId, amountMinor, currency, bankReference }),
     decideDeposit: (id, approve, note) => api.post(`/admin/agents/float-deposits/${id}/decide`, { approve, note }),
+    dashboard: () => api.get('/admin/agents/dashboard'),
+    onboardable: () => api.get('/admin/agents/onboardable-merchants'),
+    onboard: (body) => api.post('/admin/agents', body),
+    detail: (id) => api.get(`/admin/agents/${id}`),
+    update: (id, body) => api.put(`/admin/agents/${id}`, body),
 };
 
 export const posAdminApi = {
@@ -417,6 +425,7 @@ export const providerSettlementApi = {
     propose: (body) => api.post('/admin/provider-settlement-rules', body),
     decide: (id, approve) => api.post(`/admin/provider-settlement-rules/${id}/decide`, { approve }),
     retire: (id) => api.post(`/admin/provider-settlement-rules/${id}/retire`),
+    positions: () => api.get('/admin/provider-settlement-rules/positions'),
 };
 
 export const ledgerApi = {
@@ -425,4 +434,33 @@ export const ledgerApi = {
     categories: () => api.get('/admin/ledger/categories'),
     integrity: () => api.get('/admin/ledger/integrity'),
     runIntegrity: () => api.post('/admin/ledger/integrity/run'),
+    balance: (account) => api.get('/admin/ledger/balance', { params: { account } }),
+    shadowComparison: (differencesOnly) => api.get('/admin/ledger/shadow/comparison', { params: { differencesOnly } }),
+    shadowFailures: (openOnly = true) => api.get('/admin/ledger/shadow/failures', { params: { openOnly } }),
+    resolveShadowFailure: (idempotencyKey, resolution) => api.post('/admin/ledger/shadow/failures/resolve', { idempotencyKey, resolution }),
+    runShadow: () => api.post('/admin/ledger/shadow/run'),
+    backfillShadow: (from) => api.post('/admin/ledger/shadow/backfill', null, { params: { from } }),
+    taxRates: (entity) => api.get('/admin/ledger/tax-rates', { params: entity ? { entity } : {} }),
+    proposeTaxRate: (body) => api.post('/admin/ledger/tax-rates', body),
+    approveTaxRate: (id, note) => api.post(`/admin/ledger/tax-rates/${id}/approve`, { note }),
+    rejectTaxRate: (id, note) => api.post(`/admin/ledger/tax-rates/${id}/reject`, { note }),
+};
+
+export const opsExtraApi = {
+    floatThresholds: () => api.get('/admin/float-thresholds'),
+    updateFloatThresholds: (map) => api.put('/admin/float-thresholds', map),
+    exportTransactionsCsv: (params) => api.get('/admin/transactions-export/csv', { params, responseType: 'blob' }),
+    startRefund: (ref, reason) => api.post(`/admin/transactions/${encodeURIComponent(ref)}/refund`, { reason }),
+    resolveMerchantNote: (merchantId, noteId) => api.post(`/admin/merchants/${merchantId}/review-notes/${noteId}/resolve`),
+    userHistory: (phone, page = 0, size = 20) => api.get('/admin/user-history', { params: { phone, page, size } }),
+};
+
+export const providerToolsApi = {
+    econetBalance: (msisdn, currency) => api.get('/econet/admin/balance', { params: { msisdn, currency } }),
+    econetValidate: (msisdn, currency) => api.get('/econet/admin/validate', { params: { msisdn, currency } }),
+    netoneWallet: () => api.get('/admin/netone/wallet-balance'),
+    netoneWalletUsd: () => api.get('/admin/netone/wallet-balance-usd'),
+    netoneEndUser: (mobile) => api.get('/admin/netone/end-user-balance', { params: { mobile } }),
+    netonePinStock: () => api.get('/admin/netone/pin-stock'),
+    netoneBundles: (currency) => api.get('/admin/netone/data-bundles', { params: { currency } }),
 };

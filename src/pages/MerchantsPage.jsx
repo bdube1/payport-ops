@@ -4,7 +4,7 @@ import { Building2, CheckCircle, XCircle, PauseCircle, PlayCircle, Copy, Refresh
 import {
     getMerchants, rejectMerchant, suspendMerchant, reactivateMerchant,
     getDefaultCommission, setDefaultCommission, setMerchantCommission, formatDate,
-    getMerchantDocuments, getMerchantDocumentUrl, requestMerchantInfo, getMerchantReviewNotes,
+    getMerchantDocuments, getMerchantDocumentUrl, requestMerchantInfo, getMerchantReviewNotes, opsExtraApi,
     startMerchantReview, updateMerchantDetails, api,
 } from '../lib/api';
 import toast from 'react-hot-toast';
@@ -309,7 +309,13 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
             {notes.map(n => (
               <div key={n.id} style={{ fontSize: 12.5, marginBottom: 8, display: 'flex', gap: 8 }}>
                 <span className={`badge ${n.status === 'OPEN' ? 'badge-amber' : 'badge-green'}`} style={{ flexShrink: 0 }}>{n.status}</span>
-                <span>{n.note}</span>
+                <span style={{ flex: 1 }}>{n.note}</span>
+                {n.status === 'OPEN' && (
+                  <button className="btn btn-ghost" style={{ padding: '2px 10px', fontSize: 11.5 }}
+                    onClick={() => opsExtraApi.resolveMerchantNote(merchant.id, n.id)
+                      .then(() => getMerchantReviewNotes(merchant.id).then(res => setNotes(res.data?.data || res.data || [])))
+                      .catch(e => toast.error(e?.response?.data?.message || 'Could not resolve the note'))}>Mark resolved</button>
+                )}
               </div>
             ))}
           </div>

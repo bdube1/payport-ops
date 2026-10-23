@@ -42,6 +42,7 @@ import SettlementBatchesPage from './pages/platform/SettlementBatchesPage';
 import ReconExceptionsPage from './pages/platform/ReconExceptionsPage';
 import BankMessagesPage from './pages/platform/BankMessagesPage';
 import IntegrationsPage from './pages/platform/IntegrationsPage';
+import ProviderToolsPage from './pages/platform/ProviderToolsPage';
 import MarketsPage from './pages/platform/MarketsPage';
 import CustomerWalletsPage from './pages/platform/CustomerWalletsPage';
 import AgentsPage from './pages/platform/AgentsPage';
@@ -149,6 +150,7 @@ export default function App() {
                                     <Route path="/recon-exceptions" element={<ReconExceptionsPage />} />
                                     <Route path="/bank-messages" element={<BankMessagesPage />} />
                                     <Route path="/integrations" element={<IntegrationsPage />} />
+                                    <Route path="/provider-tools" element={<ProviderToolsPage />} />
                                     <Route path="/markets" element={<MarketsPage />} />
                                     <Route path="/channels" element={<ChannelsProductsPage />} />
                                     <Route path="/customer-wallets" element={<CustomerWalletsPage />} />

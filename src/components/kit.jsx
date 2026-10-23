@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { api } from '../lib/api';
+import { ISO_COUNTRIES, ISO_CURRENCIES } from '../lib/iso';
 
 /*
  * Small building blocks for the Phase 4-7 screens. Every rule (who may approve, four-eyes,
@@ -8,6 +10,44 @@ import toast from 'react-hot-toast';
 
 export const data = (r) => r?.data?.data ?? r?.data;
 export const errorText = (e, fallback = 'Request failed') => e?.response?.data?.message || e?.message || fallback;
+
+// Countries and currencies PayPort serves (GET /api/v1/markets), loaded once per session.
+let marketsPromise = null;
+export function useMarkets() {
+    const [markets, setMarkets] = useState([]);
+    useEffect(() => {
+        if (!marketsPromise) marketsPromise = api.get('/markets').then(r => data(r) || []).catch(() => { marketsPromise = null; return []; });
+        let live = true;
+        marketsPromise.then(m => { if (live) setMarkets(Array.isArray(m) ? m : []); });
+        return () => { live = false; };
+    }, []);
+    return markets;
+}
+
+export const currencyOptions = (markets) => [...new Set(markets.flatMap(m => (m.currencies || []).map(c => c.code)))].sort().map(c => ({ value: c, label: c }));
+export const countryOptions = (markets) => markets.map(m => ({ value: m.country, label: `${m.name} (${m.country})` }));
+
+const selectStyle = { padding: '7px 10px', borderRadius: 9, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)', fontSize: 13 };
+
+export function CurrencySelect({ value, onChange, allLabel, style, required }) {
+    const opts = currencyOptions(useMarkets());
+    return (
+        <select value={value ?? ''} onChange={e => onChange(e.target.value)} required={required} style={{ ...selectStyle, ...style }}>
+            <option value="">{allLabel || 'Currency…'}</option>
+            {opts.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+    );
+}
+
+export function CountrySelect({ value, onChange, allLabel, style, required }) {
+    const opts = countryOptions(useMarkets());
+    return (
+        <select value={value ?? ''} onChange={e => onChange(e.target.value)} required={required} style={{ ...selectStyle, ...style }}>
+            <option value="">{allLabel || 'Country…'}</option>
+            {opts.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+    );
+}
 
 export function useLoad(loader, deps = []) {
     const [value, setValue] = useState(null);
@@ -128,6 +168,12 @@ export function Act({ label, run, done, confirm, kind = 'primary', disabled, tit
  */
 export function FormModal({ title, intro, fields, submitLabel = 'Submit', onSubmit, onClose, onDone }) {
     const [values, setValues] = useState(() => Object.fromEntries(fields.map(f => [f.name, f.initial ?? (f.type === 'checkbox' ? false : '')])));
+    const markets = useMarkets();
+    const optionsFor = (f) => f.type === 'currency' ? currencyOptions(markets)
+        : f.type === 'country' ? countryOptions(markets)
+        : f.type === 'iso-country' ? ISO_COUNTRIES.map(c => ({ value: c.code, label: `${c.name} (${c.code})` }))
+        : f.type === 'iso-currency' ? ISO_CURRENCIES
+        : f.options;
     const [error, setError] = useState('');
     const [busy, setBusy] = useState(false);
     const set = (k, v) => setValues(s => ({ ...s, [k]: v }));
@@ -164,10 +210,10 @@ export function FormModal({ title, intro, fields, submitLabel = 'Submit', onSubm
                         ) : (
                             <>
                                 <label style={{ fontSize: 12.5, fontWeight: 700, display: 'block', marginBottom: 5 }}>{f.label}</label>
-                                {f.type === 'select' ? (
+                                {['select', 'currency', 'country', 'iso-country', 'iso-currency'].includes(f.type) ? (
                                     <select style={input} value={values[f.name]} required={f.required} onChange={e => set(f.name, e.target.value)}>
                                         <option value="">Select…</option>
-                                        {f.options.map(o => <option key={o.value ?? o} value={o.value ?? o}>{o.label ?? o}</option>)}
+                                        {(optionsFor(f) || []).map(o => <option key={o.value ?? o} value={o.value ?? o}>{o.label ?? o}</option>)}
                                     </select>
                                 ) : f.type === 'textarea' || f.type === 'json' ? (
                                     <textarea style={{ ...input, minHeight: f.type === 'json' ? 120 : 80, fontFamily: f.type === 'json' ? 'monospace' : 'inherit' }}
@@ -180,7 +226,6 @@ export function FormModal({ title, intro, fields, submitLabel = 'Submit', onSubm
                                 )}
                             </>
                         )}
-                        {f.help && <div style={{ fontSize: 11.5, color: 'var(--text-2)', marginTop: 4 }}>{f.help}</div>}
                     </div>
                 ))}
                 <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>

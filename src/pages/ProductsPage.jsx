@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { useMarkets, currencyOptions } from '../components/kit'
 import {
     Package, CreditCard, RefreshCw, Loader, DollarSign,
     ToggleLeft, ToggleRight, ChevronDown, ChevronRight, Edit2, Check, X, Image, Upload, Lightbulb, AlertTriangle
@@ -8,10 +9,13 @@ import {
     getAdminPaymentMethods, updateAdminPaymentMethod
 } from '../lib/api'
 
-const CURRENCY_META = {
+const KNOWN_CURRENCY_META = {
     USD: { label: 'USD $',   color: 'var(--green)', bg: 'var(--badge-green)', symbol: '$'    },
     ZWG: { label: 'ZWG ZiG', color: 'var(--purple)', bg: 'var(--badge-purple)', symbol: 'ZiG'  },
 }
+const CURRENCY_META = new Proxy(KNOWN_CURRENCY_META, {
+    get: (t, k) => t[k] || { label: String(k), color: 'var(--blue)', bg: 'var(--badge-blue)', symbol: String(k) },
+})
 
 // ── API helpers ──────────────────────────────────────────────────────────────
 const API_BASE = import.meta.env.VITE_API_URL || 'https://api.payport.africa'
@@ -80,6 +84,8 @@ function CurrencyBadge({ currency, isActive, onClick, saving }) {
 }
 
 function ProductRow({ product, onRefresh }) {
+    const marketCurrencies = currencyOptions(useMarkets()).map(o => o.value)
+    const CCYS = marketCurrencies.length ? marketCurrencies : ['USD', 'ZWG']
     const [expanded, setExpanded] = useState(false)
     const [saving,   setSaving]   = useState({})   // {USD: bool, ZWG: bool, active: bool, logo: bool}
     const [editing,  setEditing]  = useState(false)
@@ -222,7 +228,7 @@ function ProductRow({ product, onRefresh }) {
 
                 {/* Currency quick-badges */}
                 <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                    {['USD', 'ZWG'].map(ccy => {
+                    {CCYS.map(ccy => {
                         const existing = currencies.find(c => c.currency === ccy)
                         const isActive = existing?.isActive === true
                         return (
@@ -256,7 +262,7 @@ function ProductRow({ product, onRefresh }) {
             {expanded && (
                 <div style={{ padding: '0 16px 16px', borderTop: '1px solid var(--bg-2)' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
-                        {['USD', 'ZWG'].map(ccy => {
+                        {CCYS.map(ccy => {
                             const meta = CURRENCY_META[ccy]
                             const existing = currencies.find(c => c.currency === ccy)
                             const isActive = existing?.isActive === true

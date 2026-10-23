@@ -88,11 +88,11 @@ export default function MarketsPage() {
     return (
         <Page title="Markets and currencies" subtitle="Countries, their legal entity, currencies and bank settings, operated from here without code changes. Switching money OFF is immediate; switching it ON needs a second person (a compliance officer when it enables money)."
               actions={user?.role === 'ADMIN' && <FormButton label="Add a market" title="New market (starts in SANDBOX)"
-                  fields={[{ name: 'country', label: 'Country code (ISO 3166, e.g. MW)', type: 'text', required: true }, { name: 'name', label: 'Country name', type: 'text', required: true },
+                  fields={[{ name: 'country', label: 'Country', type: 'iso-country', required: true }, { name: 'name', label: 'Country name', type: 'text', required: true },
                       { name: 'legalEntity', label: 'Legal entity code (e.g. PAYPORT_MW)', type: 'text', required: true }, { name: 'legalEntityName', label: 'Legal entity name', type: 'text', required: true },
                       { name: 'timezone', label: 'Timezone (e.g. Africa/Blantyre)', type: 'text', required: true }, { name: 'phoneCountryCode', label: 'Phone country code (digits)', type: 'text', required: true },
                       { name: 'nationalPattern', label: 'Mobile number pattern (regex, national format)', type: 'text', required: true },
-                      { name: 'currency', label: 'Currency (ISO 4217)', type: 'text', required: true }, { name: 'currencyName', label: 'Currency name', type: 'text', required: true },
+                      { name: 'currency', label: 'Currency', type: 'iso-currency', required: true }, { name: 'currencyName', label: 'Currency name', type: 'text', required: true },
                       { name: 'bankName', label: 'Sponsor bank', type: 'text', required: true }, { name: 'reason', label: 'Reason', type: 'textarea', required: true }]}
                   onSubmit={v => platformControlsApi.requestNewMarket({ country: v.country.toUpperCase(), name: v.name, countryName: v.name, legalEntity: v.legalEntity.toUpperCase(), legalEntityName: v.legalEntityName,
                       timezone: v.timezone, phoneCountryCode: v.phoneCountryCode, nationalPattern: v.nationalPattern, bankName: v.bankName, payoutFormat: 'ISO20022_PAIN_001_001_09',

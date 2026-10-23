@@ -19,8 +19,8 @@ export default function IntegrationsPage() {
                     { key: 'act', label: '', render: r => (
                         <div style={{ display: 'flex', gap: 6 }}>
                             {(r.status || r.health?.status) === 'SUSPENDED'
-                                ? <Act label="Switch on" kind="success" run={() => integrationsApi.resume(r.code, '')} done={reload} />
-                                : <Act label="Switch off" kind="danger" run={() => integrationsApi.suspend(r.code, '')} done={reload} />}
+                                ? <Act label="Switch on" kind="success" run={() => integrationsApi.resume(r.code, 'Switched on from the ops console')} done={reload} />
+                                : <Act label="Switch off" kind="danger" run={() => integrationsApi.suspend(r.code, 'Switched off from the ops console')} done={reload} />}
                             <FormButton label="Record test" kind="ghost" title={`Verification evidence: ${r.code}`}
                                 fields={[{ name: 'environment', label: 'Environment', type: 'select', options: ['SANDBOX', 'PRODUCTION'], required: true },
                                     (r.operations || []).length

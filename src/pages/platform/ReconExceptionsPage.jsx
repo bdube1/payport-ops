@@ -15,6 +15,8 @@ export default function ReconExceptionsPage() {
                   fields={[{ name: 'provider', label: 'Provider code', type: 'text', required: true }, { name: 'format', label: 'Format', type: 'select', options: ['NATIVE', 'CSV'], initial: 'NATIVE' },
                       { name: 'file', label: 'File', type: 'file', required: true }]}
                   onSubmit={v => financeApi.importStatement(v.provider, v.format || 'NATIVE', v.file)} onDone={reload} />}>
+            <div style={{ marginBottom: 14 }}><FormButton label="Re-run a statement" kind="ghost" title="Re-run reconciliation for an imported statement" submitLabel="Re-run"
+                fields={[{ name: 'id', label: 'Statement number', type: 'number', required: true }]} onSubmit={v => financeApi.rerunStatement(v.id)} onDone={reload} /></div>
             <Section title="Open exceptions" right={
                 <select value={category} onChange={e => setCategory(e.target.value)}>
                     <option value="">All categories</option>

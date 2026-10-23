@@ -20,7 +20,7 @@ export default function ChannelsProductsPage() {
                     { key: 'updated_by', label: 'Changed by' },
                     { key: 'act', label: '', render: c => ['ADMIN', 'OPS'].includes(user?.role) && (
                         <Act label={c.enabled ? 'Switch off' : 'Switch on'} kind={c.enabled ? 'danger' : 'success'}
-                            run={() => platformControlsApi.setChannel(c.code, !c.enabled, '')} done={reload} />) },
+                            run={() => platformControlsApi.setChannel(c.code, !c.enabled, c.enabled ? 'Switched off from the ops console' : 'Switched on from the ops console')} done={reload} />) },
                 ]} />
             </Section>
             <Section title="Product lines">
@@ -31,18 +31,18 @@ export default function ChannelsProductsPage() {
                     { key: 'updated_by', label: 'Changed by' },
                     { key: 'act', label: '', render: l => ['ADMIN', 'OPS'].includes(user?.role) && (
                         <Act label={l.enabled ? 'Switch off' : 'Switch on'} kind={l.enabled ? 'danger' : 'success'}
-                            run={() => platformControlsApi.setServiceLine(l.code, !l.enabled, '')} done={reload} />) },
+                            run={() => platformControlsApi.setServiceLine(l.code, !l.enabled, l.enabled ? 'Switched off from the ops console' : 'Switched on from the ops console')} done={reload} />) },
                 ]} />
             </Section>
             {['ADMIN', 'FINANCE', 'COMPLIANCE'].includes(user?.role) && (
                 <Section title="FX reference rates" right={<>
                     {['ADMIN', 'FINANCE'].includes(user?.role) && <FormButton label="Propose rate" title="New reference rate"
-                        fields={[{ name: 'base', label: 'Base currency', type: 'text', required: true, initial: 'USD' }, { name: 'quote', label: 'Quote currency', type: 'text', required: true, initial: 'ZWG' },
+                        fields={[{ name: 'base', label: 'Base currency', type: 'currency', required: true, initial: 'USD' }, { name: 'quote', label: 'Quote currency', type: 'currency', required: true, initial: 'ZWG' },
                             { name: 'rate', label: 'Rate (quote per 1 base)', type: 'number', step: 'any', required: true }, { name: 'spreadBps', label: 'Spread (basis points)', type: 'number', initial: 0 },
                             { name: 'source', label: 'Source (e.g. RBZ interbank rate, date)', type: 'text', required: true }]}
                         onSubmit={v => platformControlsApi.proposeFxRate({ ...v, base: v.base.toUpperCase(), quote: v.quote.toUpperCase() })} onDone={reload} />}
-                    <FormButton label="Quote" kind="ghost" title="Indicative quote" fields={[{ name: 'from', label: 'From', type: 'text', required: true, initial: 'USD' },
-                        { name: 'to', label: 'To', type: 'text', required: true, initial: 'ZWG' }, { name: 'amount', label: 'Amount (major units)', type: 'number', step: '0.01', required: true }]}
+                    <FormButton label="Quote" kind="ghost" title="Indicative quote" fields={[{ name: 'from', label: 'From', type: 'currency', required: true, initial: 'USD' },
+                        { name: 'to', label: 'To', type: 'currency', required: true, initial: 'ZWG' }, { name: 'amount', label: 'Amount (major units)', type: 'number', step: '0.01', required: true }]}
                         onSubmit={v => platformControlsApi.fxQuote(v.from.toUpperCase(), v.to.toUpperCase(), Math.round(Number(v.amount) * 100))} onDone={setQuote} />
                 </>}>
                     {quote && <Notice kind="info">Quote: <code>{JSON.stringify(quote)}</code></Notice>}
