@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { agentsAdminApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth.jsx';
-import { Page, Section, Table, Notice, useLoad, Badge, FormButton, Act, minor, data, show } from '../../components/kit';
+import { Page, Section, Table, Notice, useLoad, Badge, FormButton, Act, minor, show, ShowOnce } from '../../components/kit';
 
 const sum = (rows, kind, field) => (rows || []).filter(r => !kind || r.kind === kind)
     .reduce((acc, r) => ({ ...acc, [r.currency]: (acc[r.currency] || 0) + Number(r[field] || 0) }), {});
@@ -18,7 +18,15 @@ function Stat({ label, value, sub }) {
     );
 }
 
-function AgentDetail({ id, role, onClose, onChanged }) {
+function loginShown(login, agent) {
+    return login ? {
+        title: 'Agent portal login',
+        note: login.emailed ? 'This was also emailed to the agent. It is shown only once.' : 'Email could not be sent. Give these details to the agent; they are shown only once.',
+        items: [{ label: 'Agent code', value: agent?.agent_code }, { label: 'Sign-in email', value: login.email }, { label: 'Temporary password', value: login.temporaryPassword }],
+    } : null;
+}
+
+function AgentDetail({ id, role, onClose, onChanged, onSecret }) {
     const d = useLoad(() => agentsAdminApi.detail(id), [id]);
     const a = d.value;
     const reload = () => { d.reload(); onChanged(); };
@@ -31,25 +39,29 @@ function AgentDetail({ id, role, onClose, onChanged }) {
                         <div>
                             <div style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--text-2)' }}>{a.agent_code}</div>
                             <h2 style={{ margin: '4px 0', fontSize: 20, fontWeight: 800 }}>{a.name}</h2>
-                            <div style={{ fontSize: 13, color: 'var(--text-2)' }}>{a.business_name} · {a.location} · {a.phone}</div>
+                            <div style={{ fontSize: 13, color: 'var(--text-2)' }}>{[a.contact_person, a.location, a.phone, a.email].filter(Boolean).join(' · ')}</div>
+                            {a.application_reference && <div style={{ fontSize: 12, color: 'var(--text-2)', marginTop: 2 }}>Application {a.application_reference}</div>}
                         </div>
                         <button className="btn btn-ghost" onClick={onClose}>Close</button>
                     </div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '14px 0' }}>
                         <Badge value={a.status} />
                         {['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) && <FormButton label="Edit" kind="ghost" title={`Edit ${a.agent_code}`} submitLabel="Save"
-                            fields={[{ name: 'name', label: 'Agent name', initial: a.name }, { name: 'phone', label: 'Mobile number', initial: a.phone },
+                            fields={[{ name: 'name', label: 'Business name', initial: a.name }, { name: 'contactPerson', label: 'Contact person', initial: a.contact_person || '' },
+                                { name: 'phone', label: 'Mobile number', initial: a.phone }, { name: 'email', label: 'Email', initial: a.email || '' },
+                                { name: 'idNumber', label: 'National ID / registration number', initial: a.id_number || '' },
                                 { name: 'location', label: 'Location', initial: a.location },
                                 { name: 'commissionBps', label: 'Commission (basis points, blank = default)', type: 'number', initial: a.commission_bps ?? '' }]}
                             onSubmit={v => agentsAdminApi.update(a.id, { ...v, commissionBps: v.commissionBps === '' ? null : v.commissionBps })} onDone={reload} />}
                         {a.status === 'PENDING' && ['ADMIN', 'COMPLIANCE'].includes(role) && <>
-                            <Act label="Approve" kind="success" run={() => agentsAdminApi.decide(a.id, true, 'Approved from the ops console', null)} done={reload} />
-                            <Act label="Reject" kind="danger" run={() => agentsAdminApi.decide(a.id, false, 'Rejected from the ops console', null)} done={reload} />
+                            <Act label="Approve" kind="success" confirm={`Approve ${a.name} as an agent?`} run={() => agentsAdminApi.decide(a.id, true, null, null)}
+                                done={(r) => { reload(); onSecret(loginShown(r?.login, r)); }} />
+                            <Act label="Reject" kind="danger" confirm={`Reject ${a.name}?`} run={() => agentsAdminApi.decide(a.id, false, null, null)} done={reload} />
                         </>}
                         {a.status === 'ACTIVE' && ['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) &&
-                            <Act label="Suspend" kind="danger" run={() => agentsAdminApi.setStatus(a.id, 'SUSPENDED', 'Suspended from the ops console')} done={reload} />}
+                            <Act label="Suspend" kind="danger" confirm={`Suspend ${a.name}?`} run={() => agentsAdminApi.setStatus(a.id, 'SUSPENDED', null)} done={reload} />}
                         {a.status === 'SUSPENDED' && ['ADMIN', 'COMPLIANCE'].includes(role) &&
-                            <Act label="Reinstate" kind="success" run={() => agentsAdminApi.setStatus(a.id, 'ACTIVE', 'Reinstated from the ops console')} done={reload} />}
+                            <Act label="Reinstate" kind="success" confirm={`Reinstate ${a.name}?`} run={() => agentsAdminApi.setStatus(a.id, 'ACTIVE', null)} done={reload} />}
                     </div>
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
                         <Stat label="Float" value={money(a.float || {})} />
@@ -57,6 +69,17 @@ function AgentDetail({ id, role, onClose, onChanged }) {
                         <Stat label="Cash-out" value={money(sum(a.totals, 'CASH_OUT', 'amount_minor'))} sub={`${count(a.totals, 'CASH_OUT')} transactions`} />
                         <Stat label="Commission earned" value={money(sum(a.totals, null, 'commission_minor'))} sub={`Rate: ${a.commission_bps ?? 'default'} bps`} />
                     </div>
+                    <Section title="Portal logins" right={['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) && a.status !== 'PENDING' && a.status !== 'REJECTED' &&
+                        <FormButton label="Add login" kind="ghost" title={`Portal login for ${a.name}`} submitLabel="Create login"
+                            fields={[{ name: 'fullName', label: 'Full name', required: true, initial: a.contact_person || '' }, { name: 'email', label: 'Email', required: true }]}
+                            onSubmit={v => agentsAdminApi.createLogin(a.id, v.fullName, v.email)} onDone={(l) => { reload(); onSecret(loginShown(l, a)); }} />}>
+                        <Table rows={a.users} empty="No portal login yet." columns={[
+                            { key: 'full_name', label: 'Name' }, { key: 'email', label: 'Email' }, { key: 'status', label: 'Status', render: r => <Badge value={r.account_locked ? 'LOCKED' : r.status} /> },
+                            { key: 'last_login_at', label: 'Last sign-in', render: r => show(r.last_login_at) },
+                            { key: 'actions', label: '', render: r => ['ADMIN', 'OPS'].includes(role) && <Act label="Reset password" kind="ghost" confirm={`Reset the password for ${r.email}?`}
+                                run={() => agentsAdminApi.resetLogin(a.id, r.id)} done={(l) => { reload(); onSecret(loginShown(l, a)); }} /> },
+                        ]} />
+                    </Section>
                     <Section title="Transactions">
                         <Table rows={a.transactions} empty="No transactions yet." columns={[
                             { key: 'created_at', label: 'When', render: r => show(r.created_at) }, { key: 'kind', label: 'Type' },
@@ -78,38 +101,39 @@ function AgentDetail({ id, role, onClose, onChanged }) {
     );
 }
 
-export default function AgentsPage() {
+export default function AgentsPage({ view = 'list' }) {
     const { user } = useAuth();
     const role = user?.role;
     const canSeeMoney = ['ADMIN', 'FINANCE', 'COMPLIANCE'].includes(role);
     const agents = useLoad(() => agentsAdminApi.list());
     const dash = useLoad(() => agentsAdminApi.dashboard());
-    const merchants = useLoad(() => (['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) ? agentsAdminApi.onboardable() : Promise.resolve({ data: { data: [] } })), [role]);
     const pending = useLoad(() => (canSeeMoney ? agentsAdminApi.deposits('PENDING') : Promise.resolve({ data: { data: [] } })), [role]);
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState('');
     const [openId, setOpenId] = useState(null);
-    const reload = () => { agents.reload(); dash.reload(); merchants.reload(); pending.reload(); };
+    const [secret, setSecret] = useState(null);
+    const reload = () => { agents.reload(); dash.reload(); pending.reload(); };
 
     const d = dash.value || {};
     const byStatus = Object.fromEntries((d.byStatus || []).map(r => [r.status, Number(r.count)]));
     const floatTotals = Object.fromEntries((d.float || []).map(r => [r.currency, Number(r.balance_minor)]));
     const q = search.trim().toLowerCase();
     const rows = (agents.value || []).filter(a => (!status || a.status === status)
-        && (!q || [a.agent_code, a.name, a.business_name, a.phone, a.location].some(v => String(v || '').toLowerCase().includes(q))));
+        && (!q || [a.agent_code, a.name, a.contact_person, a.phone, a.email, a.location, a.application_reference].some(v => String(v || '').toLowerCase().includes(q))));
     const floats = (f) => Object.entries(f || {}).map(([c, v]) => minor(v, c)).join(' · ');
 
     return (
-        <Page title="Agents" actions={<>
+        <Page title={view === 'dashboard' ? 'Agents Dashboard' : 'Agents'} actions={<>
             {['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) && <FormButton label="Onboard agent" title="Onboard an agent" submitLabel="Onboard"
-                fields={[{ name: 'merchantId', label: 'Business (active merchant)', type: 'select', required: true,
-                    options: (merchants.value || []).map(m => ({ value: m.id, label: `${m.business_name}${m.contact_phone ? ' · ' + m.contact_phone : ''}` })) },
-                    { name: 'name', label: 'Agent name (as customers see it)', required: true },
-                    { name: 'phone', label: 'Agent mobile number (e.g. +263771234567)', required: true },
+                fields={[{ name: 'name', label: 'Agent business name (as customers see it)', required: true },
+                    { name: 'contactPerson', label: 'Contact person', required: true },
+                    { name: 'phone', label: 'Mobile number (e.g. +263771234567)', required: true },
+                    { name: 'email', label: 'Email (for the agent portal login)', required: true },
+                    { name: 'idNumber', label: 'National ID / registration number' },
                     { name: 'location', label: 'Location / address', required: true },
                     { name: 'commissionBps', label: 'Commission (basis points, blank = default)', type: 'number' }]}
-                onSubmit={v => agentsAdminApi.onboard({ merchantId: Number(v.merchantId), name: v.name, phone: v.phone, location: v.location, commissionBps: v.commissionBps === '' ? null : v.commissionBps })}
-                onDone={(a) => { reload(); if (a?.id) setOpenId(a.id); }} />}
+                onSubmit={v => agentsAdminApi.onboard({ ...v, commissionBps: v.commissionBps === '' ? null : v.commissionBps })}
+                onDone={(a) => { reload(); setSecret(loginShown(a?.login, a)); if (a?.id) setOpenId(a.id); }} />}
             {['ADMIN', 'FINANCE'].includes(role) && <FormButton label="Record float deposit" kind="ghost" title="Float deposit seen on the bank statement"
                 fields={[{ name: 'agentId', label: 'Agent', type: 'select', required: true, options: (agents.value || []).filter(a => a.status === 'ACTIVE').map(a => ({ value: a.id, label: `${a.agent_code} ${a.name}` })) },
                     { name: 'currency', label: 'Currency', type: 'currency', required: true }, { name: 'amount', label: 'Amount', type: 'number', step: '0.01', required: true },
@@ -118,6 +142,7 @@ export default function AgentsPage() {
         </>}>
             {(agents.error || dash.error) && <Notice kind="error">{agents.error || dash.error}</Notice>}
 
+            {view === 'dashboard' && <>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 18 }}>
                 <Stat label="Active agents" value={byStatus.ACTIVE || 0} sub={`${byStatus.PENDING || 0} pending · ${byStatus.SUSPENDED || 0} suspended`} />
                 <Stat label="Float held by agents" value={money(floatTotals)} />
@@ -146,7 +171,15 @@ export default function AgentsPage() {
                 ]} />
             </Section>}
 
-            <Section title="All agents" right={<>
+            {(agents.value || []).some(a => a.status === 'PENDING') && <Section title="Applications awaiting a decision">
+                <Table rows={(agents.value || []).filter(a => a.status === 'PENDING')} onRow={r => setOpenId(r.id)} columns={[
+                    { key: 'application_reference', label: 'Reference' }, { key: 'name', label: 'Business' }, { key: 'contact_person', label: 'Contact' },
+                    { key: 'phone', label: 'Phone' }, { key: 'location', label: 'Location' }, { key: 'applied_at', label: 'Applied', render: r => show(r.applied_at) },
+                ]} />
+            </Section>}
+            </>}
+
+            {view !== 'dashboard' && <Section title="All agents" right={<>
                 <input placeholder="Search code, name, phone, location" value={search} onChange={e => setSearch(e.target.value)}
                     style={{ padding: '7px 10px', borderRadius: 9, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)', fontSize: 13, minWidth: 240 }} />
                 <select value={status} onChange={e => setStatus(e.target.value)}
@@ -154,13 +187,15 @@ export default function AgentsPage() {
                     <option value="">All statuses</option>{['ACTIVE', 'PENDING', 'SUSPENDED', 'REJECTED'].map(s => <option key={s}>{s}</option>)}
                 </select></>}>
                 <Table rows={rows} empty="No agents yet." onRow={r => setOpenId(r.id)} columns={[
-                    { key: 'agent_code', label: 'Agent code' }, { key: 'name', label: 'Name' }, { key: 'business_name', label: 'Business' }, { key: 'phone', label: 'Phone' },
+                    { key: 'agent_code', label: 'Agent code' }, { key: 'name', label: 'Name' }, { key: 'contact_person', label: 'Contact' }, { key: 'phone', label: 'Phone' },
+                    { key: 'application_reference', label: 'Application' },
                     { key: 'location', label: 'Location' }, { key: 'float', label: 'Float', render: r => floats(r.float) },
                     { key: 'status', label: 'Status', render: r => <Badge value={r.status} /> },
                 ]} />
-            </Section>
+            </Section>}
 
-            {openId && <AgentDetail id={openId} role={role} onClose={() => setOpenId(null)} onChanged={reload} />}
+            {openId && <AgentDetail id={openId} role={role} onClose={() => setOpenId(null)} onChanged={reload} onSecret={setSecret} />}
+            {secret && <ShowOnce {...secret} onClose={() => setSecret(null)} />}
         </Page>
     );
 }

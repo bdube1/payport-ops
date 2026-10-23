@@ -20,6 +20,7 @@ export default function ChannelsProductsPage() {
                     { key: 'updated_by', label: 'Changed by' },
                     { key: 'act', label: '', render: c => ['ADMIN', 'OPS'].includes(user?.role) && (
                         <Act label={c.enabled ? 'Switch off' : 'Switch on'} kind={c.enabled ? 'danger' : 'success'}
+                            confirm={`Are you sure you want to switch ${c.enabled ? 'off' : 'on'} ${c.name}?`}
                             run={() => platformControlsApi.setChannel(c.code, !c.enabled, c.enabled ? 'Switched off from the ops console' : 'Switched on from the ops console')} done={reload} />) },
                 ]} />
             </Section>
@@ -31,6 +32,7 @@ export default function ChannelsProductsPage() {
                     { key: 'updated_by', label: 'Changed by' },
                     { key: 'act', label: '', render: l => ['ADMIN', 'OPS'].includes(user?.role) && (
                         <Act label={l.enabled ? 'Switch off' : 'Switch on'} kind={l.enabled ? 'danger' : 'success'}
+                            confirm={`Are you sure you want to switch ${l.enabled ? 'off' : 'on'} ${l.name}?`}
                             run={() => platformControlsApi.setServiceLine(l.code, !l.enabled, l.enabled ? 'Switched off from the ops console' : 'Switched on from the ops console')} done={reload} />) },
                 ]} />
             </Section>

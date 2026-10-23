@@ -12,7 +12,7 @@
 
 /* Dark theme ("Corporate Midnight") — from the approved sign-in design.
    Change values here only. */
-[data-theme="dark"] {
+:root[data-theme="dark"] {
   --blue: #4B5EED;          /* Primary / Brand (indigo) */
   --blue-dark: #2A3BC7;     /* Primary Hover */
   --accent-info: #5164F2;

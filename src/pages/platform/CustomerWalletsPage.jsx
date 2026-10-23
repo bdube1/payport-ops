@@ -33,10 +33,10 @@ export default function CustomerWalletsPage() {
                     { key: 'balance_minor', label: 'Balance', render: r => minor(r.balance_minor, r.currency) }, { key: 'tier', label: 'Tier' },
                     { key: 'status', label: 'Status', render: r => <Badge value={r.status} /> }, { key: 'status_reason', label: 'Reason' },
                     { key: 'actions', label: '', render: r => <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
-                        {r.status === 'ACTIVE' && ['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) && <FormButton label="Freeze" kind="ghost" title={`Freeze ${r.wallet_ref}`} submitLabel="Freeze"
-                            fields={[{ name: 'reason', label: 'Reason', type: 'textarea', required: true }]} onSubmit={v => walletsAdminApi.setStatus(r.wallet_ref, 'FROZEN', v.reason)} onDone={reload} />}
-                        {r.status === 'FROZEN' && ['ADMIN', 'COMPLIANCE'].includes(role) && <FormButton label="Unfreeze" title={`Unfreeze ${r.wallet_ref}`} submitLabel="Unfreeze"
-                            fields={[{ name: 'reason', label: 'Reason', type: 'textarea', required: true }]} onSubmit={v => walletsAdminApi.setStatus(r.wallet_ref, 'ACTIVE', v.reason)} onDone={reload} />}
+                        {r.status === 'ACTIVE' && ['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) && <Act label="Freeze" kind="ghost" confirm={`Freeze wallet ${r.wallet_ref}?`}
+                            run={() => walletsAdminApi.setStatus(r.wallet_ref, 'FROZEN', 'Frozen from the ops console')} done={reload} />}
+                        {r.status === 'FROZEN' && ['ADMIN', 'COMPLIANCE'].includes(role) && <Act label="Unfreeze" confirm={`Unfreeze wallet ${r.wallet_ref}?`}
+                            run={() => walletsAdminApi.setStatus(r.wallet_ref, 'ACTIVE', 'Unfrozen from the ops console')} done={reload} />}
                         {role === 'COMPLIANCE' && <FormButton label="Tier" kind="ghost" title={`KYC tier for ${r.wallet_ref}`} submitLabel="Set tier"
                             fields={[{ name: 'tier', label: 'Tier', type: 'select', options: ['TIER1', 'TIER2', 'TIER3'], required: true, initial: r.tier },
                                 { name: 'reason', label: 'KYC evidence', type: 'textarea', required: true }]} onSubmit={v => walletsAdminApi.setTier(r.wallet_ref, v.tier, v.reason)} onDone={reload} />}

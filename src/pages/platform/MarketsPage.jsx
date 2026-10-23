@@ -8,14 +8,10 @@ function CurrencyActions({ c, reload, role }) {
     const canAsk = role === 'ADMIN';
     return (
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {c.live && <FormButton label="Stop live money" kind="danger" title={`Stop live payments in ${c.currency}`}
-                intro="Takes effect immediately. Turning it back on needs a request and a compliance officer's approval."
-                fields={[{ name: 'reason', label: 'Reason', type: 'textarea', required: true }]}
-                onSubmit={v => platformControlsApi.stopLiveCurrency(c.currency, v.reason)} onDone={reload} />}
-            {c.enabled && <FormButton label="Disable" kind="danger" title={`Disable ${c.currency} completely`}
-                intro="No new payments in this currency, test or live. Existing balances, refunds and settlements still work."
-                fields={[{ name: 'reason', label: 'Reason', type: 'textarea', required: true }]}
-                onSubmit={v => platformControlsApi.disableCurrency(c.currency, v.reason)} onDone={reload} />}
+            {c.live && <Act label="Stop live money" kind="danger" confirm={`Stop live payments in ${c.currency}?`}
+                run={() => platformControlsApi.stopLiveCurrency(c.currency, 'Switched off from the ops console')} done={reload} />}
+            {c.enabled && <Act label="Disable" kind="danger" confirm={`Disable ${c.currency}?`}
+                run={() => platformControlsApi.disableCurrency(c.currency, 'Switched off from the ops console')} done={reload} />}
             {canAsk && <FormButton label="Request change…" kind="ghost" title={`Change ${c.currency} (${c.country})`}
                 intro="Enabling a currency or live money needs a COMPLIANCE officer's approval; other settings another administrator's."
                 fields={[
@@ -60,8 +56,8 @@ function Market({ m, reload, role }) {
                     }
                     return platformControlsApi.requestMarketChange(m.country, changes, [], v.reason);
                 }} onDone={reload} />}
-            {m.status !== 'SUSPENDED' && <FormButton label="Suspend" kind="danger" title={`Suspend ${m.name}`} intro="Immediate: no new payments in this market until it is reinstated (with approval)."
-                fields={[{ name: 'reason', label: 'Reason', type: 'textarea', required: true }]} onSubmit={v => platformControlsApi.suspendMarket(m.country, v.reason)} onDone={reload} />}
+            {m.status !== 'SUSPENDED' && <Act label="Suspend" kind="danger" confirm={`Suspend ${m.name}?`}
+                run={() => platformControlsApi.suspendMarket(m.country, 'Suspended from the ops console')} done={reload} />}
         </>}>
             {(m.problems || []).length > 0 && <Notice kind="error">Configuration problems: {m.problems.join('; ')}</Notice>}
             <KeyValues obj={{ 'Legal entity': `${m.legal_entity} (${m.legal_name})`, Timezone: m.timezone, 'Phone code': '+' + m.phone_country_code,

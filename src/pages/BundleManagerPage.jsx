@@ -172,6 +172,7 @@ export default function BundleManagerPage() {
     };
 
     const handleToggleActive = async (bundle) => {
+        if (!window.confirm(`Are you sure you want to switch ${bundle.isActive ? 'off' : 'on'} ${bundle.bundleName || bundle.name || 'this bundle'}?`)) return;
         try {
             setLoading(true);
 

@@ -100,7 +100,7 @@ export function Notice({ kind = 'info', children }) {
 const BADGES = {
     green: ['APPROVED', 'ACTIVE', 'VERIFIED', 'CLEAR', 'PAID', 'COMPLETED', 'MET', 'ON_TRACK', 'CONFIRMED', 'SOURCED', 'TRACED', 'UP', 'CLOSED', 'SUBMITTED', 'POSTED', 'ENABLED', 'NEW_VERSION', 'UNCHANGED', 'RESOLVED', 'LIVE', 'PROVIDER_SETTLEMENT', 'EXECUTED', 'REDEEMED', 'GRANTED', 'NOT_REQUIRED'],
     amber: ['PENDING', 'PENDING_VERIFICATION', 'UNDER_REVIEW', 'OBSERVE', 'DRAFT', 'AT_RISK', 'PROVISIONAL', 'OPEN', 'IN_REVIEW', 'INSTRUCTED', 'RECOVERING', 'POTENTIAL_MATCH', 'PROPOSED', 'NOT_YET_CONFIRMED', 'LEDGER_PENDING', 'SANDBOX', 'MET_LATE', 'UPDATE_REQUIRED'],
-    red: ['REJECTED', 'FAILED', 'BREACHED', 'ENFORCE', 'DOWN', 'SUSPENDED', 'INCOMPLETE', 'QUARANTINED', 'RETURNED', 'OVERDUE', 'HIGH', 'UNIDENTIFIED', 'AMOUNT_MISMATCH', 'CANCELLED', 'FROZEN', 'DISABLED', 'RETIRED', 'REFUSED'],
+    red: ['REJECTED', 'LOCKED', 'FAILED', 'BREACHED', 'ENFORCE', 'DOWN', 'SUSPENDED', 'INCOMPLETE', 'QUARANTINED', 'RETURNED', 'OVERDUE', 'HIGH', 'UNIDENTIFIED', 'AMOUNT_MISMATCH', 'CANCELLED', 'FROZEN', 'DISABLED', 'RETIRED', 'REFUSED'],
 };
 
 export function Badge({ value }) {
@@ -264,3 +264,27 @@ export function KeyValues({ obj, keys }) {
 }
 
 export const staffId = (user) => user?.phone ? `staff:${user.phone}` : user?.email || user?.username || '';
+
+
+/** Shows values that the server returns once (temporary passwords, access keys) with copy buttons. */
+export function ShowOnce({ title, items, note, onClose }) {
+    const copy = (v) => { navigator.clipboard?.writeText(String(v)).then(() => toast.success('Copied')).catch(() => {}); };
+    return (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+            <div style={{ background: 'var(--bg-card)', borderRadius: 18, padding: 24, width: '100%', maxWidth: 520, border: '1px solid var(--border)' }}>
+                <h2 style={{ fontSize: 17, fontWeight: 800, margin: '0 0 12px' }}>{title}</h2>
+                {note && <Notice kind="warn">{note}</Notice>}
+                {items.filter(i => i.value !== undefined && i.value !== null && i.value !== '').map(i => (
+                    <div key={i.label} style={{ marginBottom: 10 }}>
+                        <div style={{ fontSize: 12, color: 'var(--text-2)', fontWeight: 700, marginBottom: 4 }}>{i.label}</div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <code style={{ flex: 1, padding: '8px 10px', borderRadius: 8, background: 'var(--bg-2)', fontSize: 13, wordBreak: 'break-all' }}>{String(i.value)}</code>
+                            <button className="btn btn-ghost" style={{ padding: '6px 10px', fontSize: 12 }} onClick={() => copy(i.value)}>Copy</button>
+                        </div>
+                    </div>
+                ))}
+                <button className="btn btn-primary" style={{ width: '100%', marginTop: 8 }} onClick={onClose}>Done</button>
+            </div>
+        </div>
+    );
+}

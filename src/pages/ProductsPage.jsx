@@ -95,6 +95,7 @@ function ProductRow({ product, onRefresh }) {
     const currencies = product.currencies || []
 
     const toggleCurrency = async (currency, currentActive) => {
+        if (!window.confirm(`Are you sure you want to switch ${currentActive ? 'off' : 'on'} ${currency} for ${product.name}?`)) return
         setSaving(s => ({ ...s, [currency]: true }))
         try {
             await apiPut(`/admin/config/products/${product.id}/currencies/${currency}`, {
@@ -109,6 +110,7 @@ function ProductRow({ product, onRefresh }) {
     }
 
     const toggleProduct = async () => {
+        if (!window.confirm(`Are you sure you want to switch ${product.isActive ? 'off' : 'on'} ${product.name}?`)) return
         setSaving(s => ({ ...s, active: true }))
         try {
             await apiPut(`/admin/config/products/${product.id}`, { isActive: !product.isActive })
@@ -448,6 +450,7 @@ export default function ProductsPage() {
     useEffect(() => { load() }, [load])
 
     const togglePaymentMethod = async (pm) => {
+        if (!window.confirm(`Are you sure you want to switch ${pm.isActive ? 'off' : 'on'} ${pm.name}?`)) return
         setSavingPM(s => ({ ...s, [pm.id]: true }))
         try {
             await apiPut(`/admin/config/payment-methods/${pm.id}`, { isActive: !pm.isActive })
