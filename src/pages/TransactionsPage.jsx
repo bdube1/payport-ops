@@ -1,4 +1,4 @@
-import { CurrencySelect } from '../components/kit';
+import { CurrencySelect, ExportArea } from '../components/kit';
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Download, RefreshCw, X, AlertTriangle } from 'lucide-react';
@@ -108,7 +108,7 @@ export default function TransactionsPage() {
       </div>
       <h3>Transactions Report</h3>
       <div class="meta">Generated: ${new Date().toLocaleString()} · Total records: ${total} · Showing: ${txs.length}</div>
-      <table>
+      <ExportArea name="Transactions"><table>
         <thead><tr><th>Reference</th><th>Status</th><th>Customer</th><th>Recipient</th><th>Product</th><th>Amount</th><th>Currency</th><th>Payment Method</th><th>Provider Ref</th><th>Date</th></tr></thead>
         <tbody>
           ${txs.map(t => `
@@ -126,7 +126,7 @@ export default function TransactionsPage() {
           </tr>
           `).join('')}
         </tbody>
-      </table>
+      </table></ExportArea>
       <div class="footer">
         © ${new Date().getFullYear()} Payport Financial Services · CONFIDENTIAL · This report is intended for authorised personnel only.
         <br/><strong>PAYPORT DIGITAL STAMP</strong> · Generated ${new Date().toISOString()}
@@ -257,7 +257,7 @@ export default function TransactionsPage() {
                     </div>
                 ) : (
                     <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <ExportArea name="Transactions"><table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                             <tr>
                                 <th>Reference</th>
@@ -295,7 +295,7 @@ export default function TransactionsPage() {
                                 );
                             })}
                             </tbody>
-                        </table>
+                        </table></ExportArea>
                     </div>
                 )}
             </div>

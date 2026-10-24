@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import { useState, useEffect } from 'react';
 import { AlertTriangle, RefreshCw, Plus } from 'lucide-react';
 import { getDisputes, openDispute, resolveDispute, formatAmount, formatDate } from '../lib/api';
@@ -149,7 +150,7 @@ export default function DisputesPage() {
                 <div className="card" style={{ padding: 40, textAlign: 'center', color: 'var(--text-2)' }}>No disputes.</div>
             ) : (
                 <div className="card" style={{ padding: 0 }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <ExportArea name="Disputes"><table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ textAlign: 'left', fontSize: 11.5, textTransform: 'uppercase', color: 'var(--text-2)' }}>
                                 <th style={{ padding: '12px 16px' }}>Session</th>
@@ -176,7 +177,7 @@ export default function DisputesPage() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table></ExportArea>
                 </div>
             )}
 

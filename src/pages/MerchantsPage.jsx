@@ -1,3 +1,4 @@
+import { PartyCodesSection } from './platform/CodesPage';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Building2, CheckCircle, XCircle, PauseCircle, PlayCircle, Copy, RefreshCw, Percent, FileText, MessageSquarePlus, Edit3, Eye, Search } from 'lucide-react';
@@ -299,6 +300,8 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
             <div><span style={{ color: 'var(--text-2)' }}>Currency</span><br />{merchant.defaultCurrency}</div>
           </div>
         )}
+
+        {merchant.id && <PartyCodesSection type="MERCHANT" id={merchant.id} canAdd={merchant.status === 'ACTIVE'} />}
 
         {merchant.riskFlags && (
           <div style={{ background: 'var(--badge-amber)', color: '#92600A', padding: '10px 14px', borderRadius: 10, fontSize: 12.5, marginBottom: 20 }}>

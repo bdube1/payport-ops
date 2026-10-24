@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import { useState, useEffect } from 'react';
 import { Users, RefreshCw, UserX, UserCheck, Lock, Unlock, KeyRound, Copy } from 'lucide-react';
 import { getUsers, deactivateUser, activateUser, unlockUser, resetCustomerPin, formatDate } from '../lib/api';
@@ -126,7 +127,7 @@ export default function ConsumersPage() {
                 <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><div className="spinner" /></div>
             ) : (
                 <div className="card" style={{ overflow: 'hidden' }}>
-                    <table>
+                    <ExportArea name="Consumers"><table>
                         <thead>
                             <tr><th>Name</th><th>Phone</th><th>Status</th><th>Verified</th><th>Last Login</th><th>Registered</th><th>Actions</th></tr>
                         </thead>
@@ -177,7 +178,7 @@ export default function ConsumersPage() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table></ExportArea>
                     {filtered.length === 0 && (
                         <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-2)' }}>No consumers match.</div>
                     )}

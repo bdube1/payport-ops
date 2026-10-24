@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import { useState, useEffect } from 'react';
 import { Landmark, RefreshCw, Play } from 'lucide-react';
 import { getSettlements, runSettlements, markSettlementPaid, formatAmount, formatDate } from '../lib/api';
@@ -107,7 +108,7 @@ export default function SettlementsPage() {
                 <div className="card" style={{ padding: 40, textAlign: 'center', color: 'var(--text-2)' }}>No settlements{statusFilter !== 'ALL' ? ` with status ${statusFilter}` : ''}.</div>
             ) : (
                 <div className="card" style={{ padding: 0 }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <ExportArea name="Settlements"><table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ textAlign: 'left', fontSize: 11.5, textTransform: 'uppercase', color: 'var(--text-2)' }}>
                                 <th style={{ padding: '12px 16px' }}>Merchant</th>
@@ -138,7 +139,7 @@ export default function SettlementsPage() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table></ExportArea>
                 </div>
             )}
 

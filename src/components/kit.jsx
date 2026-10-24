@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { exportExcel, exportPdf } from '../lib/exporter';
 import toast from 'react-hot-toast';
 import { api } from '../lib/api';
 import { ISO_COUNTRIES, ISO_CURRENCIES } from '../lib/iso';
@@ -64,31 +65,39 @@ export function useLoad(loader, deps = []) {
     return { value, error, loading, reload };
 }
 
+const ReportName = createContext('');
+
 export function Page({ title, subtitle, actions, children }) {
     return (
-        <div style={{ padding: '28px 32px', maxWidth: 1400 }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 20 }}>
-                <div>
-                    <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>{title}</h1>
+        <ReportName.Provider value={typeof title === 'string' ? title : ''}>
+            <div style={{ padding: '28px 32px', maxWidth: 1400 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 20 }}>
+                    <div>
+                        <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>{title}</h1>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{actions}</div>
                 </div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{actions}</div>
+                {children}
             </div>
-            {children}
-        </div>
+        </ReportName.Provider>
     );
 }
 
 export function Section({ title, right, children }) {
+    const page = useContext(ReportName);
+    const name = [page, typeof title === 'string' ? title : ''].filter(Boolean).join(' - ');
     return (
-        <div className="card" style={{ padding: 18, marginBottom: 18 }}>
-            {(title || right) && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <h2 style={{ fontSize: 15, fontWeight: 800, margin: 0 }}>{title}</h2>
-                    <div style={{ display: 'flex', gap: 8 }}>{right}</div>
-                </div>
-            )}
-            {children}
-        </div>
+        <ReportName.Provider value={name}>
+            <div className="card" style={{ padding: 18, marginBottom: 18 }}>
+                {(title || right) && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                        <h2 style={{ fontSize: 15, fontWeight: 800, margin: 0 }}>{title}</h2>
+                        <div style={{ display: 'flex', gap: 8 }}>{right}</div>
+                    </div>
+                )}
+                {children}
+            </div>
+        </ReportName.Provider>
     );
 }
 
@@ -121,12 +130,37 @@ export function show(v) {
 
 export const minor = (m, ccy = '') => (m === null || m === undefined ? '—' : `${ccy ? ccy + ' ' : ''}${(Number(m) / 100).toFixed(2)}`);
 
-/** columns: [{ key, label, render?(row) }]; without columns every field is shown. */
-export function Table({ rows, columns, empty = 'Nothing here.', onRow }) {
+/** Excel and PDF buttons for the report tables inside it (every table on screen can be exported). */
+export function ExportArea({ name = 'Report', children, style }) {
+    const ref = useRef(null);
+    const [busy, setBusy] = useState('');
+    const run = async (kind) => {
+        const tables = [...(ref.current?.querySelectorAll('table') || [])];
+        if (!tables.length) { toast.error('Nothing to export'); return; }
+        setBusy(kind);
+        try { if (kind === 'xlsx') exportExcel(tables, name); else await exportPdf(tables, name); }
+        catch (e) { toast.error(errorText(e, 'Export failed')); }
+        finally { setBusy(''); }
+    };
+    const btn = { padding: '4px 10px', fontSize: 12, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)', cursor: 'pointer' };
+    return (
+        <div style={style}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginBottom: 6 }} data-export-bar>
+                <button type="button" style={btn} disabled={!!busy} onClick={() => run('xlsx')}>{busy === 'xlsx' ? '…' : 'Excel'}</button>
+                <button type="button" style={btn} disabled={!!busy} onClick={() => run('pdf')}>{busy === 'pdf' ? '…' : 'PDF'}</button>
+            </div>
+            <div ref={ref}>{children}</div>
+        </div>
+    );
+}
+
+/** columns: [{ key, label, render?(row) }]; without columns every field is shown. Every table can be exported to Excel and PDF. */
+export function Table({ rows, columns, empty = 'Nothing here.', onRow, exportName, noExport }) {
+    const context = useContext(ReportName);
     const list = Array.isArray(rows) ? rows : [];
     if (!list.length) return <p style={{ fontSize: 13, color: 'var(--text-2)', margin: 0 }}>{empty}</p>;
     const cols = columns || Object.keys(list[0]).map(k => ({ key: k, label: k }));
-    return (
+    const table = (
         <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
                 <thead>
@@ -142,6 +176,7 @@ export function Table({ rows, columns, empty = 'Nothing here.', onRow }) {
             </table>
         </div>
     );
+    return noExport ? table : <ExportArea name={exportName || context || 'Report'}>{table}</ExportArea>;
 }
 
 /** A button that runs an async call, shows the server's answer and refreshes. */

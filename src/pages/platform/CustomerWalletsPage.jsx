@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { walletsAdminApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth.jsx';
 import { Page, Section, Table, Notice, useLoad, Badge, FormButton, Act, minor } from '../../components/kit';
@@ -14,6 +14,8 @@ export default function CustomerWalletsPage() {
     const [open, setOpen] = useState(null);
     const statement = useLoad(() => (open ? walletsAdminApi.statement(open) : Promise.resolve({ data: { data: [] } })), [open]);
     const reload = () => { list.reload(); totals.reload(); statement.reload(); };
+    // One match for a wallet number or mobile number: show its statement straight away.
+    useEffect(() => { if (query && list.value?.length === 1) setOpen(list.value[0].wallet_ref); }, [query, list.value]);
     return (
         <Page title="Customer wallets" subtitle="Balances are the ledger's CUSTOMER_WALLET accounts. Freezing stops all spending at once; only compliance or an administrator unfreezes. Tier changes need KYC evidence."
             actions={['ADMIN', 'FINANCE'].includes(role) && <FormButton label="Refund a wallet payment" title="Refund to wallet"
@@ -26,7 +28,7 @@ export default function CustomerWalletsPage() {
                     { key: 'balance_minor', label: 'Held for customers', render: r => minor(r.balance_minor, r.currency) }]} />
             </Section>}
             <Section title="Wallets" right={<form onSubmit={e => { e.preventDefault(); setQuery(q); }} style={{ display: 'flex', gap: 6 }}>
-                <input value={q} onChange={e => setQ(e.target.value)} placeholder="Wallet number or phone" style={{ padding: 6, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)' }} />
+                <input value={q} onChange={e => setQ(e.target.value)} placeholder="Wallet number, mobile number or name" style={{ padding: 6, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)' }} />
                 <button className="btn btn-primary" style={{ padding: '6px 12px', fontSize: 12.5 }}>Search</button></form>}>
                 <Table rows={list.value} onRow={r => setOpen(r.wallet_ref)} empty="No wallets." columns={[
                     { key: 'wallet_ref', label: 'Wallet' }, { key: 'full_name', label: 'Holder' }, { key: 'phone', label: 'Phone' }, { key: 'currency', label: 'Ccy' },

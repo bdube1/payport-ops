@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import { useState, useEffect, useMemo } from 'react';
 import { ScrollText, RefreshCw, Search, X } from 'lucide-react';
 import { getAuditLogs, getNotificationLogs, formatDate } from '../lib/api';
@@ -114,7 +115,7 @@ export default function LogsPage() {
             <div style={{ padding: 60, display: 'flex', justifyContent: 'center' }}><div className="spinner" /></div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table>
+              <ExportArea name="Logs"><table>
                 <thead><tr><th>Time</th><th>Reference</th><th>Transition</th><th>Actor</th><th>Notes</th></tr></thead>
                 <tbody>
                   {filteredAudit.length === 0 ? (
@@ -137,7 +138,7 @@ export default function LogsPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></ExportArea>
             </div>
           )}
         </div>
@@ -149,7 +150,7 @@ export default function LogsPage() {
           {loading ? (
             <div style={{ padding: 60, display: 'flex', justifyContent: 'center' }}><div className="spinner" /></div>
           ) : (
-            <table>
+            <ExportArea name="Logs"><table>
               <thead><tr><th>Time</th><th>Recipient</th><th>Type</th><th>Message</th><th>Status</th></tr></thead>
               <tbody>
                 {filteredNotif.length === 0 ? (
@@ -164,7 +165,7 @@ export default function LogsPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></ExportArea>
           )}
         </div>
       )}

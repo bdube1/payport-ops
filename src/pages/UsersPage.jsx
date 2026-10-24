@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import { useState, useEffect } from 'react';
 import { Users, Plus, Edit, UserX, RefreshCw, Lock, Unlock } from 'lucide-react';
 import { getUsers, createUser, updateUser, deactivateUser, unlockUser, formatDate } from '../lib/api';
@@ -183,7 +184,7 @@ export default function UsersPage() {
         <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><div className="spinner" /></div>
       ) : (
         <div className="card" style={{ overflow: 'hidden' }}>
-          <table>
+          <ExportArea name="Users"><table>
             <thead>
               <tr>
                 <th>Name</th><th>Phone</th><th>Role</th><th>Status</th><th>Last Login</th><th>Registered</th><th>Actions</th>
@@ -242,7 +243,7 @@ export default function UsersPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></ExportArea>
         </div>
       )}
 
