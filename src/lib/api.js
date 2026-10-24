@@ -399,6 +399,24 @@ export const walletsAdminApi = {
     refund: (reference, reason) => api.post(`/admin/wallets/refunds/${encodeURIComponent(reference)}`, { reason }),
 };
 
+export const rulesAdminApi = {
+    list: (party) => api.get(`/admin/rules/${party}`),
+    options: (party) => api.get(`/admin/rules/${party}/options`),
+    save: (party, body) => api.post(`/admin/rules/${party}`, body),
+    remove: (party, id) => api.delete(`/admin/rules/${party}/${id}`),
+};
+
+export const walletReportApi = {
+    report: (params) => api.get('/admin/wallets/report', { params }),
+    exportFile: (format, params) => api.get('/admin/wallets/report/export', { params: { ...params, format }, responseType: 'blob', timeout: 120000 }),
+};
+
+export const cardsAdminApi = {
+    search: ({ q, status, scheme } = {}) => api.get('/admin/cards', { params: { ...(q ? { q } : {}), ...(status ? { status } : {}), ...(scheme ? { scheme } : {}) } }),
+    setStatus: (ref, status, note) => api.post(`/admin/cards/${encodeURIComponent(ref)}/status`, { status, note }),
+    refresh: (ref) => api.post(`/admin/cards/${encodeURIComponent(ref)}/refresh`),
+};
+
 export const agentsAdminApi = {
     list: () => api.get('/admin/agents'),
     decide: (id, approve, reason, commissionBps) => api.post(`/admin/agents/${id}/decide`, { approve, reason, commissionBps }),

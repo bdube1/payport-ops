@@ -22,7 +22,7 @@ function loginShown(login, agent) {
     return login ? {
         title: 'Agent portal login',
         note: login.emailed ? 'This was also emailed to the agent. It is shown only once.' : 'Email could not be sent. Give these details to the agent; they are shown only once.',
-        items: [{ label: 'Agent code', value: agent?.agent_code }, { label: 'Sign-in email', value: login.email }, { label: 'Temporary password', value: login.temporaryPassword }],
+        items: [{ label: 'Agent code', value: agent?.code || agent?.agent_code }, { label: 'Sign-in email', value: login.email }, { label: 'Temporary password', value: login.temporaryPassword }],
     } : null;
 }
 
@@ -37,7 +37,7 @@ function AgentDetail({ id, role, onClose, onChanged, onSecret }) {
                 {a && <>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
                         <div>
-                            <div style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--text-2)' }}>{a.agent_code}</div>
+                            <div style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--text-2)' }}>{a.code ? `Agent code ${a.code}` : a.agent_code}</div>
                             <h2 style={{ margin: '4px 0', fontSize: 20, fontWeight: 800 }}>{a.name}</h2>
                             <div style={{ fontSize: 13, color: 'var(--text-2)' }}>{[a.contact_person, a.location, a.phone, a.email].filter(Boolean).join(' · ')}</div>
                             {a.application_reference && <div style={{ fontSize: 12, color: 'var(--text-2)', marginTop: 2 }}>Application {a.application_reference}</div>}
@@ -46,7 +46,7 @@ function AgentDetail({ id, role, onClose, onChanged, onSecret }) {
                     </div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '14px 0' }}>
                         <Badge value={a.status} />
-                        {['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) && <FormButton label="Edit" kind="ghost" title={`Edit ${a.agent_code}`} submitLabel="Save"
+                        {['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) && <FormButton label="Edit" kind="ghost" title={`Edit ${a.code || a.agent_code}`} submitLabel="Save"
                             fields={[{ name: 'name', label: 'Business name', initial: a.name }, { name: 'contactPerson', label: 'Contact person', initial: a.contact_person || '' },
                                 { name: 'phone', label: 'Mobile number', initial: a.phone }, { name: 'email', label: 'Email', initial: a.email || '' },
                                 { name: 'idNumber', label: 'National ID / registration number', initial: a.id_number || '' },
@@ -119,7 +119,7 @@ export default function AgentsPage({ view = 'list' }) {
     const floatTotals = Object.fromEntries((d.float || []).map(r => [r.currency, Number(r.balance_minor)]));
     const q = search.trim().toLowerCase();
     const rows = (agents.value || []).filter(a => (!status || a.status === status)
-        && (!q || [a.agent_code, a.name, a.contact_person, a.phone, a.email, a.location, a.application_reference].some(v => String(v || '').toLowerCase().includes(q))));
+        && (!q || [a.code, a.agent_code, a.name, a.contact_person, a.phone, a.email, a.location, a.application_reference].some(v => String(v || '').toLowerCase().includes(q))));
     const floats = (f) => Object.entries(f || {}).map(([c, v]) => minor(v, c)).join(' · ');
 
     return (
@@ -135,7 +135,7 @@ export default function AgentsPage({ view = 'list' }) {
                 onSubmit={v => agentsAdminApi.onboard({ ...v, commissionBps: v.commissionBps === '' ? null : v.commissionBps })}
                 onDone={(a) => { reload(); setSecret(loginShown(a?.login, a)); if (a?.id) setOpenId(a.id); }} />}
             {['ADMIN', 'FINANCE'].includes(role) && <FormButton label="Record float deposit" kind="ghost" title="Float deposit seen on the bank statement"
-                fields={[{ name: 'agentId', label: 'Agent', type: 'select', required: true, options: (agents.value || []).filter(a => a.status === 'ACTIVE').map(a => ({ value: a.id, label: `${a.agent_code} ${a.name}` })) },
+                fields={[{ name: 'agentId', label: 'Agent', type: 'select', required: true, options: (agents.value || []).filter(a => a.status === 'ACTIVE').map(a => ({ value: a.id, label: `${a.code || a.agent_code} ${a.name}` })) },
                     { name: 'currency', label: 'Currency', type: 'currency', required: true }, { name: 'amount', label: 'Amount', type: 'number', step: '0.01', required: true },
                     { name: 'bankReference', label: 'Bank reference', required: true }]}
                 onSubmit={v => agentsAdminApi.recordDeposit(Number(v.agentId), Math.round(Number(v.amount) * 100), v.currency, v.bankReference.trim())} onDone={reload} />}
@@ -154,7 +154,7 @@ export default function AgentsPage({ view = 'list' }) {
 
             {(d.topAgents || []).length > 0 && <Section title="Top agents, last 30 days">
                 <Table rows={d.topAgents} onRow={r => setOpenId(r.id)} columns={[
-                    { key: 'agent_code', label: 'Code' }, { key: 'name', label: 'Agent' }, { key: 'location', label: 'Location' },
+                    { key: 'code', label: 'Code' }, { key: 'name', label: 'Agent' }, { key: 'location', label: 'Location' },
                     { key: 'count', label: 'Transactions' }, { key: 'amount_minor', label: 'Volume', render: r => minor(r.amount_minor, r.currency) },
                     { key: 'commission_minor', label: 'Commission', render: r => minor(r.commission_minor, r.currency) },
                 ]} />
@@ -162,7 +162,7 @@ export default function AgentsPage({ view = 'list' }) {
 
             {pending.value?.length > 0 && <Section title="Float deposits awaiting approval">
                 <Table rows={pending.value} columns={[
-                    { key: 'agent_code', label: 'Agent' }, { key: 'name', label: 'Name' }, { key: 'amount_minor', label: 'Amount', render: r => minor(r.amount_minor, r.currency) },
+                    { key: 'code', label: 'Agent' }, { key: 'name', label: 'Name' }, { key: 'amount_minor', label: 'Amount', render: r => minor(r.amount_minor, r.currency) },
                     { key: 'bank_reference', label: 'Bank reference' }, { key: 'created_by', label: 'Recorded by' }, { key: 'created_at', label: 'At', render: r => show(r.created_at) },
                     { key: 'actions', label: '', render: r => ['ADMIN', 'FINANCE'].includes(role) && <div style={{ display: 'flex', gap: 6 }}>
                         <Act label="Approve" kind="success" run={() => agentsAdminApi.decideDeposit(r.id, true, 'Seen on the bank statement')} done={reload} />
@@ -187,7 +187,7 @@ export default function AgentsPage({ view = 'list' }) {
                     <option value="">All statuses</option>{['ACTIVE', 'PENDING', 'SUSPENDED', 'REJECTED'].map(s => <option key={s}>{s}</option>)}
                 </select></>}>
                 <Table rows={rows} empty="No agents yet." onRow={r => setOpenId(r.id)} columns={[
-                    { key: 'agent_code', label: 'Agent code' }, { key: 'name', label: 'Name' }, { key: 'contact_person', label: 'Contact' }, { key: 'phone', label: 'Phone' },
+                    { key: 'code', label: 'Agent code' }, { key: 'name', label: 'Name' }, { key: 'contact_person', label: 'Contact' }, { key: 'phone', label: 'Phone' },
                     { key: 'application_reference', label: 'Application' },
                     { key: 'location', label: 'Location' }, { key: 'float', label: 'Float', render: r => floats(r.float) },
                     { key: 'status', label: 'Status', render: r => <Badge value={r.status} /> },

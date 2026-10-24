@@ -19,6 +19,7 @@ export const ROUTE_ROLES = {
     '/merchants':     ['ADMIN', 'OPS'],
     '/merchants/dashboard': ['ADMIN', 'OPS'],
     '/merchants/statement': ['ADMIN', 'OPS', 'FINANCE'],
+    '/merchants/limits': ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
     '/consumers':     ['ADMIN', 'OPS'],
     '/consumers/dashboard': ['ADMIN', 'OPS'],
     '/reports/consolidated': ['ADMIN', 'OPS'],
