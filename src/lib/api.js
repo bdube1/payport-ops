@@ -399,6 +399,16 @@ export const walletsAdminApi = {
     refund: (reference, reason) => api.post(`/admin/wallets/refunds/${encodeURIComponent(reference)}`, { reason }),
 };
 
+export const codesAdminApi = {
+    search: (type, q) => api.get('/admin/codes', { params: { ...(type ? { type } : {}), ...(q ? { q } : {}) } }),
+    ofParty: (type, id) => api.get(`/admin/codes/${type}/${id}`),
+    add: (type, id, label, address) => api.post(`/admin/codes/${type}/${id}`, { label, address }),
+    requests: (status) => api.get('/admin/codes/requests', { params: status ? { status } : {} }),
+    decide: (id, approve, note) => api.post(`/admin/codes/requests/${id}/decide`, { approve, note }),
+    setStatus: (code, status) => api.post(`/admin/codes/${code}/status`, { status }),
+    report: (params) => api.get('/admin/codes/report', { params }),
+};
+
 export const rulesAdminApi = {
     list: (party) => api.get(`/admin/rules/${party}`),
     options: (party) => api.get(`/admin/rules/${party}/options`),

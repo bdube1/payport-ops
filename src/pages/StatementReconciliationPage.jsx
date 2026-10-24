@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import { useState, useEffect } from 'react';
 import { FileSpreadsheet, Upload, CheckCircle2, AlertTriangle, XCircle, HelpCircle, History } from 'lucide-react';
 import { uploadReconciliationStatement, listReconciliationRuns, getReconciliationMatches } from '../lib/api';
@@ -113,7 +114,7 @@ function MatchesTable({ matches, tab }) {
     }
     return (
         <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
+            <ExportArea name="Statement reconciliation"><table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
                 <thead>
                     <tr style={{ textAlign: 'left', color: 'var(--text-2)', borderBottom: '1px solid var(--border)' }}>
                         <th style={{ padding: '8px 10px' }}>Payport Reference</th>
@@ -138,7 +139,7 @@ function MatchesTable({ matches, tab }) {
                         </tr>
                     ))}
                 </tbody>
-            </table>
+            </table></ExportArea>
         </div>
     );
 }

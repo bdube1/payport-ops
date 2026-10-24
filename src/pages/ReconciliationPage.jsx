@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ShieldCheck, Play, AlertCircle, Search, Radio, Smartphone, Wallet, CreditCard, Landmark, Signal } from 'lucide-react';
 import { runReconciliation, queryNetOneTransaction, queryEcoCashTransaction, queryOmariTransaction, queryZimSwitchTransaction, queryOneMoneyTransaction, queryEconetTransaction } from '../lib/api';
 import toast from 'react-hot-toast';
-import { CurrencySelect } from '../components/kit';
+import { CurrencySelect, ExportArea } from '../components/kit';
 
 const TYPE_LABEL = {
     STATUS_MISMATCH: 'Status mismatch',
@@ -292,7 +292,7 @@ export default function ReconciliationPage() {
                         </div>
                     ) : (
                         <div className="card" style={{ padding: 0 }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <ExportArea name="Reconciliation"><table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <thead>
                                     <tr style={{ textAlign: 'left', fontSize: 11.5, textTransform: 'uppercase', color: 'var(--text-2)' }}>
                                         <th style={{ padding: '12px 16px' }}>Session</th>
@@ -317,7 +317,7 @@ export default function ReconciliationPage() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </table></ExportArea>
                         </div>
                     )}
                 </>

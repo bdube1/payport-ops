@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import { useState, useEffect } from 'react';
 import { Building2, TrendingUp, DollarSign, ShieldAlert, Trophy, RefreshCw } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
@@ -105,7 +106,7 @@ export default function MerchantsDashboardPage() {
                 {(data.leaderboard || []).length === 0 ? (
                     <div style={{ padding: 32, textAlign: 'center', color: 'var(--text-2)' }}>No paid transactions yet.</div>
                 ) : (
-                    <table>
+                    <ExportArea name="Merchants dashboard"><table>
                         <thead><tr><th>Rank</th><th>Merchant</th><th>Gross volume</th></tr></thead>
                         <tbody>
                             {data.leaderboard.map((m, i) => (
@@ -116,7 +117,7 @@ export default function MerchantsDashboardPage() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table></ExportArea>
                 )}
             </div>
         </div>

@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import { useState, useEffect } from 'react';
 import { FileText, Download, RefreshCw } from 'lucide-react';
 import { searchMerchantTransactions, formatAmount, formatDate } from '../lib/api';
@@ -121,7 +122,7 @@ export default function MerchantStatementPage() {
                         ) : transactions.length === 0 ? (
                             <div style={{ padding: 32, textAlign: 'center', color: 'var(--text-2)' }}>No transactions in this period.</div>
                         ) : (
-                            <table>
+                            <ExportArea name="Merchant statement"><table>
                                 <thead>
                                     <tr><th>Reference</th><th>Method</th><th>Amount</th><th>Commission</th><th>Net</th><th>Status</th><th>Date</th></tr>
                                 </thead>
@@ -138,7 +139,7 @@ export default function MerchantStatementPage() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </table></ExportArea>
                         )}
                     </div>
                 </>

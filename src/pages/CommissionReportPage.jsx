@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import { useState, useEffect } from 'react';
 import { Percent, RefreshCw, Download } from 'lucide-react';
 import { getCommissionReport, formatAmount } from '../lib/api';
@@ -72,7 +73,7 @@ export default function CommissionReportPage() {
                 {(data.perMerchant || []).length === 0 ? (
                     <div style={{ padding: 32, textAlign: 'center', color: 'var(--text-2)' }}>No commission collected yet.</div>
                 ) : (
-                    <table>
+                    <ExportArea name="Commission report"><table>
                         <thead><tr><th>Merchant</th><th>Rate</th><th>Currency</th><th>Transactions</th><th>Commission</th></tr></thead>
                         <tbody>
                             {data.perMerchant.map(m => (
@@ -89,7 +90,7 @@ export default function CommissionReportPage() {
                                 ))
                             ))}
                         </tbody>
-                    </table>
+                    </table></ExportArea>
                 )}
             </div>
         </div>

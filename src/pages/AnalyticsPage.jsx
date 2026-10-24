@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import React, { useState, useEffect, useCallback } from 'react'
 import { TrendingUp, DollarSign, CheckCircle, XCircle, RefreshCw, BarChart2, Activity, PieChart, Filter, AlertCircle } from 'lucide-react'
 import { searchTransactions, formatDate, STATUS_CONFIG } from '../lib/api'
@@ -616,7 +617,7 @@ export default function AnalyticsPage() {
 
                         {/* Data Table with multi-currency */}
                         <div style={{ marginTop: 32, overflowX: 'auto' }}>
-                            <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
+                            <ExportArea name="Analytics"><table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
                                 <thead>
                                 <tr style={{ borderBottom: '2px solid var(--border)' }}>
                                     <th style={{ textAlign: 'left', padding: '12px 8px' }}>{groupBy === 'product' ? 'Product' : 'Network/Biller'}</th>
@@ -649,7 +650,7 @@ export default function AnalyticsPage() {
                                     </tr>
                                 ))}
                                 </tbody>
-                            </table>
+                            </table></ExportArea>
                         </div>
                     </>
                 )}
@@ -777,7 +778,7 @@ export default function AnalyticsPage() {
                     <p style={{ color: 'var(--text-2)', fontSize: 13, textAlign: 'center', padding: '24px 0' }}>No transactions in this period</p>
                 ) : (
                     <div style={{ overflowX: 'auto' }}>
-                        <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <ExportArea name="Analytics"><table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                             <tr style={{ borderBottom: '2px solid var(--border)' }}>
                                 <th style={{ textAlign: 'left', padding: '12px 8px' }}>Reference</th>
@@ -810,7 +811,7 @@ export default function AnalyticsPage() {
                                 )
                             })}
                             </tbody>
-                        </table>
+                        </table></ExportArea>
                         {filtered.length > 20 && (
                             <p style={{ textAlign: 'center', padding: '16px 0 8px', color: 'var(--text-2)', fontSize: 13 }}>
                                 Showing 20 of {filtered.length} transactions. Use the Transactions page to view all.

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { agentsAdminApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth.jsx';
 import { Page, Section, Table, Notice, useLoad, Badge, FormButton, Act, minor, show, ShowOnce } from '../../components/kit';
+import { PartyCodesSection } from './CodesPage';
 
 const sum = (rows, kind, field) => (rows || []).filter(r => !kind || r.kind === kind)
     .reduce((acc, r) => ({ ...acc, [r.currency]: (acc[r.currency] || 0) + Number(r[field] || 0) }), {});
@@ -69,6 +70,7 @@ function AgentDetail({ id, role, onClose, onChanged, onSecret }) {
                         <Stat label="Cash-out" value={money(sum(a.totals, 'CASH_OUT', 'amount_minor'))} sub={`${count(a.totals, 'CASH_OUT')} transactions`} />
                         <Stat label="Commission earned" value={money(sum(a.totals, null, 'commission_minor'))} sub={`Rate: ${a.commission_bps ?? 'default'} bps`} />
                     </div>
+                    <PartyCodesSection type="AGENT" id={a.id} canAdd={['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) && a.status === 'ACTIVE'} />
                     <Section title="Portal logins" right={['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) && a.status !== 'PENDING' && a.status !== 'REJECTED' &&
                         <FormButton label="Add login" kind="ghost" title={`Portal login for ${a.name}`} submitLabel="Create login"
                             fields={[{ name: 'fullName', label: 'Full name', required: true, initial: a.contact_person || '' }, { name: 'email', label: 'Email', required: true }]}

@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { TrendingUp, CheckCircle, XCircle, Clock, RefreshCw, AlertTriangle, ArrowRight, Activity, DollarSign, CircleDot } from 'lucide-react'
@@ -225,7 +226,7 @@ export default function DashboardPage() {
                     </div>
                 ) : (
                     <div style={{ overflowX: 'auto' }}>
-                        <table className="table">
+                        <ExportArea name="Dashboard"><table className="table">
                             <thead>
                             <tr>
                                 <th>Reference</th>
@@ -255,7 +256,7 @@ export default function DashboardPage() {
                                 )
                             })}
                             </tbody>
-                        </table>
+                        </table></ExportArea>
                     </div>
                 )}
             </div>

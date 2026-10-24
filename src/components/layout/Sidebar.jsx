@@ -9,7 +9,7 @@ import {
     Grid, Building2, Landmark, ShieldAlert, ClipboardCheck, MessageCircleQuestion, FileSpreadsheet,
     UserCircle, FileBarChart, LayoutGrid, Percent, ChevronDown,
     Inbox, BadgeCheck, Banknote, Plug, Globe, Scale, Gavel, Search, FileWarning, Lock, KeyRound, HandCoins, MonitorSmartphone, BookOpen, WalletCards,
-    Wrench, SlidersHorizontal, CreditCard,
+    Wrench, SlidersHorizontal, CreditCard, Hash,
 } from 'lucide-react';
 
 // Always visible, never collapsed -- these aren't grouped under any of
@@ -40,6 +40,7 @@ const sections = [
             { to: '/merchants/dashboard', icon: LayoutGrid, label: 'Merchants Dashboard' },
             { to: '/merchants', icon: Building2, label: 'Merchant Applications', end: true },
             { to: '/merchants/statement', icon: FileText, label: 'Merchant Statement' },
+            { to: '/merchants/codes', icon: Hash, label: 'Merchant Codes' },
             { to: '/merchants/limits', icon: SlidersHorizontal, label: 'Merchant Limits & Charges' },
             { to: '/settlements', icon: Landmark, label: 'Settlements' },
             { to: '/disputes', icon: ShieldAlert, label: 'Disputes' },
@@ -53,6 +54,7 @@ const sections = [
         items: [
             { to: '/agents/dashboard', icon: LayoutGrid, label: 'Agents Dashboard' },
             { to: '/agents', icon: HandCoins, label: 'Agents & Float', end: true },
+            { to: '/agents/codes', icon: Hash, label: 'Agent Codes' },
             { to: '/agents/limits', icon: SlidersHorizontal, label: 'Agent Limits & Charges' },
         ],
     },

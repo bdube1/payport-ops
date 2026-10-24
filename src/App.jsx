@@ -54,6 +54,7 @@ import ChannelsProductsPage from './pages/platform/ChannelsProductsPage';
 import PartyRulesPage from './pages/platform/PartyRulesPage';
 import WalletReportPage from './pages/platform/WalletReportPage';
 import CardsPage from './pages/platform/CardsPage';
+import CodesPage from './pages/platform/CodesPage';
 import CasesPage from './pages/compliance/CasesPage';
 import RulesPage from './pages/compliance/RulesPage';
 import ScreeningPage from './pages/compliance/ScreeningPage';
@@ -161,6 +162,8 @@ export default function App() {
                                     <Route path="/customer-wallets/report" element={<WalletReportPage />} />
                                     <Route path="/customer-wallets/cards" element={<CardsPage />} />
                                     <Route path="/customer-wallets/limits" element={<PartyRulesPage key="WALLET" party="WALLET" title="Wallet limits & charges" />} />
+                                    <Route path="/agents/codes" element={<CodesPage key="AGENT" type="AGENT" />} />
+                                    <Route path="/merchants/codes" element={<CodesPage key="MERCHANT" type="MERCHANT" />} />
                                     <Route path="/agents/limits" element={<PartyRulesPage key="AGENT" party="AGENT" title="Agent limits & charges" />} />
                                     <Route path="/merchants/limits" element={<PartyRulesPage key="MERCHANT" party="MERCHANT" title="Merchant limits & charges" />} />
                                     <Route path="/agents" element={<AgentsPage view="list" />} />

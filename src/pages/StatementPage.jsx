@@ -1,3 +1,4 @@
+import { ExportArea } from '../components/kit';
 import { useState } from 'react';
 import { Search, Download, AlertTriangle } from 'lucide-react';
 import { getCustomerStatement, formatDate } from '../lib/api';
@@ -228,7 +229,7 @@ export default function StatementPage() {
           `).join('')}
         </div>
 
-        <table>
+        <ExportArea name="Statement"><table>
           <thead>
             <tr>
               <th>Date</th><th>Reference</th><th>Product</th><th>Recipient</th><th>Amount</th><th>Currency</th><th>Payment Method</th><th>Provider Ref</th><th>Status</th>
@@ -249,7 +250,7 @@ export default function StatementPage() {
             </tr>
             `).join('')}
           </tbody>
-        </table>
+        </table></ExportArea>
 
         <div class="seal-container">
           <img 
@@ -342,7 +343,7 @@ export default function StatementPage() {
 
                     {/* Table */}
                     <div className="card" style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <ExportArea name="Statement"><table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                             <tr>
                                 <th>Date</th><th>Reference</th><th>Product</th><th>Recipient</th><th>Amount</th><th>Currency</th><th>Payment Method</th><th>Provider Ref</th><th>Status</th>
@@ -363,7 +364,7 @@ export default function StatementPage() {
                                 </tr>
                             ))}
                             </tbody>
-                        </table>
+                        </table></ExportArea>
                     </div>
                 </>
             )}
