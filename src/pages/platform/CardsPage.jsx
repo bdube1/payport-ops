@@ -27,7 +27,7 @@ export default function CardsPage() {
                     { key: 'form', label: 'Type', render: r => r.form === 'VIRTUAL' ? 'Virtual' : 'Physical' },
                     { key: 'maskedPan', label: 'Number', render: r => r.maskedPan || (r.last4 ? `•••• ${r.last4}` : '—') }, { key: 'expiry', label: 'Expiry' },
                     { key: 'nameOnCard', label: 'Name on card' }, { key: 'holder', label: 'Holder' }, { key: 'phone', label: 'Phone' },
-                    { key: 'walletRef', label: 'Wallet' }, { key: 'currency', label: 'Ccy' },
+                    { key: 'walletRef', label: 'Wallets', render: r => (r.walletRefs || [r.walletRef]).join(', ') }, { key: 'currency', label: 'Ccy', render: r => (r.currencies || [r.currency]).join(' + ') },
                     { key: 'status', label: 'Status', render: r => <Badge value={r.status} /> }, { key: 'note', label: 'Note' },
                     { key: 'createdAt', label: 'Requested', render: r => show(r.createdAt) },
                     { key: 'actions', label: '', render: r => canChange && !['CANCELLED', 'REFUSED'].includes(r.status) && <div style={{ display: 'flex', gap: 6 }}>
