@@ -9,7 +9,7 @@ import {
     Grid, Building2, Landmark, ShieldAlert, ClipboardCheck, MessageCircleQuestion, FileSpreadsheet,
     UserCircle, FileBarChart, LayoutGrid, Percent, ChevronDown,
     Inbox, BadgeCheck, Banknote, Plug, Globe, Scale, Gavel, Search, FileWarning, Lock, KeyRound, HandCoins, MonitorSmartphone, BookOpen, WalletCards,
-    Wrench,
+    Wrench, SlidersHorizontal, CreditCard,
 } from 'lucide-react';
 
 // Always visible, never collapsed -- these aren't grouped under any of
@@ -40,6 +40,7 @@ const sections = [
             { to: '/merchants/dashboard', icon: LayoutGrid, label: 'Merchants Dashboard' },
             { to: '/merchants', icon: Building2, label: 'Merchant Applications', end: true },
             { to: '/merchants/statement', icon: FileText, label: 'Merchant Statement' },
+            { to: '/merchants/limits', icon: SlidersHorizontal, label: 'Merchant Limits & Charges' },
             { to: '/settlements', icon: Landmark, label: 'Settlements' },
             { to: '/disputes', icon: ShieldAlert, label: 'Disputes' },
             { to: '/reconciliation', icon: ClipboardCheck, label: 'Reconciliation' },
@@ -52,6 +53,7 @@ const sections = [
         items: [
             { to: '/agents/dashboard', icon: LayoutGrid, label: 'Agents Dashboard' },
             { to: '/agents', icon: HandCoins, label: 'Agents & Float', end: true },
+            { to: '/agents/limits', icon: SlidersHorizontal, label: 'Agent Limits & Charges' },
         ],
     },
     {
@@ -66,7 +68,10 @@ const sections = [
             { to: '/provider-tools', icon: Wrench, label: 'Provider Tools' },
             { to: '/markets', icon: Globe, label: 'Markets & Currencies' },
             { to: '/channels', icon: Plug, label: 'Channels & Product Lines' },
-            { to: '/customer-wallets', icon: WalletCards, label: 'Customer Wallets' },
+            { to: '/customer-wallets', icon: WalletCards, label: 'Customer Wallets', end: true },
+            { to: '/customer-wallets/report', icon: FileSpreadsheet, label: 'Wallet Report' },
+            { to: '/customer-wallets/cards', icon: CreditCard, label: 'Cards' },
+            { to: '/customer-wallets/limits', icon: SlidersHorizontal, label: 'Wallet Limits & Charges' },
             { to: '/ussd-whatsapp', icon: MessageCircleQuestion, label: 'USSD & WhatsApp' },
             { to: '/pos-terminals', icon: MonitorSmartphone, label: 'POS Terminals' },
             { to: '/provider-settlement-rules', icon: Banknote, label: 'Provider Settlement Rules' },

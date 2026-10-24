@@ -174,6 +174,7 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
     businessCategory: merchant.businessCategory || '',
     contactEmail: merchant.contactEmail,
     contactPhone: merchant.contactPhone,
+    address: merchant.address || '',
   });
   const [showRequestInfo, setShowRequestInfo] = useState(false);
   const [infoNote, setInfoNote] = useState('');
@@ -278,7 +279,9 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
             <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 4 }}>Contact email</label>
             <input value={editForm.contactEmail} onChange={e => setEditForm(f => ({ ...f, contactEmail: e.target.value }))} style={{ width: '100%', marginBottom: 12 }} />
             <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 4 }}>Contact phone</label>
-            <input value={editForm.contactPhone} onChange={e => setEditForm(f => ({ ...f, contactPhone: e.target.value }))} style={{ width: '100%', marginBottom: 16 }} />
+            <input value={editForm.contactPhone} onChange={e => setEditForm(f => ({ ...f, contactPhone: e.target.value }))} style={{ width: '100%', marginBottom: 12 }} />
+            <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 4 }}>Address / location</label>
+            <input value={editForm.address} onChange={e => setEditForm(f => ({ ...f, address: e.target.value }))} style={{ width: '100%', marginBottom: 16 }} />
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setEditing(false)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
               <button onClick={saveEdit} disabled={busy} className="btn btn-primary" style={{ flex: 1 }}>{busy ? 'Saving…' : 'Save changes'}</button>
@@ -286,6 +289,8 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13, marginBottom: 20 }}>
+            <div><span style={{ color: 'var(--text-2)' }}>Merchant code</span><br /><strong style={{ fontFamily: 'var(--font-mono)' }}>{merchant.merchantCode || '—'}</strong></div>
+            <div><span style={{ color: 'var(--text-2)' }}>Address</span><br />{merchant.address || '—'}</div>
             <div><span style={{ color: 'var(--text-2)' }}>Registration #</span><br />{merchant.registrationNumber}</div>
             <div><span style={{ color: 'var(--text-2)' }}>Category</span><br />{merchant.businessCategory || '—'}</div>
             <div><span style={{ color: 'var(--text-2)' }}>Email</span><br />{merchant.contactEmail}</div>
@@ -514,9 +519,11 @@ export default function MerchantsPage() {
                   <span className={`badge ${STATUS_BADGE[m.status] || 'badge-gray'}`}>{m.status}</span>
                 </div>
                 <div style={{ fontSize: 12.5, color: 'var(--text-2)', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {m.merchantCode && <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--text)' }}>Merchant code {m.merchantCode}</span>}
                   {m.applicationReference && <span style={{ fontFamily: 'var(--font-mono)' }}>Application {m.applicationReference}</span>}
                   <span>Reg #{m.registrationNumber} {m.businessCategory ? `· ${m.businessCategory}` : ''}</span>
                   <span>{m.contactEmail} · {m.contactPhone}</span>
+                  {m.address && <span>{m.address}</span>}
                   <span>Applied {formatDate(m.createdAt)}</span>
                   {m.status === 'ACTIVE' && (
                     <span>

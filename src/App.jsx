@@ -51,6 +51,9 @@ import UssdWhatsAppPage from './pages/platform/UssdWhatsAppPage';
 import ProviderSettlementRulesPage from './pages/platform/ProviderSettlementRulesPage';
 import LedgerPage from './pages/platform/LedgerPage';
 import ChannelsProductsPage from './pages/platform/ChannelsProductsPage';
+import PartyRulesPage from './pages/platform/PartyRulesPage';
+import WalletReportPage from './pages/platform/WalletReportPage';
+import CardsPage from './pages/platform/CardsPage';
 import CasesPage from './pages/compliance/CasesPage';
 import RulesPage from './pages/compliance/RulesPage';
 import ScreeningPage from './pages/compliance/ScreeningPage';
@@ -155,6 +158,11 @@ export default function App() {
                                     <Route path="/markets" element={<MarketsPage />} />
                                     <Route path="/channels" element={<ChannelsProductsPage />} />
                                     <Route path="/customer-wallets" element={<CustomerWalletsPage />} />
+                                    <Route path="/customer-wallets/report" element={<WalletReportPage />} />
+                                    <Route path="/customer-wallets/cards" element={<CardsPage />} />
+                                    <Route path="/customer-wallets/limits" element={<PartyRulesPage key="WALLET" party="WALLET" title="Wallet limits & charges" />} />
+                                    <Route path="/agents/limits" element={<PartyRulesPage key="AGENT" party="AGENT" title="Agent limits & charges" />} />
+                                    <Route path="/merchants/limits" element={<PartyRulesPage key="MERCHANT" party="MERCHANT" title="Merchant limits & charges" />} />
                                     <Route path="/agents" element={<AgentsPage view="list" />} />
                                     <Route path="/agents/dashboard" element={<AgentsPage view="dashboard" />} />
                                     <Route path="/pos-terminals" element={<PosTerminalsPage />} />
