@@ -563,6 +563,21 @@
   },
   {
    "method": "GET",
+   "path": "/api/v1/admin/health-lookups",
+   "access": null
+  },
+  {
+   "method": "PUT",
+   "path": "/api/v1/admin/health-lookups",
+   "access": null
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/admin/health-lookups/check",
+   "access": null
+  },
+  {
+   "method": "GET",
    "path": "/api/v1/admin/health-status",
    "access": null
   },

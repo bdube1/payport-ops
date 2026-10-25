@@ -5,7 +5,7 @@ import { Page } from '../components/kit';
 
 const NAMES = {
     ECONET: 'Econet', NETONE: 'NetOne', TELECEL: 'Telecel', ECOCASH: 'EcoCash', ONEMONEY: 'OneMoney', TELECASH: 'Telecash',
-    OMARI: "O'mari", INNBUCKS: 'InnBucks', ZIMSWITCH: 'ZimSwitch', ZESA: 'ZESA', PAYPORT_WALLET: 'PayPort Wallet',
+    OMARI: "O'mari", BULAWAYO: 'City of Bulawayo', ESOLUTIONS: 'eSolutions', NYARADZO: 'Nyaradzo', MOONLIGHT: 'Moonlight', ZOL: 'ZOL', INNBUCKS: 'InnBucks', ZIMSWITCH: 'ZimSwitch', ZESA: 'ZESA', PAYPORT_WALLET: 'PayPort Wallet',
 };
 const TYPES = { PAYMENT: 'Payments', FULFILMENT: 'Fulfilment', WALLET: 'Wallet', BILLER: 'Bills' };
 const STATE = {
@@ -14,6 +14,7 @@ const STATE = {
     DEGRADED: { label: 'Degraded', color: 'var(--amber)', pill: 'badge-amber' },
     DOWN: { label: 'Down', color: 'var(--red)', pill: 'badge-red' },
     REACHABLE: { label: 'Reachable', color: 'var(--blue)', pill: 'badge-blue' },
+    NOT_CONFIGURED: { label: 'Not configured', color: 'var(--text-2)', pill: 'badge-gray' },
     NOT_CHECKED: { label: 'Not checked', color: 'var(--text-2)', pill: 'badge-gray' },
     OPERATIONAL: { label: 'Not checked', color: 'var(--text-2)', pill: 'badge-gray' },
 };
