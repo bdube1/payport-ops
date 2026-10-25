@@ -233,7 +233,7 @@ export default function WalletBalancePage() {
     const anyEsolutionsLow = ESOLUTIONS_WALLETS.some(w => isEsolutionsLow(w.code));
 
     return (
-        <div style={{ padding: 28, maxWidth: 1200 }}>
+        <div className="op-page">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
                 <div>
                     <h1 style={{ fontSize: 24, fontWeight: 800 }}>Float Balances</h1>

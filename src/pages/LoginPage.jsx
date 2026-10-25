@@ -124,8 +124,10 @@ export default function LoginPage() {
       const authUser = data.user || data;
       if (remember) localStorage.setItem(REMEMBER_KEY, email.trim().toLowerCase());
       else localStorage.removeItem(REMEMBER_KEY);
-      login({ email, fullName: authUser.fullName || authUser.name || email, role: authUser.role }, data.token || data.accessToken);
-      navigate(data.mustChangePassword ? '/reset-password?forced=1' : homeFor(authUser.role), { replace: true });
+      const signedIn = { email, fullName: authUser.fullName || authUser.name || email, role: authUser.role, roleName: authUser.roleName,
+        customRole: authUser.customRole, permissions: authUser.permissions, routes: authUser.routes };
+      login(signedIn, data.token || data.accessToken);
+      navigate(data.mustChangePassword ? '/reset-password?forced=1' : homeFor(signedIn), { replace: true });
     } catch (e) {
       setError(e.response?.data?.message || 'Invalid credentials or insufficient privileges');
     } finally { setLoading(false); }

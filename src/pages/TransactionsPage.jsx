@@ -1,6 +1,7 @@
 import { CurrencySelect, ExportArea } from '../components/kit';
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import TransactionDrawer from '../components/TransactionDrawer';
 import { Search, Download, RefreshCw, X, AlertTriangle } from 'lucide-react';
 import { searchTransactions, formatDate, STATUS_CONFIG, opsExtraApi } from '../lib/api';
 
@@ -19,6 +20,8 @@ export default function TransactionsPage() {
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(0);
     const [error, setError] = useState('');
+    const [params] = useSearchParams();
+    const [open, setOpen] = useState(null);
 
     const [filters, setFilters] = useState({
         reference: '', status: '', customerPhone: '', recipientIdentifier: '',
@@ -42,7 +45,19 @@ export default function TransactionsPage() {
         } finally { setLoading(false); }
     }, [filters]);
 
-    useEffect(() => { load(0); }, []);
+    // ?q= from the top-bar search (a phone number or a reference), ?status= from Reports.
+    useEffect(() => {
+        const q = (params.get('q') || '').trim();
+        const status = params.get('status') || '';
+        const next = { ...filters, status };
+        if (q) {
+            if (/^\+?[0-9 ]{7,}$/.test(q)) next.customerPhone = q.replace(/\s/g, '');
+            else next.reference = q;
+        }
+        setFilters(next);
+        load(0, next);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [params]);
 
     const updateFilter = (key, val) => setFilters(f => ({ ...f, [key]: val }));
 
@@ -148,7 +163,7 @@ export default function TransactionsPage() {
     });
 
     return (
-        <div style={{ padding: 28 }}>
+        <div className="op-page">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
                 <div>
                     <h1 style={{ fontSize: 22, fontWeight: 800 }}>Transactions</h1>
@@ -260,37 +275,33 @@ export default function TransactionsPage() {
                         <ExportArea name="Transactions"><table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                             <tr>
+                                <th>Date & Time</th>
                                 <th>Reference</th>
-                                <th>Status</th>
                                 <th>Customer</th>
                                 <th>Recipient</th>
-                                <th>Product</th>
+                                <th>Service</th>
+                                <th>Provider</th>
                                 <th>Amount</th>
-                                <th>Currency</th>
-                                <th>Payment Method</th>
-                                <th>Provider Ref</th>
-                                <th>Date</th>
-                                <th></th>
+                                <th>Status</th>
+                                <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
                             {txs.length === 0 ? (
-                                <tr><td colSpan={11} style={{ textAlign: 'center', padding: 48, color: 'var(--text-2)' }}>No transactions found</td></tr>
+                                <tr><td colSpan={9} style={{ textAlign: 'center', padding: 48, color: 'var(--text-2)' }}>No transactions found</td></tr>
                             ) : txs.map(tx => {
                                 const sc = STATUS_CONFIG[tx.status] || { label: tx.status, badge: 'badge-gray' };
                                 return (
                                     <tr key={tx.reference}>
-                                        <td style={{ fontFamily: 'monospace', fontSize: 12 }}>{tx.reference}</td>
+                                        <td style={{ color: 'var(--text-2)', whiteSpace: 'nowrap' }}>{formatDate(tx.createdAt)}</td>
+                                        <td className="mono" style={{ whiteSpace: 'nowrap' }}>{tx.reference}</td>
+                                        <td style={{ whiteSpace: 'nowrap' }}><div style={{ fontWeight: 600 }}>{tx.customerName || tx.customerPhone || '—'}</div>{tx.customerName && <div style={{ fontSize: 11.5, color: 'var(--text-2)' }}>{tx.customerPhone}</div>}</td>
+                                        <td>{tx.recipientIdentifier || '—'}</td>
+                                        <td>{tx.productName || tx.productTypeCode || '—'}</td>
+                                        <td>{tx.paymentMethodName || tx.paymentMethodCode || '—'}{tx.providerReference && <div className="mono" style={{ fontSize: 11, color: 'var(--text-2)' }}>{tx.providerReference}</div>}</td>
+                                        <td style={{ fontWeight: 700, whiteSpace: 'nowrap' }}>{fmt(tx.amountCents || 0, tx.currency)}</td>
                                         <td><span className={`badge ${sc.badge}`}>{sc.label}</span></td>
-                                        <td style={{ fontSize: 12 }}>{tx.customerPhone || '—'}</td>
-                                        <td style={{ fontSize: 12 }}>{tx.recipientIdentifier || '—'}</td>
-                                        <td style={{ fontSize: 12 }}>{tx.productTypeCode || '—'}</td>
-                                        <td style={{ fontWeight: 700 }}>{fmt(tx.amountCents || 0, tx.currency)}</td>
-                                        <td style={{ fontSize: 12 }}>{tx.currency || 'USD'}</td>
-                                        <td style={{ fontSize: 12 }}>{tx.paymentMethodCode || '—'}</td>
-                                        <td style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--text-2)' }}>{tx.providerReference || '—'}</td>
-                                        <td style={{ fontSize: 12, color: 'var(--text-2)' }}>{formatDate(tx.createdAt)}</td>
-                                        <td><Link to={`/transactions/${tx.reference}`} className="btn btn-ghost" style={{ fontSize: 12 }}>View</Link></td>
+                                        <td><button className="btn btn-ghost btn-sm" onClick={() => setOpen(tx.reference)}>View</button></td>
                                     </tr>
                                 );
                             })}
@@ -308,6 +319,7 @@ export default function TransactionsPage() {
                     <button onClick={() => load(page+1)} disabled={page >= totalPages-1} className="btn btn-ghost">Next →</button>
                 </div>
             )}
+            {open && <TransactionDrawer reference={open} onClose={() => setOpen(null)} onChanged={() => load(page)} />}
         </div>
     );
 }

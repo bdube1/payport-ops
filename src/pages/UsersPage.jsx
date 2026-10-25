@@ -1,11 +1,24 @@
 import { ExportArea } from '../components/kit';
 import { useState, useEffect } from 'react';
 import { Users, Plus, Edit, UserX, RefreshCw, Lock, Unlock } from 'lucide-react';
-import { getUsers, createUser, updateUser, deactivateUser, unlockUser, formatDate } from '../lib/api';
+import { api, getUsers, createUser, updateUser, deactivateUser, unlockUser, formatDate } from '../lib/api';
 import toast from 'react-hot-toast';
 import { useAuth } from '../lib/auth.jsx';
 
 const ROLES = ['OPS', 'FINANCE', 'COMPLIANCE', 'ADMIN'];
+const ROLE_NAMES = { ADMIN: 'Administrator', OPS: 'Operations', FINANCE: 'Finance', COMPLIANCE: 'Compliance' };
+
+/** Built-in and configured roles (Roles & permissions); falls back to the built-in four. */
+function useRoleOptions() {
+  const [opts, setOpts] = useState(ROLES.map(r => ({ code: r, name: ROLE_NAMES[r] })));
+  useEffect(() => {
+    api.get('/admin/roles').then(r => {
+      const list = r.data?.data || [];
+      if (Array.isArray(list) && list.length) setOpts(list.map(x => ({ code: x.code, name: x.name })));
+    }).catch(() => {});
+  }, []);
+  return opts;
+}
 
 function UserModal({ user, onSave, onClose }) {
   const editing = !!user?.id;
@@ -13,7 +26,7 @@ function UserModal({ user, onSave, onClose }) {
     fullName: user?.fullName || '',
     phone: user?.phone || '',
     email: user?.email || '',
-    role: user?.role || 'OPS',
+    role: user?.customRole || user?.role || 'OPS',
     pin: '',
     isActive: user?.isActive !== false,
   });
@@ -23,6 +36,7 @@ function UserModal({ user, onSave, onClose }) {
   const isStaff = true;
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+  const roleOptions = useRoleOptions();
 
   const handleSave = () => {
     if (!form.fullName.trim()) { toast.error('Full name is required'); return; }
@@ -53,7 +67,7 @@ function UserModal({ user, onSave, onClose }) {
           <div>
             <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-2)', display: 'block', marginBottom: 6 }}>Role *</label>
             <select value={form.role} onChange={e => set('role', e.target.value)} style={{ width: '100%' }}>
-              {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+              {roleOptions.map(r => <option key={r.code} value={r.code}>{r.name}</option>)}
             </select>
           </div>
           {!editing && (
@@ -156,7 +170,7 @@ export default function UsersPage() {
   const ROLE_BADGE = { ADMIN: 'badge-red', OPS: 'badge-blue', FINANCE: 'badge-green', CUSTOMER: 'badge-gray' };
 
   return (
-    <div style={{ padding: 28, maxWidth: 1100 }}>
+    <div className="op-page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -205,7 +219,7 @@ export default function UsersPage() {
                     </div>
                   </td>
                   <td style={{ fontFamily: 'monospace', fontSize: 12 }}>{u.phone}</td>
-                  <td><span className={`badge ${ROLE_BADGE[u.role] || 'badge-gray'}`}>{u.role}</span></td>
+                  <td><span className={`badge ${u.customRole ? 'badge-purple' : (ROLE_BADGE[u.role] || 'badge-gray')}`}>{u.roleName || ROLE_NAMES[u.role] || u.role}</span></td>
                   <td>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                       <span className={`badge ${u.isActive ? 'badge-green' : 'badge-red'}`}>

@@ -70,12 +70,10 @@ const ReportName = createContext('');
 export function Page({ title, subtitle, actions, children }) {
     return (
         <ReportName.Provider value={typeof title === 'string' ? title : ''}>
-            <div style={{ padding: '28px 32px', maxWidth: 1400 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 20 }}>
-                    <div>
-                        <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>{title}</h1>
-                    </div>
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{actions}</div>
+            <div className="op-page">
+                <div className="op-page-head">
+                    <h1>{title}</h1>
+                    <div className="op-actions">{actions}</div>
                 </div>
                 {children}
             </div>
@@ -91,7 +89,7 @@ export function Section({ title, right, children }) {
             <div className="card" style={{ padding: 18, marginBottom: 18 }}>
                 {(title || right) && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                        <h2 style={{ fontSize: 15, fontWeight: 800, margin: 0 }}>{title}</h2>
+                        <h2 style={{ fontSize: 15, fontWeight: 700, margin: 0 }}>{title}</h2>
                         <div style={{ display: 'flex', gap: 8 }}>{right}</div>
                     </div>
                 )}
@@ -116,7 +114,8 @@ export function Badge({ value }) {
     if (value === null || value === undefined || value === '') return <span style={{ color: 'var(--text-2)' }}>—</span>;
     const v = String(value);
     const cls = BADGES.green.includes(v) ? 'badge-green' : BADGES.amber.includes(v) ? 'badge-amber' : BADGES.red.includes(v) ? 'badge-red' : 'badge-gray';
-    return <span className={`badge ${cls}`}>{v.replace(/_/g, ' ')}</span>;
+    const text = v.replace(/_/g, ' ').toLowerCase();
+    return <span className={`badge ${cls}`}>{text.charAt(0).toUpperCase() + text.slice(1)}</span>;
 }
 
 export function show(v) {
@@ -142,12 +141,11 @@ export function ExportArea({ name = 'Report', children, style }) {
         catch (e) { toast.error(errorText(e, 'Export failed')); }
         finally { setBusy(''); }
     };
-    const btn = { padding: '4px 10px', fontSize: 12, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)', cursor: 'pointer' };
     return (
         <div style={style}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginBottom: 6 }} data-export-bar>
-                <button type="button" style={btn} disabled={!!busy} onClick={() => run('xlsx')}>{busy === 'xlsx' ? '…' : 'Excel'}</button>
-                <button type="button" style={btn} disabled={!!busy} onClick={() => run('pdf')}>{busy === 'pdf' ? '…' : 'PDF'}</button>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginBottom: 8 }} data-export-bar>
+                <button type="button" className="btn btn-ghost btn-sm" disabled={!!busy} onClick={() => run('xlsx')}>{busy === 'xlsx' ? '…' : 'Excel'}</button>
+                <button type="button" className="btn btn-ghost btn-sm" disabled={!!busy} onClick={() => run('pdf')}>{busy === 'pdf' ? '…' : 'PDF'}</button>
             </div>
             <div ref={ref}>{children}</div>
         </div>
@@ -162,14 +160,14 @@ export function Table({ rows, columns, empty = 'Nothing here.', onRow, exportNam
     const cols = columns || Object.keys(list[0]).map(k => ({ key: k, label: k }));
     const table = (
         <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
+            <table>
                 <thead>
-                    <tr>{cols.map(c => <th key={c.key} style={{ textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid var(--border)', color: 'var(--text-2)', fontWeight: 700, whiteSpace: 'nowrap' }}>{c.label}</th>)}</tr>
+                    <tr>{cols.map(c => <th key={c.key}>{c.label}</th>)}</tr>
                 </thead>
                 <tbody>
                     {list.map((r, i) => (
                         <tr key={r.id ?? r.code ?? r.param_key ?? i} onClick={onRow ? () => onRow(r) : undefined} style={{ cursor: onRow ? 'pointer' : 'default' }}>
-                            {cols.map(c => <td key={c.key} style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', verticalAlign: 'top' }}>{c.render ? c.render(r) : show(r[c.key])}</td>)}
+                            {cols.map(c => <td key={c.key}>{c.render ? c.render(r) : show(r[c.key])}</td>)}
                         </tr>
                     ))}
                 </tbody>

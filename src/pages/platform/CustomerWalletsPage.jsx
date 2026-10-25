@@ -28,10 +28,10 @@ export default function CustomerWalletsPage() {
                     { key: 'balance_minor', label: 'Held for customers', render: r => minor(r.balance_minor, r.currency) }]} />
             </Section>}
             <Section title="Wallets" right={<form onSubmit={e => { e.preventDefault(); setQuery(q); }} style={{ display: 'flex', gap: 6 }}>
-                <input value={q} onChange={e => setQ(e.target.value)} placeholder="Wallet number, mobile number or name" style={{ padding: 6, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)' }} />
+                <input value={q} onChange={e => setQ(e.target.value)} placeholder="Wallet number, mobile number, name or ID number" style={{ padding: 6, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)' }} />
                 <button className="btn btn-primary" style={{ padding: '6px 12px', fontSize: 12.5 }}>Search</button></form>}>
                 <Table rows={list.value} onRow={r => setOpen(r.wallet_ref)} empty="No wallets." columns={[
-                    { key: 'wallet_ref', label: 'Wallet' }, { key: 'full_name', label: 'Holder' }, { key: 'phone', label: 'Phone' }, { key: 'currency', label: 'Ccy' },
+                    { key: 'wallet_ref', label: 'Wallet' }, { key: 'full_name', label: 'Holder' }, { key: 'phone', label: 'Phone' }, { key: 'id_number', label: 'ID Number' }, { key: 'currency', label: 'Ccy' },
                     { key: 'balance_minor', label: 'Balance', render: r => minor(r.balance_minor, r.currency) }, { key: 'tier', label: 'Tier' },
                     { key: 'status', label: 'Status', render: r => <Badge value={r.status} /> }, { key: 'status_reason', label: 'Reason' },
                     { key: 'actions', label: '', render: r => <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
