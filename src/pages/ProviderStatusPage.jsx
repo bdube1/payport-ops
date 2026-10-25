@@ -13,6 +13,9 @@ const STATE = {
     TIMEOUTS: { label: 'Degraded', color: 'var(--amber)', pill: 'badge-amber' },
     DEGRADED: { label: 'Degraded', color: 'var(--amber)', pill: 'badge-amber' },
     DOWN: { label: 'Down', color: 'var(--red)', pill: 'badge-red' },
+    REACHABLE: { label: 'Reachable', color: 'var(--blue)', pill: 'badge-blue' },
+    NOT_CHECKED: { label: 'Not checked', color: 'var(--text-2)', pill: 'badge-gray' },
+    OPERATIONAL: { label: 'Not checked', color: 'var(--text-2)', pill: 'badge-gray' },
 };
 const state = (s) => STATE[s] || { label: s ? s.charAt(0) + s.slice(1).toLowerCase() : 'Unknown', color: 'var(--text-2)', pill: 'badge-gray' };
 const name = (code) => NAMES[code] || (code || '').replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
