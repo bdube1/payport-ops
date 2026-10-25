@@ -77,21 +77,6 @@ function BundleManager() {
         }
     };
 
-    const [syncing, setSyncing] = useState(false);
-    const syncNetOne = async () => {
-        setSyncing(true);
-        try {
-            const r = await api.post('/bundles/admin/NETONE/sync', null, { timeout: 120000 });
-            const d = r.data || {};
-            if (d.message) showSnackbar(d.message, 'warning');
-            else showSnackbar(`NetOne: ${d.USD ?? 0} USD and ${d.ZWG ?? 0} ZWG bundles · ${d.added ?? 0} new (switched off)`, 'success');
-            fetchBundles();
-        } catch (error) {
-            showSnackbar(`NetOne refresh failed: ${errorText(error)}`, 'error');
-        } finally {
-            setSyncing(false);
-        }
-    };
 
     const fetchCategories = async () => {
         try {
@@ -322,17 +307,6 @@ function BundleManager() {
                     >
                         Refresh
                     </Button>
-                    {provider === 'NETONE' && (
-                        <Button
-                            variant="outlined"
-                            startIcon={syncing ? <CircularProgress size={16} /> : <Refresh />}
-                            onClick={syncNetOne}
-                            disabled={syncing}
-                            sx={{ color: textColor, borderColor: 'var(--border)' }}
-                        >
-                            Refresh from NetOne
-                        </Button>
-                    )}
                     <Button
                         variant="outlined"
                         startIcon={<Download />}
@@ -446,10 +420,10 @@ function BundleManager() {
                                         <Chip label={bundle.category} size="small" />
                                     </TableCell>
                                     <TableCell align="right" sx={{ color: textColor }}>
-                                        ${(bundle.priceValue || 0).toFixed(2)}
+                                        {provider === 'NETONE' && bundle.currency !== 'USD' ? '—' : `$${(bundle.priceValue || 0).toFixed(2)}`}
                                     </TableCell>
                                     <TableCell align="right" sx={{ color: 'var(--amber)' }}>
-                                        ZiG {(bundle.priceZwgCents ? bundle.priceZwgCents/100 : 0).toFixed(2)}
+                                        {provider === 'NETONE' ? (bundle.currency === 'ZWG' ? `ZiG ${(bundle.priceValue || 0).toFixed(2)}` : '—') : `ZiG ${(bundle.priceZwgCents ? bundle.priceZwgCents/100 : 0).toFixed(2)}`}
                                     </TableCell>
                                     <TableCell sx={{ color: mutedColor }}>{bundle.validity || '—'}</TableCell>
                                     <TableCell sx={{ color: mutedColor }}>{bundle.dataVolume || '—'}</TableCell>
@@ -474,6 +448,7 @@ function BundleManager() {
                                                 <Visibility fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
+                                        {provider !== 'NETONE' && (<>
                                         <Tooltip title="Edit Bundle">
                                             <IconButton
                                                 size="small"
@@ -500,6 +475,7 @@ function BundleManager() {
                                                 {bundle.isActive ? <VisibilityOff fontSize="small" /> : <CheckCircle fontSize="small" />}
                                             </IconButton>
                                         </Tooltip>
+                                        </>)}
                                     </TableCell>
                                 </TableRow>
                             ))

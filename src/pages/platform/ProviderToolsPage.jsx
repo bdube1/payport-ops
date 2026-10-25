@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { providerToolsApi } from '../../lib/api';
 import { Page, Section, Notice, Table, CurrencySelect, data } from '../../components/kit';
+import HealthChecks from '../../components/HealthChecks';
 
 const inp = { padding: '7px 10px', borderRadius: 9, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)', fontSize: 13 };
 
@@ -35,6 +36,7 @@ export default function ProviderToolsPage() {
     const [oOtp, setOOtp] = useState('');
     return (
         <Page title="Provider tools">
+            <HealthChecks />
             <Section title="Econet">
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
                     <input style={{ ...inp, minWidth: 200 }} placeholder="Econet number" value={msisdn} onChange={e => setMsisdn(e.target.value)} />
