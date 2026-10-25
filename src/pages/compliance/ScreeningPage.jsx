@@ -55,7 +55,7 @@ export default function ScreeningPage() {
                 ]} />
             </Section>
             <Section title="Screening runs for a subject" right={<>
-                <input placeholder="PHONE:263… or MERCHANT:12" value={subject} onChange={e => setSubject(e.target.value)} style={{ width: 220 }} />
+                <input value={subject} onChange={e => setSubject(e.target.value)} style={{ width: 220 }} />
                 <button className="btn btn-ghost" onClick={() => setRunsFor(subject.trim())}>Show</button>
             </>}>
                 <Table rows={runs.value} empty={runsFor ? 'No runs.' : 'Enter a subject key.'} columns={[

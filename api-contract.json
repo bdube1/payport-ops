@@ -1222,6 +1222,11 @@
    "access": null
   },
   {
+   "method": "GET",
+   "path": "/api/v1/admin/wallets/balances",
+   "access": null
+  },
+  {
    "method": "POST",
    "path": "/api/v1/admin/wallets/refunds/{reference}",
    "access": null
@@ -1244,6 +1249,11 @@
   {
    "method": "GET",
    "path": "/api/v1/admin/wallets/{ref}/statement",
+   "access": null
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/admin/wallets/{ref}/statement-report",
    "access": null
   },
   {

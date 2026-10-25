@@ -50,7 +50,7 @@ function NetOneLookup() {
             <form onSubmit={lookup} style={{ display: 'flex', gap: 8, marginBottom: error || result ? 16 : 0 }}>
                 <input
                     value={reference} onChange={e => setReference(e.target.value)}
-                    placeholder="Payport transaction reference, e.g. PP-API-20260822-1234"
+                    placeholder="Payport transaction reference"
                     style={{ flex: 1, padding: 10, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)' }}
                 />
                 <button type="submit" disabled={looking} className="btn btn-primary"><Search size={14} /> {looking ? 'Looking…' : 'Query'}</button>

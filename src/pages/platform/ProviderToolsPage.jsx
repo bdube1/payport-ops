@@ -40,7 +40,7 @@ export default function ProviderToolsPage() {
         <Page title="Provider tools">
             <Section title="Econet">
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-                    <input style={{ ...inp, minWidth: 200 }} placeholder="Econet number, e.g. 0771234567" value={msisdn} onChange={e => setMsisdn(e.target.value)} />
+                    <input style={{ ...inp, minWidth: 200 }} placeholder="Econet number" value={msisdn} onChange={e => setMsisdn(e.target.value)} />
                     <CurrencySelect value={ccy} onChange={setCcy} />
                     <button className="btn btn-primary" disabled={econet.busy || !msisdn.trim()} onClick={() => econet.run(() => providerToolsApi.econetValidate(msisdn.trim(), ccy))}>Validate number</button>
                     <button className="btn btn-ghost" disabled={econet.busy || !msisdn.trim()} onClick={() => econet.run(() => providerToolsApi.econetBalance(msisdn.trim(), ccy))}>Account balance</button>
@@ -61,7 +61,7 @@ export default function ProviderToolsPage() {
             </Section>
             <Section title="O'mari">
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
-                    <input style={{ ...inp, minWidth: 180 }} placeholder="O'mari number, e.g. 263771234567" value={oMsisdn} onChange={e => setOMsisdn(e.target.value)} />
+                    <input style={{ ...inp, minWidth: 180 }} placeholder="O'mari number" value={oMsisdn} onChange={e => setOMsisdn(e.target.value)} />
                     <input style={{ ...inp, width: 100 }} placeholder="Amount" value={oAmount} onChange={e => setOAmount(e.target.value)} />
                     <CurrencySelect value={oCcy} onChange={setOCcy} />
                     <button className="btn btn-primary" disabled={omari.busy || !oMsisdn.trim()}

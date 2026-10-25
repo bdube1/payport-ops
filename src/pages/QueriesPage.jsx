@@ -212,7 +212,7 @@ export default function QueriesPage() {
             <form onSubmit={runSearch} style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                 <input
                     value={search} onChange={e => setSearch(e.target.value)}
-                    placeholder="Search by query reference, e.g. QRY-20260822-4471"
+                    placeholder="Search by query reference"
                     style={{ flex: '1 1 320px', maxWidth: 420, padding: 10, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)' }}
                 />
                 <button type="submit" disabled={searching} className="btn btn-ghost"><Search size={14} /> Search</button>

@@ -769,58 +769,6 @@ export default function AnalyticsPage() {
                 </div>
             </div>
 
-            {/* Recent Transactions with multi-currency */}
-            <div className="card" style={{ padding: 24 }}>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, marginBottom: 16 }}>
-                    Recent Transactions {total > 0 && <span style={{ color: 'var(--text-2)', fontWeight: 400, fontSize: 13 }}>({total} in period)</span>}
-                </h3>
-                {filtered.length === 0 ? (
-                    <p style={{ color: 'var(--text-2)', fontSize: 13, textAlign: 'center', padding: '24px 0' }}>No transactions in this period</p>
-                ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                        <ExportArea name="Analytics"><table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                            <tr style={{ borderBottom: '2px solid var(--border)' }}>
-                                <th style={{ textAlign: 'left', padding: '12px 8px' }}>Reference</th>
-                                <th style={{ textAlign: 'left', padding: '12px 8px' }}>Product</th>
-                                <th style={{ textAlign: 'left', padding: '12px 8px' }}>Network/Biller</th>
-                                <th style={{ textAlign: 'right', padding: '12px 8px' }}>Amount</th>
-                                <th style={{ textAlign: 'left', padding: '12px 8px' }}>Payment</th>
-                                <th style={{ textAlign: 'left', padding: '12px 8px' }}>Status</th>
-                                <th style={{ textAlign: 'left', padding: '12px 8px' }}>Date</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {filtered.slice(0, 20).map(tx => {
-                                const cfg = STATUS_CONFIG[tx.status] || { label: tx.status, badge: 'badge-gray' }
-                                const networkName = getGroupName(tx, 'network')
-                                const currency = tx.currency || 'USD'
-                                const symbol = CURRENCY_SYMBOLS[currency] || currency
-                                return (
-                                    <tr key={tx.reference} style={{ borderBottom: '1px solid var(--border)' }}>
-                                        <td style={{ padding: '10px 8px' }}><span className="mono" style={{ color: 'var(--blue)', fontSize: 12 }}>{tx.reference}</span></td>
-                                        <td style={{ padding: '10px 8px', color: 'var(--text-2)', fontSize: 13 }}>{tx.productType?.name || tx.productName || '—'}</td>
-                                        <td style={{ padding: '10px 8px', fontSize: 13 }}>{networkName}</td>
-                                        <td style={{ padding: '10px 8px', fontWeight: 600, textAlign: 'right', color: currency === 'USD' ? 'var(--green)' : 'var(--amber)' }}>
-                                            {symbol} {((tx.amountCents || 0) / 100).toFixed(2)}
-                                        </td>
-                                        <td style={{ padding: '10px 8px', color: 'var(--text-2)', fontSize: 13 }}>{tx.paymentMethod?.code || tx.paymentMethodName || tx.paymentMethodCode || '—'}</td>
-                                        <td style={{ padding: '10px 8px' }}><span className={`badge ${cfg.badge}`}>{cfg.label}</span></td>
-                                        <td style={{ padding: '10px 8px', color: 'var(--text-2)', fontSize: 12 }}>{formatDate(tx.initiatedAt)}</td>
-                                    </tr>
-                                )
-                            })}
-                            </tbody>
-                        </table></ExportArea>
-                        {filtered.length > 20 && (
-                            <p style={{ textAlign: 'center', padding: '16px 0 8px', color: 'var(--text-2)', fontSize: 13 }}>
-                                Showing 20 of {filtered.length} transactions. Use the Transactions page to view all.
-                            </p>
-                        )}
-                    </div>
-                )}
-            </div>
-
             <style>{`
                 @keyframes spin {
                     to { transform: rotate(360deg); }

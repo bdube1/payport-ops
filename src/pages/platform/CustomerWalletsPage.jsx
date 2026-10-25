@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { walletsAdminApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth.jsx';
 import { Page, Section, Table, Notice, useLoad, Badge, FormButton, Act, minor } from '../../components/kit';
@@ -35,6 +36,7 @@ export default function CustomerWalletsPage() {
                     { key: 'balance_minor', label: 'Balance', render: r => minor(r.balance_minor, r.currency) }, { key: 'tier', label: 'Tier' },
                     { key: 'status', label: 'Status', render: r => <Badge value={r.status} /> }, { key: 'status_reason', label: 'Reason' },
                     { key: 'actions', label: '', render: r => <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
+                        <Link className="btn btn-ghost btn-sm" to={`/customer-wallets/statement?ref=${encodeURIComponent(r.wallet_ref)}`}>Statement</Link>
                         {r.status === 'ACTIVE' && ['ADMIN', 'OPS', 'COMPLIANCE'].includes(role) && <Act label="Freeze" kind="ghost" confirm={`Freeze wallet ${r.wallet_ref}?`}
                             run={() => walletsAdminApi.setStatus(r.wallet_ref, 'FROZEN', 'Frozen from the ops console')} done={reload} />}
                         {r.status === 'FROZEN' && ['ADMIN', 'COMPLIANCE'].includes(role) && <Act label="Unfreeze" confirm={`Unfreeze wallet ${r.wallet_ref}?`}

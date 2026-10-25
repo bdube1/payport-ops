@@ -231,7 +231,7 @@ export default function StatementPage() {
           `).join('')}
         </div>
 
-        <ExportArea name="Statement"><table>
+        <table>
           <thead>
             <tr>
               <th>Date</th><th>Reference</th><th>Product</th><th>Recipient</th><th>Amount</th><th>Currency</th><th>Payment Method</th><th>Provider Ref</th><th>Status</th>
@@ -252,7 +252,7 @@ export default function StatementPage() {
             </tr>
             `).join('')}
           </tbody>
-        </table></ExportArea>
+        </table>
 
         <div class="seal-container">
           <img 
@@ -290,7 +290,7 @@ export default function StatementPage() {
                     <div style={{ gridColumn: '1 / -1' }}>
                         <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-2)', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Customer Phone Number</label>
                         <input value={phone} onChange={e => setPhone(e.target.value)}
-                               placeholder="07X XXX XXXX or +263..."
+                              
                                style={{ width: '100%', padding: '12px 16px', fontSize: 15 }} />
                     </div>
                     <div>
@@ -344,15 +344,10 @@ export default function StatementPage() {
                         ))}
                     </div>
 
-                    {/* Export buttons */}
-                    <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
-                        <button onClick={exportCSV} className="btn btn-ghost"><Download size={14} /> Export CSV</button>
-                        <button onClick={exportPDF} className="btn btn-primary"><Download size={14} /> Download PDF Statement</button>
-                    </div>
 
                     {/* Table */}
                     <div className="card" style={{ overflowX: 'auto' }}>
-                        <ExportArea name="Statement"><table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <ExportArea name="Statement" pdf={exportPDF}><table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                             <tr>
                                 <th>Date</th><th>Reference</th><th>Product</th><th>Recipient</th><th>Amount</th><th>Currency</th><th>Payment Method</th><th>Provider Ref</th><th>Status</th>

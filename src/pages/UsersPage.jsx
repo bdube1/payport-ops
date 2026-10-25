@@ -62,7 +62,7 @@ function UserModal({ user, onSave, onClose }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
             <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-2)', display: 'block', marginBottom: 6 }}>Full Name *</label>
-            <input value={form.fullName} onChange={e => set('fullName', e.target.value)} placeholder="e.g. John Doe" style={{ width: '100%' }} />
+            <input value={form.fullName} onChange={e => set('fullName', e.target.value)} style={{ width: '100%' }} />
           </div>
           <div>
             <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-2)', display: 'block', marginBottom: 6 }}>Role *</label>
@@ -73,7 +73,7 @@ function UserModal({ user, onSave, onClose }) {
           {!editing && (
             <div>
               <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-2)', display: 'block', marginBottom: 6 }}>Phone Number *</label>
-              <input value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="07X XXX XXXX" style={{ width: '100%' }} />
+              <input value={form.phone} onChange={e => set('phone', e.target.value)} style={{ width: '100%' }} />
             </div>
           )}
           {isStaff && (
@@ -81,7 +81,7 @@ function UserModal({ user, onSave, onClose }) {
               <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-2)', display: 'block', marginBottom: 6 }}>
                 Email * <span style={{ fontWeight: 400 }}>— used to sign in and for password resets</span>
               </label>
-              <input type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="name@payport.africa" style={{ width: '100%' }} />
+              <input type="email" value={form.email} onChange={e => set('email', e.target.value)} style={{ width: '100%' }} />
             </div>
           )}
           <div>
@@ -91,7 +91,7 @@ function UserModal({ user, onSave, onClose }) {
             {isStaff ? (
               <input type="password" value={form.pin} onChange={e => set('pin', e.target.value)} placeholder="At least 8 characters" style={{ width: '100%' }} />
             ) : (
-              <input type="password" value={form.pin} onChange={e => set('pin', e.target.value.slice(0,4))} placeholder="••••" maxLength={4} style={{ width: '100%', letterSpacing: 4, fontSize: 20 }} />
+              <input type="password" value={form.pin} onChange={e => set('pin', e.target.value.slice(0,4))} maxLength={4} style={{ width: '100%', letterSpacing: 4, fontSize: 20 }} />
             )}
             {isStaff && (
               <p style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 4 }}>
