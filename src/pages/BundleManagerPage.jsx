@@ -1,3 +1,5 @@
+import { ThemeProvider as MuiThemeProvider } from '@mui/material';
+import { buildMuiTheme } from '../lib/muiTheme';
 import React, { useState, useEffect } from 'react';
 import {
     Box, Button, Paper, Table, TableBody, TableCell,
@@ -17,7 +19,14 @@ import * as XLSX from 'xlsx';
 import { api } from '../lib/api';
 import { useTheme } from '../lib/theme';
 
+// MUI (only this page uses it) loads with the page, not with the whole console.
 export default function BundleManagerPage() {
+    const { dark } = useTheme();
+    const muiTheme = React.useMemo(() => buildMuiTheme(dark), [dark]);
+    return <MuiThemeProvider theme={muiTheme}><BundleManager /></MuiThemeProvider>;
+}
+
+function BundleManager() {
     const { dark } = useTheme();
 
     const [provider, setProvider] = useState('ECONET');
