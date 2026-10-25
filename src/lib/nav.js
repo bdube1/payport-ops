@@ -20,6 +20,7 @@ export const TOP = [
 export const GROUPS = [
     { key: 'monitoring', label: 'Monitoring', icon: Activity, items: [
         { to: '/provider-status', icon: Activity, label: 'Provider Status' },
+        { to: '/wallet', icon: Wallet, label: 'Float Balances' },
         { to: '/integrations', icon: Plug, label: 'Integrations' },
         { to: '/provider-tools', icon: Wrench, label: 'Provider Tools' },
         { to: '/analytics', icon: BarChart2, label: 'Analytics' },
@@ -63,7 +64,6 @@ export const GROUPS = [
         { to: '/recon-exceptions', icon: FileWarning, label: 'Recon Exceptions' },
         { to: '/bank-messages', icon: FileSpreadsheet, label: 'Bank Messages' },
         { to: '/provider-settlement-rules', icon: Scale, label: 'Provider Settlement Rules' },
-        { to: '/wallet', icon: Wallet, label: 'Float Balances' },
         { to: '/ledger', icon: BookOpen, label: 'Ledger' },
     ] },
     { key: 'reports', label: 'Reports', icon: FileBarChart, items: [

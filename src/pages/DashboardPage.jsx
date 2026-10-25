@@ -28,6 +28,14 @@ export default function DashboardPage() {
     const [kpis, setKpis] = useState(null);
     const [providers, setProviders] = useState([]);
     const [volume, setVolume] = useState(null);
+    const [lowFloat, setLowFloat] = useState([]);
+    // Float accounts below their minimum (Monitoring → Float Balances); read once, it asks every provider.
+    useEffect(() => {
+        api.get('/admin/wallet-balances').then(r => {
+            const d = r.data?.data || {};
+            setLowFloat(Object.entries(d).filter(([, v]) => v && v.low).map(([k, v]) => ({ k, ...v })));
+        }).catch(() => {});
+    }, []);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState('');
@@ -110,6 +118,13 @@ export default function DashboardPage() {
                     <RefreshCw size={14} style={refreshing ? { animation: 'spin 1s linear infinite' } : undefined} /> Refresh
                 </button>
             </div>
+
+            {lowFloat.length > 0 && (
+                <Link to="/wallet" className="card" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, background: 'var(--badge-red)', borderColor: 'transparent', color: 'var(--pill-red)', textDecoration: 'none', fontWeight: 600, fontSize: 13.5 }}>
+                    <AlertTriangle size={17} />
+                    Low float: {lowFloat.map(f => `${f.provider} ${f.currency} ${Number(f.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })} (minimum ${Number(f.threshold).toLocaleString('en-US', { minimumFractionDigits: 2 })})`).join(' · ')}
+                </Link>
+            )}
 
             {error && <div className="card" style={{ marginBottom: 16, color: 'var(--pill-red)', background: 'var(--badge-red)', borderColor: 'transparent' }}>{error}</div>}
 

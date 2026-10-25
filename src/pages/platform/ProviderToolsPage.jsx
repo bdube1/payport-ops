@@ -27,9 +27,6 @@ export default function ProviderToolsPage() {
     const [msisdn, setMsisdn] = useState('');
     const [ccy, setCcy] = useState('USD');
     const econet = useCall();
-    const [nMobile, setNMobile] = useState('');
-    const [nCcy, setNCcy] = useState('USD');
-    const netone = useCall();
     const omari = useCall();
     const [oMsisdn, setOMsisdn] = useState('');
     const [oAmount, setOAmount] = useState('1.00');
@@ -46,18 +43,6 @@ export default function ProviderToolsPage() {
                     <button className="btn btn-ghost" disabled={econet.busy || !msisdn.trim()} onClick={() => econet.run(() => providerToolsApi.econetBalance(msisdn.trim(), ccy))}>Account balance</button>
                 </div>
                 <Result value={econet.value} />
-            </Section>
-            <Section title="NetOne">
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-                    <button className="btn btn-ghost" disabled={netone.busy} onClick={() => netone.run(() => providerToolsApi.netoneWallet())}>Wallet balance (ZWG)</button>
-                    <button className="btn btn-ghost" disabled={netone.busy} onClick={() => netone.run(() => providerToolsApi.netoneWalletUsd())}>Wallet balance (USD)</button>
-                    <button className="btn btn-ghost" disabled={netone.busy} onClick={() => netone.run(() => providerToolsApi.netonePinStock())}>PIN stock</button>
-                    <CurrencySelect value={nCcy} onChange={setNCcy} />
-                    <button className="btn btn-ghost" disabled={netone.busy} onClick={() => netone.run(() => providerToolsApi.netoneBundles(nCcy))}>Data bundles</button>
-                    <input style={{ ...inp, minWidth: 200 }} placeholder="NetOne number" value={nMobile} onChange={e => setNMobile(e.target.value)} />
-                    <button className="btn btn-primary" disabled={netone.busy || !nMobile.trim()} onClick={() => netone.run(() => providerToolsApi.netoneEndUser(nMobile.trim()))}>Customer balance</button>
-                </div>
-                <Result value={netone.value} />
             </Section>
             <Section title="O'mari">
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>

@@ -578,6 +578,11 @@
   },
   {
    "method": "GET",
+   "path": "/api/v1/admin/integrations/connectivity",
+   "access": null
+  },
+  {
+   "method": "GET",
    "path": "/api/v1/admin/integrations/{code}",
    "access": null
   },
@@ -1453,7 +1458,17 @@
   },
   {
    "method": "POST",
+   "path": "/api/v1/bundles/admin/NETONE/sync",
+   "access": null
+  },
+  {
+   "method": "POST",
    "path": "/api/v1/bundles/admin/upload",
+   "access": null
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/bundles/admin/{provider}/all",
    "access": null
   },
   {
