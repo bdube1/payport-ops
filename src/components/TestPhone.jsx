@@ -15,16 +15,21 @@ export default function TestPhone() {
     useEffect(() => { end.current?.scrollIntoView({ block: 'nearest' }); }, [log]);
 
     const add = (who, msg) => setLog(l => [...l, { who, msg, at: new Date() }]);
+    // A reply to a PIN prompt is shown as dots.
+    const shown = (msg) => {
+        const last = [...log].reverse().find(m => m.who === 'pp');
+        return last && /PIN/.test(last.msg) && /^\d{4}$/.test(msg) ? '••••' : msg;
+    };
     const err = (e) => add('sys', e.response?.data?.error?.message || e.response?.data?.message || 'Not available');
 
     const sendWa = async (msg) => {
-        add('me', msg);
+        add('me', shown(msg));
         const r = await api.post('/admin/whatsapp/simulate', { phone, text: msg });
         add('pp', r.data?.data?.reply || '');
     };
     const sendUssd = async (input, fresh) => {
         const path = fresh ? '' : (ussd.path ? `${ussd.path}*${input}` : input);
-        if (fresh) add('me', 'Dial *699#'); else add('me', input);
+        if (fresh) add('me', 'Dial *699#'); else add('me', shown(input));
         const r = await api.post('/admin/ussd/simulate', { phone, session: fresh ? '' : ussd.session, path });
         const d = r.data?.data || {};
         setUssd({ session: d.session, path, end: d.end });
