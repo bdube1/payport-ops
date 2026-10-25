@@ -50,7 +50,6 @@ export default function CommissionReportPage() {
                     </h1>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={exportCsv} className="btn btn-ghost"><Download size={14} /> Export CSV</button>
                     <button onClick={load} className="btn btn-ghost"><RefreshCw size={14} /></button>
                 </div>
             </div>

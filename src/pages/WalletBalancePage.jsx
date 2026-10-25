@@ -401,7 +401,7 @@ export default function WalletBalancePage() {
                                         <input
                                             type="number" value={thresholdInput}
                                             onChange={e => setThresholdInput(e.target.value)}
-                                            placeholder="e.g. 50.00" min="0"
+                                            min="0"
                                             style={{ flex: 1, fontSize: 13 }}
                                         />
                                         <button onClick={() => saveThreshold(provider.code, false)} className="btn btn-primary" style={{ padding: '6px 12px', fontSize: 12 }}>Save</button>
@@ -529,7 +529,7 @@ export default function WalletBalancePage() {
                                         <input
                                             type="number" value={thresholdInput}
                                             onChange={e => setThresholdInput(e.target.value)}
-                                            placeholder={`e.g. ${wallet.currency === 'USD' ? '50.00' : '500.00'}`}
+                                           
                                             min="0" step="0.01"
                                             style={{ flex: 1, fontSize: 13 }}
                                         />

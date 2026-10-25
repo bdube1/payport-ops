@@ -123,7 +123,7 @@ export default function TransactionsPage() {
       </div>
       <h3>Transactions Report</h3>
       <div class="meta">Generated: ${new Date().toLocaleString()} · Total records: ${total} · Showing: ${txs.length}</div>
-      <ExportArea name="Transactions"><table>
+      <table>
         <thead><tr><th>Reference</th><th>Status</th><th>Customer</th><th>Recipient</th><th>Product</th><th>Amount</th><th>Currency</th><th>Payment Method</th><th>Provider Ref</th><th>Date</th></tr></thead>
         <tbody>
           ${txs.map(t => `
@@ -141,7 +141,7 @@ export default function TransactionsPage() {
           </tr>
           `).join('')}
         </tbody>
-      </table></ExportArea>
+      </table>
       <div class="footer">
         © ${new Date().getFullYear()} Payport Financial Services · CONFIDENTIAL · This report is intended for authorised personnel only.
         <br/><strong>PAYPORT DIGITAL STAMP</strong> · Generated ${new Date().toISOString()}
@@ -172,11 +172,8 @@ export default function TransactionsPage() {
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: 10 }}>
-                    <button onClick={exportCSV} className="btn btn-ghost">
-                        <Download size={14} /> CSV
-                    </button>
-                    <button onClick={exportPDF} className="btn btn-ghost" disabled={!txs.length}>
-                        <Download size={14} /> PDF
+                    <button onClick={exportCSV} className="btn btn-ghost" title="Every record matching the filters">
+                        <Download size={14} /> Export all results
                     </button>
                     <button onClick={() => load(0)} className="btn btn-ghost">
                         <RefreshCw size={14} /> Refresh
@@ -212,7 +209,7 @@ export default function TransactionsPage() {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
                     {[
-                        ['reference', 'Reference (PP-WEB-...)'],
+                        ['reference', 'Reference'],
                         ['customerPhone', 'Customer / Source Phone'],
                         ['recipientIdentifier', 'Recipient Phone'],
                         ['providerReference', 'Provider Reference'],
@@ -272,7 +269,7 @@ export default function TransactionsPage() {
                     </div>
                 ) : (
                     <div style={{ overflowX: 'auto' }}>
-                        <ExportArea name="Transactions"><table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <ExportArea name="Transactions" pdf={exportPDF}><table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                             <tr>
                                 <th>Date & Time</th>

@@ -33,7 +33,7 @@ function MarkPaidModal({ settlement, onClose, onDone }) {
                     {settlement.merchantName} — {formatAmount(settlement.netAmountCents, settlement.currency)}
                 </p>
                 <label style={{ fontSize: 12.5, fontWeight: 700, display: 'block', marginBottom: 6 }}>Payout reference</label>
-                <input value={reference} onChange={e => setReference(e.target.value)} placeholder="Bank transfer ref, EcoCash txn ID, etc." required
+                <input value={reference} onChange={e => setReference(e.target.value)} required
                     style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)', marginBottom: 20 }} />
                 <div style={{ display: 'flex', gap: 10 }}>
                     <button type="button" onClick={onClose} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>

@@ -13,6 +13,6 @@ export default defineConfig(() => ({
     port: 3001,
   },
   preview: {
-    allowedHosts: ['admin.payport.africa']
+    allowedHosts: ['admin.payport.africa', 'admin-staging.payport.africa', 'localhost']
   }
 }))

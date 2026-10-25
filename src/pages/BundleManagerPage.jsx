@@ -665,7 +665,7 @@ export default function BundleManagerPage() {
                             onChange={(e) => setManualEntry({...manualEntry, priceUsdCents: e.target.value})}
                             fullWidth
                             size="small"
-                            placeholder="1.50"
+                           
                         />
                         <TextField
                             label="ZiG Price"
@@ -673,7 +673,7 @@ export default function BundleManagerPage() {
                             onChange={(e) => setManualEntry({...manualEntry, priceZwgCents: e.target.value})}
                             fullWidth
                             size="small"
-                            placeholder="15.00"
+                           
                         />
                         <TextField
                             label="Data Volume (MB)"

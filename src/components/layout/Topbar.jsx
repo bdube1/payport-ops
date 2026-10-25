@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, ChevronDown, LogOut, Menu, Search, User, Moon, Sun } from 'lucide-react';
+import { Bell, ChevronDown, LogOut, Menu, User, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../../lib/auth.jsx';
 import { useTheme } from '../../lib/theme.jsx';
 import { canAccess } from '../../lib/permissions';
@@ -12,7 +12,6 @@ export default function Topbar({ onMenu }) {
     const { user, logout } = useAuth();
     const { dark, toggle } = useTheme();
     const navigate = useNavigate();
-    const [q, setQ] = useState('');
     const [menu, setMenu] = useState(false);
     const [attention, setAttention] = useState(0);
     const ref = useRef(null);
@@ -36,25 +35,12 @@ export default function Topbar({ onMenu }) {
         return () => document.removeEventListener('mousedown', close);
     }, []);
 
-    const search = (e) => {
-        e.preventDefault();
-        const v = q.trim();
-        if (!v) return;
-        if (/^(PP|TXN|CS|WAL|AG)[-A-Z0-9]{4,}$/i.test(v) && canAccess(user, '/transactions')) navigate(`/transactions/${encodeURIComponent(v.toUpperCase())}`);
-        else navigate(`/transactions?q=${encodeURIComponent(v)}`);
-        setQ('');
-    };
-
     const name = user?.fullName || user?.email || 'Staff';
     const role = user?.roleName || ROLE_NAMES[user?.role] || user?.role || '';
 
     return (
         <header className="op-top">
             <button className="op-icon-btn op-burger" onClick={onMenu} aria-label="Menu"><Menu size={18} /></button>
-            <form className="op-search" onSubmit={search}>
-                <Search size={16} />
-                <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search by reference, transaction ID, customer..." />
-            </form>
             <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <button className="op-icon-btn" title="Attention queue" onClick={() => canAttention && navigate('/attention')}>
                     <Bell size={18} />

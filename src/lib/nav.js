@@ -48,6 +48,8 @@ export const GROUPS = [
         { to: '/consumers/dashboard', icon: LayoutGrid, label: 'Consumers Dashboard' },
         { to: '/consumers', icon: UserCircle, label: 'Consumers', end: true },
         { to: '/customer-wallets', icon: WalletCards, label: 'Customer Wallets', end: true },
+        { to: '/customer-wallets/statement', icon: FileText, label: 'Wallet Statement' },
+        { to: '/customer-wallets/balances', icon: Wallet, label: 'Wallet Balances' },
         { to: '/customer-wallets/report', icon: FileSpreadsheet, label: 'Wallet Report' },
         { to: '/customer-wallets/cards', icon: CreditCard, label: 'Cards' },
         { to: '/customer-wallets/limits', icon: SlidersHorizontal, label: 'Limits & Charges' },

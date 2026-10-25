@@ -200,7 +200,7 @@ export default function TransactionDetailPage() {
                             <input
                                 value={refundReference}
                                 onChange={e => setRefundReference(e.target.value)}
-                                placeholder="e.g. transaction/receipt reference"
+                               
                                 className="input"
                                 style={{ width: '100%' }}
                             />
@@ -211,7 +211,7 @@ export default function TransactionDetailPage() {
                         <textarea
                             value={refundReason}
                             onChange={e => setRefundReason(e.target.value)}
-                            placeholder="e.g. Service could not be delivered after repeated retries"
+                           
                             rows={3}
                             className="input"
                             style={{ width: '100%', resize: 'vertical' }}

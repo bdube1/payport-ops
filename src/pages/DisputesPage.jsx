@@ -54,7 +54,7 @@ function OpenDisputeModal({ onClose, onDone }) {
                 </select>
 
                 <label style={{ fontSize: 12.5, fontWeight: 700, display: 'block', marginBottom: 6 }}>Reason</label>
-                <input value={reason} onChange={e => setReason(e.target.value)} placeholder="Fraud claim, item not received, etc."
+                <input value={reason} onChange={e => setReason(e.target.value)}
                     style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)', marginBottom: 20 }} />
 
                 <div style={{ display: 'flex', gap: 10 }}>

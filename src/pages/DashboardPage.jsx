@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Activity, CheckCircle2, Clock, AlertTriangle, XCircle, DollarSign, RefreshCw, ArrowUpRight, ArrowDownRight, ChevronRight } from 'lucide-react';
 import { getDashboardKpis, getAttentionQueue, getProviderHealth, searchTransactions, formatDate, STATUS_CONFIG } from '../lib/api';
-import { ExportArea } from '../components/kit';
 import { Sparkline, LineChart, Legend } from '../components/charts';
 import { ProviderRow } from './ProviderStatusPage';
 
@@ -144,7 +143,7 @@ export default function DashboardPage() {
         <div className="op-page">
             <div className="op-page-head">
                 <div>
-                    <h1>Operations Dashboard</h1>
+                    <h1>Dashboard</h1>
                     <p style={{ fontSize: 12.5, color: 'var(--text-2)', marginTop: 4 }}>Last updated {lastRefresh.toLocaleTimeString()} · every 30s</p>
                 </div>
                 <button className="btn btn-outline" onClick={() => load(true)} disabled={refreshing}>
@@ -192,42 +191,6 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            <div className="card" style={{ padding: 0 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px 8px' }}>
-                    <h2 style={{ fontSize: 15, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        Attention Queue {queue.length > 0 && <span className="badge badge-red">{queue.length}</span>}
-                    </h2>
-                    <Link to="/attention" className="btn btn-ghost btn-sm">View all</Link>
-                </div>
-                {queue.length === 0 ? (
-                    <p style={{ padding: '18px 20px 22px', color: 'var(--text-2)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <CheckCircle2 size={16} color="var(--green)" /> Nothing needs attention.
-                    </p>
-                ) : (
-                    <div style={{ padding: '0 4px 8px', overflowX: 'auto' }}>
-                        <ExportArea name="Attention queue" style={{ padding: '0 16px' }}>
-                            <table>
-                                <thead><tr><th>Reference</th><th>Service</th><th>Amount</th><th>Status</th><th>Initiated</th><th>Action</th></tr></thead>
-                                <tbody>
-                                    {queue.slice(0, 10).map(t => {
-                                        const cfg = STATUS_CONFIG[t.status] || STATUS_CONFIG.INITIATED;
-                                        return (
-                                            <tr key={t.reference}>
-                                                <td className="mono">{t.reference}</td>
-                                                <td>{t.productName || t.productTypeCode || '—'}</td>
-                                                <td style={{ fontWeight: 600 }}>{money(t.amountCents, t.currency || 'USD')}</td>
-                                                <td><span className={`badge ${cfg.badge}`}>{cfg.label}</span></td>
-                                                <td style={{ color: 'var(--text-2)' }}>{formatDate(t.createdAt)}</td>
-                                                <td><Link to={`/transactions/${t.reference}`} className="btn btn-ghost btn-sm">View</Link></td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </ExportArea>
-                    </div>
-                )}
-            </div>
         </div>
     );
 }

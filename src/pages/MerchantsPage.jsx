@@ -98,7 +98,7 @@ function CommissionModal({ merchant, onClose, onSaved }) {
         </p>
         {error && <div style={{ background: 'var(--badge-red)', color: 'var(--red)', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 14 }}>{error}</div>}
         <label style={{ fontSize: 12.5, fontWeight: 700, display: 'block', marginBottom: 6 }}>Override rate (%)</label>
-        <input type="number" step="0.01" min="0" max="100" value={bps} onChange={e => setBps(e.target.value)} placeholder="e.g. 2.5"
+        <input type="number" step="0.01" min="0" max="100" value={bps} onChange={e => setBps(e.target.value)}
           style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-2)', color: 'var(--text)', marginBottom: 20, boxSizing: 'border-box' }} />
         <div style={{ display: 'flex', gap: 10 }}>
           <button type="button" onClick={onClose} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
@@ -375,7 +375,7 @@ function MerchantDetailModal({ merchant, onClose, onChanged, onApprove, onReject
             <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 6 }}>What do you need from the applicant?</label>
             <textarea
               value={infoNote} onChange={e => setInfoNote(e.target.value)} rows={3}
-              placeholder="e.g. Your Business Registration Certificate is missing — please upload it."
+             
               style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text)', resize: 'vertical', boxSizing: 'border-box', marginBottom: 10 }}
             />
             <p style={{ fontSize: 11.5, color: 'var(--text-2)', marginBottom: 12 }}>

@@ -18,7 +18,7 @@ export default function AuditPage() {
                     : <Notice kind="error">Chain broken at entry {String(v.brokenAtId)} (head matches: {String(v.headMatches)}). Escalate immediately.</Notice>)}
             </Section>
             <Section title="Trail for a subject" right={<>
-                <input placeholder="report:12, case:5, risk_rule:CODE…" value={subject} onChange={e => setSubject(e.target.value)} style={{ width: 240 }} />
+                <input value={subject} onChange={e => setSubject(e.target.value)} style={{ width: 240 }} />
                 <button className="btn btn-ghost" onClick={() => setTrailFor(subject.trim())}>Show</button>
             </>}>
                 <Table rows={trail.value} empty={trailFor ? 'No entries.' : 'Enter a subject.'} columns={[

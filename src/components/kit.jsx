@@ -130,7 +130,7 @@ export function show(v) {
 export const minor = (m, ccy = '') => (m === null || m === undefined ? '—' : `${ccy ? ccy + ' ' : ''}${(Number(m) / 100).toFixed(2)}`);
 
 /** Excel and PDF buttons for the report tables inside it (every table on screen can be exported). */
-export function ExportArea({ name = 'Report', children, style }) {
+export function ExportArea({ name = 'Report', children, style, pdf }) {
     const ref = useRef(null);
     const [busy, setBusy] = useState('');
     const run = async (kind) => {
@@ -145,7 +145,7 @@ export function ExportArea({ name = 'Report', children, style }) {
         <div style={style}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginBottom: 8 }} data-export-bar>
                 <button type="button" className="btn btn-ghost btn-sm" disabled={!!busy} onClick={() => run('xlsx')}>{busy === 'xlsx' ? '…' : 'Excel'}</button>
-                <button type="button" className="btn btn-ghost btn-sm" disabled={!!busy} onClick={() => run('pdf')}>{busy === 'pdf' ? '…' : 'PDF'}</button>
+                <button type="button" className="btn btn-ghost btn-sm" disabled={!!busy} onClick={() => (pdf ? pdf() : run('pdf'))}>{busy === 'pdf' ? '…' : 'PDF'}</button>
             </div>
             <div ref={ref}>{children}</div>
         </div>

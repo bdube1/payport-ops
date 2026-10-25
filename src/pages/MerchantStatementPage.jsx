@@ -79,9 +79,6 @@ export default function MerchantStatementPage() {
                         <FileText size={22} /> Merchant Statement
                     </h1>
                 </div>
-                <button onClick={exportCsv} disabled={!transactions || transactions.length === 0} className="btn btn-primary">
-                    <Download size={14} /> Export CSV
-                </button>
             </div>
 
             <div className="card" style={{ padding: 20, marginBottom: 20, display: 'flex', gap: 16, alignItems: 'flex-end', flexWrap: 'wrap' }}>

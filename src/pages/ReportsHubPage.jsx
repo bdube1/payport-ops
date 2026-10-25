@@ -15,7 +15,9 @@ const STANDARD = [
 ];
 const MORE = [
     { icon: Percent, color: '#16A34A', title: 'Commission Report', sub: 'Commission earned by merchant', to: '/reports/commission' },
-    { icon: WalletCards, color: '#1D6FE8', title: 'Wallet Report', sub: 'Wallet operations by customer', to: '/customer-wallets/report' },
+    { icon: WalletCards, color: '#1D6FE8', title: 'Wallet Statement', sub: 'One wallet with its running balance', to: '/customer-wallets/statement' },
+    { icon: WalletCards, color: '#16A34A', title: 'Wallet Balances', sub: 'Every wallet holder by balance', to: '/customer-wallets/balances' },
+    { icon: WalletCards, color: '#7C5CFA', title: 'Wallet Report', sub: 'Wallet operations by customer', to: '/customer-wallets/report' },
     { icon: UserCircle, color: '#0EA5E9', title: 'Customer Statement', sub: 'One customer’s transactions', to: '/statement' },
     { icon: Hash, color: '#7C5CFA', title: 'Merchant Code Report', sub: 'Payments by merchant code', to: '/merchants/codes' },
     { icon: HandCoins, color: '#E8930C', title: 'Agent Code Report', sub: 'Cash-in and cash-out by agent code', to: '/agents/codes' },
