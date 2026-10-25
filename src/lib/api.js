@@ -28,7 +28,7 @@ const redirectToLogin = () => {
     localStorage.removeItem('ops_user');
 
     // Redirect to ops login page
-    window.location.href = '/ops/login';
+    window.location.href = '/login?timeout=1';
 };
 
 api.interceptors.request.use(config => {
