@@ -30,6 +30,7 @@ function BundleManager() {
     const { dark } = useTheme();
 
     const [provider, setProvider] = useState('ECONET');
+    const [currency, setCurrency] = useState('USD');
     const [bundles, setBundles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [uploadDialog, setUploadDialog] = useState(false);
@@ -60,12 +61,13 @@ function BundleManager() {
     useEffect(() => {
         fetchBundles();
         fetchCategories();
-    }, [provider]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [provider, currency]);
 
     const fetchBundles = async () => {
         setLoading(true);
         try {
-            const response = await api.get(`/bundles/${provider}?currency=USD`);
+            const response = await api.get(`/bundles/admin/${provider}/all?currency=${currency}`);
             setBundles(response.data || []);
         } catch (error) {
             showSnackbar('Failed to load bundles', 'error');
@@ -342,6 +344,13 @@ function BundleManager() {
                         <MenuItem value="ECONET">Econet Wireless</MenuItem>
                         <MenuItem value="NETONE">NetOne</MenuItem>
                         <MenuItem value="TELECEL">Telecel</MenuItem>
+                    </Select>
+                </FormControl>
+                <FormControl sx={{ minWidth: 140, ml: 2 }}>
+                    <InputLabel sx={{ color: mutedColor }}>Currency</InputLabel>
+                    <Select value={currency} label="Currency" onChange={(e) => setCurrency(e.target.value)} sx={{ color: textColor }}>
+                        <MenuItem value="USD">USD</MenuItem>
+                        <MenuItem value="ZWG">ZWG</MenuItem>
                     </Select>
                 </FormControl>
             </Paper>

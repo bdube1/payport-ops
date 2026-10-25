@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { RefreshCw, AlertTriangle, CheckCircle, Settings, Wallet, Zap, X, Clock } from 'lucide-react';
 import { getSingleWalletBalance, getVendorBalance, opsExtraApi } from '../lib/api';
+import NetOneTools from '../components/NetOneTools';
 
 const PROVIDERS = [
-    { code: 'NETONE_USD', name: 'NetOne', currency: 'USD', symbol: '$', color: '#e53e3e', endpoint: 'Airtime Providers' },
+    { code: 'NETONE_USD', name: 'NetOne (USD)', currency: 'USD', symbol: '$', color: '#e53e3e', endpoint: 'Airtime Providers' },
+    { code: 'NETONE_ZWG', name: 'NetOne (ZWG)', currency: 'ZWG', symbol: 'ZWG', color: '#e53e3e', endpoint: 'Airtime Providers' },
     { code: 'ECONET_USD', name: 'Econet Wireless (USD)', currency: 'USD', symbol: '$', color: '#34AD54', endpoint: 'Airtime Providers' },
     { code: 'ECONET_ZWG', name: 'Econet Wireless (ZWG)', currency: 'ZWG', symbol: 'ZWG', color: '#34AD54', endpoint: 'Airtime Providers' },
     { code: 'TELECEL_USD', name: 'Telecel Zimbabwe (USD)', currency: 'USD', symbol: '$', color: '#f59e0b', endpoint: 'Airtime Providers' },
@@ -296,6 +298,24 @@ export default function WalletBalancePage() {
             )}
 
             {/* Airtime Providers Section Header */}
+            {/* Totals by currency */}
+            <div className="op-kpis" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', marginBottom: 22 }}>
+                {['USD', 'ZWG'].map(ccy => {
+                    const acc = [...PROVIDERS.filter(p => p.currency === ccy).map(p => [p.code, getBalance(p.code), thresholds[p.code]]),
+                        ...ESOLUTIONS_WALLETS.filter(w => w.currency === ccy).map(w => [w.code, getEsolutionsBalance(w.code), esolutionsThresholds[w.code]])];
+                    const known = acc.filter(([, b]) => typeof b === 'number');
+                    const low = acc.filter(([, b, t]) => typeof b === 'number' && t && b < t).length;
+                    const total = known.reduce((x, [, b]) => x + b, 0);
+                    return (
+                        <div key={ccy} className="card op-kpi">
+                            <div className="op-kpi-label">{ccy} float · {known.length} of {acc.length} accounts</div>
+                            <div className="op-kpi-value">{ccy === 'USD' ? '$' : 'ZWG '}{total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                            <div style={{ fontSize: 12.5, fontWeight: 600, color: low ? 'var(--pill-red)' : 'var(--pill-green)', marginTop: 4 }}>{low ? `${low} below minimum` : 'All above minimum'}</div>
+                        </div>
+                    );
+                })}
+            </div>
+
             <div style={{ marginBottom: 20 }}>
                 <h2 style={{ fontSize: 18, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <Zap size={20} color="var(--green)" />
@@ -554,18 +574,7 @@ export default function WalletBalancePage() {
                 })}
             </div>
 
-            {/* Instructions */}
-            <div style={{ marginTop: 32, background: 'var(--bg-card)', borderRadius: 14, padding: '20px 24px', border: '1px solid var(--border)' }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: 'var(--blue)' }}>ℹ️ About Float Monitoring</h3>
-                <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.7 }}>
-                    This page checks your live wallet/float balance with each provider. Set minimum thresholds for each wallet — when the balance drops below that level, you'll see an orange alert. Click "Refresh" to get the latest balances, or they auto-refresh every 60 seconds.
-                </p>
-                <ul style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.7, marginTop: 8, paddingLeft: 20 }}>
-                    <li><strong>Airtime Providers</strong> - NetOne (Connected), Econet &amp; Telecel (Pending)</li>
-                    <li><strong>eSolutions USD Wallet</strong> - Bill payments in US Dollars (ZESA, DStv, TelOne, etc.)</li>
-                    <li><strong>eSolutions ZWG Wallet</strong> - Bill payments in Zimbabwe Gold (ZESA only)</li>
-                </ul>
-            </div>
+            <div style={{ marginTop: 24 }}><NetOneTools /></div>
         </div>
     );
 }

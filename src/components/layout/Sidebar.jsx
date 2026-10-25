@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronDown, LogOut, Moon } from 'lucide-react';
+import { ChevronDown, LogOut } from 'lucide-react';
 import { useAuth } from '../../lib/auth.jsx';
-import { useTheme } from '../../lib/theme.jsx';
 import { canAccess } from '../../lib/permissions';
 import { TOP, GROUPS } from '../../lib/nav';
 
@@ -20,7 +19,6 @@ const groupOf = (path) => GROUPS.find(g => g.items.some(i => path === i.to || pa
 
 export default function Sidebar({ open, onNavigate }) {
     const { user, logout } = useAuth();
-    const { dark, toggle } = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
     const [expanded, setExpanded] = useState(() => groupOf(location.pathname));
@@ -58,10 +56,6 @@ export default function Sidebar({ open, onNavigate }) {
                 })}
             </nav>
             <div className="op-side-foot">
-                <button className="op-link" onClick={toggle}>
-                    <Moon size={17} strokeWidth={1.9} /><span>Dark Mode</span>
-                    <span className={`op-switch${dark ? ' on' : ''}`} />
-                </button>
                 <button className="op-link" onClick={() => { logout(); navigate('/login', { replace: true }); }}>
                     <LogOut size={17} strokeWidth={1.9} /><span>Sign Out</span>
                 </button>

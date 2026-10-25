@@ -1,3 +1,4 @@
+import ConnectivityCheck from '../../components/ConnectivityCheck';
 import { integrationsApi } from '../../lib/api';
 import { Page, Section, Table, Notice, useLoad, Badge, Act, FormButton } from '../../components/kit';
 
@@ -31,6 +32,7 @@ export default function IntegrationsPage() {
                         </div>) },
                 ]} />
             </Section>
+            <ConnectivityCheck />
         </Page>
     );
 }
