@@ -59,7 +59,7 @@ export default function AttentionQueuePage() {
   })
 
   return (
-    <div style={{ padding: 28 }}>
+    <div className="op-page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

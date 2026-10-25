@@ -492,7 +492,7 @@ export default function ProductsPage() {
     )
 
     return (
-        <div style={{ padding: 28, maxWidth: 1100 }}>
+        <div className="op-page">
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
                 <div>

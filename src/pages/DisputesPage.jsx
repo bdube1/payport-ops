@@ -131,7 +131,7 @@ export default function DisputesPage() {
     useEffect(load, []);
 
     return (
-        <div style={{ padding: 32 }}>
+        <div className="op-page">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
                 <div>
                     <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>

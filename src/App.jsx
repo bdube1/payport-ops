@@ -7,6 +7,11 @@ import { useAuth } from './lib/auth.jsx';
 import { canAccess, homeFor } from './lib/permissions';
 import { buildMuiTheme } from './lib/muiTheme';
 import Sidebar from './components/layout/Sidebar';
+import Topbar from './components/layout/Topbar';
+import { titleFor } from './lib/nav';
+import RolesPage from './pages/RolesPage';
+import ReportsHubPage from './pages/ReportsHubPage';
+import ProviderStatusPage from './pages/ProviderStatusPage';
 import LoginPage from './pages/LoginPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import DashboardPage from './pages/DashboardPage';
@@ -64,7 +69,28 @@ import AuthoritiesAdminPage from './pages/compliance/AuthoritiesAdminPage';
 
 function HomeRedirect() {
     const { user } = useAuth();
-    return <Navigate to={homeFor(user?.role)} replace />;
+    return <Navigate to={homeFor(user)} replace />;
+}
+
+function Shell({ children }) {
+    const location = useLocation();
+    const [open, setOpen] = React.useState(false);
+    React.useEffect(() => {
+        const t = titleFor(location.pathname);
+        document.title = t ? `${t} · Payport Ops` : 'Payport Ops';
+        setOpen(false);
+        window.scrollTo(0, 0);
+    }, [location.pathname]);
+    return (
+        <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+            <Sidebar open={open} onNavigate={() => setOpen(false)} />
+            {open && <div className="op-drawer-back" style={{ zIndex: 90 }} onClick={() => setOpen(false)} />}
+            <main className="op-main" id="main-content">
+                <Topbar onMenu={() => setOpen(o => !o)} />
+                <div className="op-content" key={location.pathname}>{children}</div>
+            </main>
+        </div>
+    );
 }
 
 function PrivateRoute({ children }) {
@@ -80,8 +106,8 @@ function PrivateRoute({ children }) {
     //    infinite loop (a blank white screen, not an error).
     // 2. If role data is missing/unrecognized, fail OPEN, not closed. A bug
     //    in how the role got read should never mean nobody can use the app.
-    const home = homeFor(user.role);
-    if (user.role && !canAccess(user.role, location.pathname) && location.pathname !== home) {
+    const home = homeFor(user);
+    if (!canAccess(user, location.pathname) && location.pathname !== home) {
         return <Navigate to={home} replace />;
     }
     return children;
@@ -113,13 +139,7 @@ export default function App() {
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/*" element={
                     <PrivateRoute>
-                        <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
-                            <Sidebar />
-                            <main style={{
-                                flex: 1, marginLeft: 240, minHeight: '100vh',
-                                background: 'var(--bg)', overflow: 'auto',
-                                transition: 'margin-left 0.3s',
-                            }} id="main-content">
+                        <Shell>
                                 <Routes>
                                     <Route path="/" element={<HomeRedirect />} />
                                     <Route path="/dashboard" element={<DashboardPage />} />
@@ -178,9 +198,12 @@ export default function App() {
                                     <Route path="/compliance/screening" element={<ScreeningPage />} />
                                     <Route path="/compliance/reports" element={<ReportsPage />} />
                                     <Route path="/compliance/audit" element={<AuditPage />} />
+                                    <Route path="/roles" element={<RolesPage />} />
+                                    <Route path="/reports" element={<ReportsHubPage />} />
+                                    <Route path="/provider-status" element={<ProviderStatusPage />} />
+                                    <Route path="*" element={<HomeRedirect />} />
                                 </Routes>
-                            </main>
-                        </div>
+                        </Shell>
                     </PrivateRoute>
                 } />
             </Routes>

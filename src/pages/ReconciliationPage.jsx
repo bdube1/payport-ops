@@ -149,7 +149,7 @@ export default function ReconciliationPage() {
     };
 
     return (
-        <div style={{ padding: 32 }}>
+        <div className="op-page">
             <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 800 }}>
                 <ShieldCheck size={22} /> Reconciliation
             </h1>

@@ -180,7 +180,7 @@ export default function StatementReconciliationPage() {
     };
 
     return (
-        <div style={{ padding: 28 }}>
+        <div className="op-page">
             <h1 style={{ fontSize: 20, fontWeight: 800, marginBottom: 4 }}>Statement Reconciliation</h1>
             <p style={{ fontSize: 13, color: 'var(--text-2)', marginBottom: 24 }}>
                 Upload a provider's own statement and see exactly where it agrees or disagrees with Payport's records.

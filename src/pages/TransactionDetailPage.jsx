@@ -92,7 +92,7 @@ export default function TransactionDetailPage() {
     )
 
     if (!txn) return (
-        <div style={{ padding: 28 }}>
+        <div className="op-page">
             <p style={{ color: 'var(--text-2)' }}>Transaction not found: {ref}</p>
         </div>
     )
@@ -122,7 +122,7 @@ export default function TransactionDetailPage() {
                 <Clock size={18} color="var(--text-2)" />
 
     return (
-        <div style={{ padding: 28 }}>
+        <div className="op-page">
             {/* Back */}
             <Link to="/transactions" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--text-2)', fontSize: 13, marginBottom: 20, transition: 'color 0.15s' }}
                   onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'}

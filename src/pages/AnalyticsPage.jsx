@@ -436,7 +436,7 @@ export default function AnalyticsPage() {
     )
 
     return (
-        <div style={{ padding: 28 }}>
+        <div className="op-page">
             {/* Header with refresh indicator */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
                 <div>

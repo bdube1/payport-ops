@@ -113,7 +113,7 @@ export default function ConfigPage() {
   if (loading) return <div style={{ padding: 60, display: 'flex', justifyContent: 'center' }}><div className="spinner" /></div>;
 
   return (
-    <div style={{ padding: 28, maxWidth: 1100 }}>
+    <div className="op-page">
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 22, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Settings size={22} /> System Configuration

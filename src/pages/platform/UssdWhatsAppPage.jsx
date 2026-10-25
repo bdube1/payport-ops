@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ussdAdminApi, whatsappAdminApi, platformControlsApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth.jsx';
+import TestPhone from '../../components/TestPhone';
 import { Page, Section, Table, Notice, useLoad, Badge, FormButton, Act, KeyValues, ShowOnce, show } from '../../components/kit';
 
 const API_BASE = (import.meta.env.VITE_API_URL || 'https://api.payport.africa').replace(/\/$/, '');
@@ -123,6 +124,7 @@ export default function UssdWhatsAppPage() {
             <ChannelSwitches role={role} />
             <Networks role={role} onSecret={setSecret} />
             <WhatsApp role={role} />
+            {['ADMIN', 'OPS'].includes(role) && <TestPhone />}
             {secret && <ShowOnce {...secret} onClose={() => setSecret(null)} />}
         </Page>
     );

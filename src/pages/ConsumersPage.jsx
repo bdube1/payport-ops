@@ -103,11 +103,11 @@ export default function ConsumersPage() {
     const filtered = consumers.filter(u => {
         if (!search.trim()) return true;
         const q = search.toLowerCase();
-        return u.fullName?.toLowerCase().includes(q) || u.phone?.includes(q);
+        return u.fullName?.toLowerCase().includes(q) || u.phone?.includes(q) || (u.idNumber || '').toLowerCase().includes(q);
     });
 
     return (
-        <div style={{ padding: 28, maxWidth: 1100 }}>
+        <div className="op-page">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
                 <div>
                     <h1 style={{ fontSize: 22, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -119,7 +119,7 @@ export default function ConsumersPage() {
             </div>
 
             <input
-                value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name or phone…"
+                value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, phone or ID number…"
                 style={{ width: '100%', maxWidth: 340, marginBottom: 20 }}
             />
 
@@ -129,7 +129,7 @@ export default function ConsumersPage() {
                 <div className="card" style={{ overflow: 'hidden' }}>
                     <ExportArea name="Consumers"><table>
                         <thead>
-                            <tr><th>Name</th><th>Phone</th><th>Status</th><th>Verified</th><th>Last Login</th><th>Registered</th><th>Actions</th></tr>
+                            <tr><th>Name</th><th>Phone</th><th>ID Number</th><th>Status</th><th>Verified</th><th>Last Login</th><th>Registered</th><th>Actions</th></tr>
                         </thead>
                         <tbody>
                             {filtered.map(u => (
@@ -143,6 +143,7 @@ export default function ConsumersPage() {
                                         </div>
                                     </td>
                                     <td style={{ fontFamily: 'monospace', fontSize: 12 }}>{u.phone}</td>
+                                    <td style={{ fontFamily: 'monospace', fontSize: 12 }}>{u.idNumber || '—'}</td>
                                     <td>
                                         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                                             <span className={`badge ${u.isActive ? 'badge-green' : 'badge-red'}`}>{u.isActive ? 'Active' : 'Inactive'}</span>

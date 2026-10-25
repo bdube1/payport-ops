@@ -63,7 +63,7 @@ export default function LogsPage() {
   }, [notifLogs, search]);
 
   return (
-    <div style={{ padding: 28 }}>
+    <div className="op-page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 10 }}>

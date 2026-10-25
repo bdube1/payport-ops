@@ -207,6 +207,8 @@ export default function StatementPage() {
           <div class="statement-info">
             <h2>Customer Statement</h2>
             <p><strong>Account:</strong> ${data.phone}</p>
+            ${data.customerName ? `<p><strong>Customer:</strong> ${data.customerName}</p>` : ''}
+            ${data.idNumber ? `<p><strong>ID number:</strong> ${data.idNumber}</p>` : ''}
             <p><strong>Generated:</strong> ${generationDate}</p>
             ${dateFrom || dateTo ? `<p><strong>Period:</strong> ${dateFrom || 'All time'} — ${dateTo || 'Present'}</p>` : '<p><strong>Period:</strong> All transactions</p>'}
           </div>
@@ -277,7 +279,7 @@ export default function StatementPage() {
     };
 
     return (
-        <div style={{ padding: 28, maxWidth: 1200 }}>
+        <div className="op-page">
             <div style={{ marginBottom: 28 }}>
                 <h1 style={{ fontSize: 22, fontWeight: 800 }}>Customer Statements</h1>
             </div>
@@ -313,6 +315,13 @@ export default function StatementPage() {
 
             {data && (
                 <>
+                    {(data.customerName || data.idNumber) && (
+                        <div className="card" style={{ marginBottom: 16, display: 'flex', gap: 28, flexWrap: 'wrap', fontSize: 13 }}>
+                            <div><div style={{ color: 'var(--text-2)', fontSize: 12 }}>Customer</div><b>{data.customerName || '—'}</b></div>
+                            <div><div style={{ color: 'var(--text-2)', fontSize: 12 }}>Phone</div><b>{data.phone}</b></div>
+                            <div><div style={{ color: 'var(--text-2)', fontSize: 12 }}>ID number</div><b className="mono">{data.idNumber || '—'}</b></div>
+                        </div>
+                    )}
                     {/* Summary by Currency */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, marginBottom: 24 }}>
                         {[
