@@ -1102,6 +1102,11 @@
    "access": null
   },
   {
+   "method": "PUT",
+   "path": "/api/v1/admin/session-timeouts",
+   "access": null
+  },
+  {
    "method": "GET",
    "path": "/api/v1/admin/settlements",
    "access": null
@@ -2029,6 +2034,11 @@
   {
    "method": "POST",
    "path": "/api/v1/qr/resolve",
+   "access": null
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/session-timeouts",
    "access": null
   },
   {

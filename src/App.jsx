@@ -7,6 +7,8 @@ import { canAccess, homeFor } from './lib/permissions';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
 import { titleFor } from './lib/nav';
+import { useIdleLogout } from './lib/idle';
+const SessionTimeoutsPage = React.lazy(() => import('./pages/platform/SessionTimeoutsPage'));
 const RolesPage = React.lazy(() => import('./pages/RolesPage'));
 const ReportsHubPage = React.lazy(() => import('./pages/ReportsHubPage'));
 const ProviderStatusPage = React.lazy(() => import('./pages/ProviderStatusPage'));
@@ -114,7 +116,12 @@ function PrivateRoute({ children }) {
 }
 
 export default function App() {
-    const { dark } = useTheme();
+    const { user, logout } = useAuth();
+    // Signed out after the ops time-out without activity (Platform Setup → Session Timeouts).
+    useIdleLogout(user ? localStorage.getItem('ops_token') : null, 'ops', () => {
+        logout();
+        window.location.href = '/login?timeout=1';
+    });
 
     return (
         <>
@@ -200,6 +207,7 @@ export default function App() {
                                     <Route path="/compliance/reports" element={<ReportsPage />} />
                                     <Route path="/compliance/audit" element={<AuditPage />} />
                                     <Route path="/roles" element={<RolesPage />} />
+                                    <Route path="/session-timeouts" element={<SessionTimeoutsPage />} />
                                     <Route path="/reports" element={<ReportsHubPage />} />
                                     <Route path="/provider-status" element={<ProviderStatusPage />} />
                                     <Route path="*" element={<HomeRedirect />} />
