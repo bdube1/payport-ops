@@ -1,43 +1,15 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Activity, CheckCircle2, Clock, AlertTriangle, XCircle, DollarSign, RefreshCw, ArrowUpRight, ArrowDownRight, ChevronRight } from 'lucide-react';
-import { getDashboardKpis, getAttentionQueue, getProviderHealth, searchTransactions, formatDate, STATUS_CONFIG } from '../lib/api';
+import { api, getDashboardKpis, getProviderHealth } from '../lib/api';
 import { Sparkline, LineChart, Legend } from '../components/charts';
 import { ProviderRow } from './ProviderStatusPage';
 
-const PENDING = ['INITIATED', 'PAYMENT_PENDING', 'PAYMENT_CONFIRMED', 'FULFILMENT_PENDING', 'FULFILMENT_RETRY'];
-const FAILED = ['PAYMENT_FAILED', 'FULFILMENT_FAILED', 'PAYMENT_TIMEOUT'];
-const ATTENTION = ['FULFILMENT_FAILED', 'MANUAL_FULFILMENT', 'REFUND_PENDING', 'FULFILMENT_RETRY'];
-
-const iso = (d) => {
-    const p = (n) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
-};
-const toDate = (v) => (Array.isArray(v) ? new Date(v[0], v[1] - 1, v[2], v[3] || 0, v[4] || 0, v[5] || 0) : new Date(String(v || '').replace(' ', 'T')));
 const money = (cents, ccy = 'USD') => {
     const n = (Number(cents || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     return ccy === 'USD' ? `$ ${n}` : `${ccy === 'ZWL' ? 'ZWG' : ccy} ${n}`;
 };
-
-async function dayOf(from, to) {
-    try {
-        const r = await searchTransactions({ dateFrom: iso(from), dateTo: iso(to), size: 1000, page: 0 });
-        const d = r.data?.data || r.data || {};
-        const rows = d.content || [];
-        return { rows, total: Number(d.totalElements ?? rows.length), complete: Number(d.totalElements ?? rows.length) <= rows.length };
-    } catch { return { rows: [], total: 0, complete: false }; }
-}
-
-/** Hourly buckets 00:00 … now. */
-function buckets(rows, hours, pick) {
-    const out = new Array(hours).fill(0);
-    for (const t of rows) {
-        const at = toDate(t.createdAt || t.initiatedAt);
-        const h = at.getHours();
-        if (h < hours) out[h] += pick(t);
-    }
-    return out;
-}
+const sum = (a) => (a || []).reduce((x, y) => x + Number(y || 0), 0);
 const cumulative = (a) => a.reduce((acc, v, i) => (acc.push((acc[i - 1] || 0) + v), acc), []);
 
 function Trend({ now, before }) {
@@ -54,12 +26,8 @@ function Trend({ now, before }) {
 
 export default function DashboardPage() {
     const [kpis, setKpis] = useState(null);
-    const [queue, setQueue] = useState([]);
     const [providers, setProviders] = useState([]);
-    const [todayDay, setToday] = useState({ rows: [], total: 0, complete: false });
-    const [yesterdayDay, setYesterday] = useState({ rows: [], total: 0, complete: false });
-    const today = todayDay.rows;
-    const yesterday = yesterdayDay.rows;
+    const [volume, setVolume] = useState(null);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState('');
@@ -68,22 +36,15 @@ export default function DashboardPage() {
     const load = useCallback(async (silent = false) => {
         if (silent) setRefreshing(true);
         setError('');
-        const now = new Date();
-        const start = new Date(now); start.setHours(0, 0, 0, 0);
-        const yStart = new Date(start); yStart.setDate(yStart.getDate() - 1);
-        const yNow = new Date(now); yNow.setDate(yNow.getDate() - 1);
         try {
-            const [k, q, h, t, y] = await Promise.all([
-                getDashboardKpis(), getAttentionQueue().catch(() => ({ data: [] })), getProviderHealth().catch(() => ({ data: [] })),
-                dayOf(start, now), dayOf(yStart, yNow),
+            // Three small answers: the counts, the hourly volume (grouped by the database) and provider health.
+            const [k, v, h] = await Promise.all([
+                getDashboardKpis(), api.get('/admin/dashboard/volume').catch(() => null), getProviderHealth().catch(() => ({ data: [] })),
             ]);
             setKpis(k.data?.data || k.data || {});
-            const qd = q.data?.data || q.data || [];
-            setQueue(Array.isArray(qd) ? qd : []);
+            setVolume(v ? (v.data?.data || v.data) : null);
             const hd = h.data?.data || h.data || [];
             setProviders(Array.isArray(hd) ? hd : []);
-            setToday(t);
-            setYesterday(y);
             setLastRefresh(new Date());
         } catch {
             setError('Could not load the dashboard.');
@@ -99,19 +60,18 @@ export default function DashboardPage() {
         return () => clearInterval(t);
     }, [load]);
 
-    const hours = new Date().getHours() + 1;
+    const hours = volume?.hours || new Date().getHours() + 1;
     const labels = Array.from({ length: hours }, (_, i) => `${String(i).padStart(2, '0')}:00`);
-    const series = useMemo(() => ({
-        all: buckets(today, hours, () => 1),
-        completed: buckets(today, hours, t => (t.status === 'COMPLETED' ? 1 : 0)),
-        pending: buckets(today, hours, t => (PENDING.includes(t.status) ? 1 : 0)),
-        failed: buckets(today, hours, t => (FAILED.includes(t.status) ? 1 : 0)),
-        attention: buckets(today, hours, t => (ATTENTION.includes(t.status) ? 1 : 0)),
-        revenue: buckets(today, hours, t => (t.status === 'COMPLETED' && (t.currency || 'USD') === 'USD' ? Number(t.amountCents || 0) : 0)),
-    }), [today, hours]);
-    // Against the same time yesterday: only when both days were read in full (otherwise the counts are partial).
-    const both = todayDay.complete && yesterdayDay.complete;
-    const cmp = (f) => (both ? { now: today.filter(f).length, before: yesterday.filter(f).length } : null);
+    const zero = new Array(hours).fill(0);
+    const series = useMemo(() => {
+        const t = volume?.today || {};
+        return { all: t.all || zero, completed: t.completed || zero, pending: t.pending || zero, failed: t.failed || zero,
+            attention: t.attention || zero, revenue: t.revenueUsd || zero };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [volume, hours]);
+    // Against the same time yesterday (counted by the database).
+    const y = volume?.yesterdaySoFar;
+    const cmp = (now, key) => (y && y[key] ? { now, before: y[key] } : null);
     const n = (v) => (v === null || v === undefined ? '—' : Number(v).toLocaleString('en-US'));
 
     const revenue = kpis?.revenueByCurrency || {};
@@ -119,13 +79,13 @@ export default function DashboardPage() {
 
     const cards = [
         { label: 'Total Today', value: n(kpis?.totalTransactionsToday), color: '#1D6FE8', icon: Activity, spark: cumulative(series.all),
-          trend: yesterdayDay.total ? { now: todayDay.total, before: yesterdayDay.total } : null },
-        { label: 'Completed', value: n(kpis?.completedToday), color: '#16A34A', icon: CheckCircle2, spark: cumulative(series.completed), trend: cmp(t => t.status === 'COMPLETED') },
-        { label: 'Pending Payment', value: n(kpis?.pendingPayment), color: '#E8930C', icon: Clock, spark: series.pending, trend: cmp(t => PENDING.includes(t.status)) },
+          trend: cmp(sum(series.all), 'all') },
+        { label: 'Completed', value: n(kpis?.completedToday), color: '#16A34A', icon: CheckCircle2, spark: cumulative(series.completed), trend: cmp(sum(series.completed), 'completed') },
+        { label: 'Pending Payment', value: n(kpis?.pendingPayment), color: '#E8930C', icon: Clock, spark: series.pending, trend: cmp(sum(series.pending), 'pending') },
         { label: 'Need Attention', value: n(kpis?.needAttention), color: '#E5484D', icon: AlertTriangle, spark: series.attention, trend: null, to: '/attention' },
-        { label: 'Failed', value: n(kpis?.failedToday), color: '#E5484D', icon: XCircle, spark: cumulative(series.failed), trend: cmp(t => FAILED.includes(t.status)) },
+        { label: 'Failed', value: n(kpis?.failedToday), color: '#E5484D', icon: XCircle, spark: cumulative(series.failed), trend: cmp(sum(series.failed), 'failed') },
         { label: 'Revenue Today', value: money(revenue.USD || 0), color: '#7C5CFA', icon: DollarSign, spark: cumulative(series.revenue),
-          trend: both ? { now: today.filter(t => t.status === 'COMPLETED').reduce((a, t) => a + Number(t.amountCents || 0), 0), before: yesterday.filter(t => t.status === 'COMPLETED').reduce((a, t) => a + Number(t.amountCents || 0), 0) } : null,
+          trend: cmp(sum(series.revenue), 'revenueUsd'),
           extra: otherRevenue.map(([c, v]) => money(v, c)).join(' · ') },
     ];
 

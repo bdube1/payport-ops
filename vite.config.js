@@ -9,6 +9,17 @@ import react from '@vitejs/plugin-react'
 // gateway this app talks to, .env.development.local is the file to edit.
 export default defineConfig(() => ({
   plugins: [react()],
+  build: {
+    // Pages load on demand; the libraries every page needs are cached once in their own files.
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          icons: ['lucide-react'],
+        },
+      },
+    },
+  },
   server: {
     port: 3001,
   },

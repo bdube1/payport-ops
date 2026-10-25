@@ -1,73 +1,71 @@
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { ThemeProvider as MuiThemeProvider } from '@mui/material';
 import { useTheme } from './lib/theme.jsx';
 import { useAuth } from './lib/auth.jsx';
 import { canAccess, homeFor } from './lib/permissions';
-import { buildMuiTheme } from './lib/muiTheme';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
 import { titleFor } from './lib/nav';
-import RolesPage from './pages/RolesPage';
-import ReportsHubPage from './pages/ReportsHubPage';
-import ProviderStatusPage from './pages/ProviderStatusPage';
+const RolesPage = React.lazy(() => import('./pages/RolesPage'));
+const ReportsHubPage = React.lazy(() => import('./pages/ReportsHubPage'));
+const ProviderStatusPage = React.lazy(() => import('./pages/ProviderStatusPage'));
 import LoginPage from './pages/LoginPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
-import DashboardPage from './pages/DashboardPage';
-import TransactionsPage from './pages/TransactionsPage';
-import TransactionDetailPage from './pages/TransactionDetailPage';
-import AttentionQueuePage from './pages/AttentionQueuePage';
-import ProductsPage from './pages/ProductsPage';
-import AnalyticsPage from './pages/AnalyticsPage';
-import WalletBalancePage from './pages/WalletBalancePage';
-import ConfigPage from './pages/ConfigPage';
-import UsersPage from './pages/UsersPage';
-import MerchantsPage from './pages/MerchantsPage';
-import SettlementsPage from './pages/SettlementsPage';
-import DisputesPage from './pages/DisputesPage';
-import ReconciliationPage from './pages/ReconciliationPage';
-import StatementReconciliationPage from './pages/StatementReconciliationPage';
-import QueriesPage from './pages/QueriesPage';
-import MerchantsDashboardPage from './pages/MerchantsDashboardPage';
-import ConsumersDashboardPage from './pages/ConsumersDashboardPage';
-import ConsumersPage from './pages/ConsumersPage';
-import MerchantStatementPage from './pages/MerchantStatementPage';
-import ConsolidatedReportPage from './pages/ConsolidatedReportPage';
-import CommissionReportPage from './pages/CommissionReportPage';
-import AccountPage from './pages/AccountPage';
-import LogsPage from './pages/LogsPage';
-import StatementPage from './pages/StatementPage';
+const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
+const TransactionsPage = React.lazy(() => import('./pages/TransactionsPage'));
+const TransactionDetailPage = React.lazy(() => import('./pages/TransactionDetailPage'));
+const AttentionQueuePage = React.lazy(() => import('./pages/AttentionQueuePage'));
+const ProductsPage = React.lazy(() => import('./pages/ProductsPage'));
+const AnalyticsPage = React.lazy(() => import('./pages/AnalyticsPage'));
+const WalletBalancePage = React.lazy(() => import('./pages/WalletBalancePage'));
+const ConfigPage = React.lazy(() => import('./pages/ConfigPage'));
+const UsersPage = React.lazy(() => import('./pages/UsersPage'));
+const MerchantsPage = React.lazy(() => import('./pages/MerchantsPage'));
+const SettlementsPage = React.lazy(() => import('./pages/SettlementsPage'));
+const DisputesPage = React.lazy(() => import('./pages/DisputesPage'));
+const ReconciliationPage = React.lazy(() => import('./pages/ReconciliationPage'));
+const StatementReconciliationPage = React.lazy(() => import('./pages/StatementReconciliationPage'));
+const QueriesPage = React.lazy(() => import('./pages/QueriesPage'));
+const MerchantsDashboardPage = React.lazy(() => import('./pages/MerchantsDashboardPage'));
+const ConsumersDashboardPage = React.lazy(() => import('./pages/ConsumersDashboardPage'));
+const ConsumersPage = React.lazy(() => import('./pages/ConsumersPage'));
+const MerchantStatementPage = React.lazy(() => import('./pages/MerchantStatementPage'));
+const ConsolidatedReportPage = React.lazy(() => import('./pages/ConsolidatedReportPage'));
+const CommissionReportPage = React.lazy(() => import('./pages/CommissionReportPage'));
+const AccountPage = React.lazy(() => import('./pages/AccountPage'));
+const LogsPage = React.lazy(() => import('./pages/LogsPage'));
+const StatementPage = React.lazy(() => import('./pages/StatementPage'));
 // NEW: Import Bundle Manager Page
-import BundleManagerPage from './pages/BundleManagerPage';
-import WorkQueuesPage from './pages/platform/WorkQueuesPage';
-import KybPage from './pages/platform/KybPage';
-import DestinationsPage from './pages/platform/DestinationsPage';
-import SettlementBatchesPage from './pages/platform/SettlementBatchesPage';
-import ReconExceptionsPage from './pages/platform/ReconExceptionsPage';
-import BankMessagesPage from './pages/platform/BankMessagesPage';
-import IntegrationsPage from './pages/platform/IntegrationsPage';
-import ProviderToolsPage from './pages/platform/ProviderToolsPage';
-import MarketsPage from './pages/platform/MarketsPage';
-import CustomerWalletsPage from './pages/platform/CustomerWalletsPage';
-import AgentsPage from './pages/platform/AgentsPage';
-import PosTerminalsPage from './pages/platform/PosTerminalsPage';
-import UssdWhatsAppPage from './pages/platform/UssdWhatsAppPage';
-import ProviderSettlementRulesPage from './pages/platform/ProviderSettlementRulesPage';
-import LedgerPage from './pages/platform/LedgerPage';
-import ChannelsProductsPage from './pages/platform/ChannelsProductsPage';
-import PartyRulesPage from './pages/platform/PartyRulesPage';
-import WalletReportPage from './pages/platform/WalletReportPage';
-import CardsPage from './pages/platform/CardsPage';
-import WalletStatementPage from './pages/platform/WalletStatementPage';
-import WalletBalancesPage from './pages/platform/WalletBalancesPage';
-import CodesPage from './pages/platform/CodesPage';
-import CasesPage from './pages/compliance/CasesPage';
-import RulesPage from './pages/compliance/RulesPage';
-import ScreeningPage from './pages/compliance/ScreeningPage';
-import ReportsPage from './pages/compliance/ReportsPage';
-import AuditPage from './pages/compliance/AuditPage';
-import AuthoritiesAdminPage from './pages/compliance/AuthoritiesAdminPage';
+const BundleManagerPage = React.lazy(() => import('./pages/BundleManagerPage'));
+const WorkQueuesPage = React.lazy(() => import('./pages/platform/WorkQueuesPage'));
+const KybPage = React.lazy(() => import('./pages/platform/KybPage'));
+const DestinationsPage = React.lazy(() => import('./pages/platform/DestinationsPage'));
+const SettlementBatchesPage = React.lazy(() => import('./pages/platform/SettlementBatchesPage'));
+const ReconExceptionsPage = React.lazy(() => import('./pages/platform/ReconExceptionsPage'));
+const BankMessagesPage = React.lazy(() => import('./pages/platform/BankMessagesPage'));
+const IntegrationsPage = React.lazy(() => import('./pages/platform/IntegrationsPage'));
+const ProviderToolsPage = React.lazy(() => import('./pages/platform/ProviderToolsPage'));
+const MarketsPage = React.lazy(() => import('./pages/platform/MarketsPage'));
+const CustomerWalletsPage = React.lazy(() => import('./pages/platform/CustomerWalletsPage'));
+const AgentsPage = React.lazy(() => import('./pages/platform/AgentsPage'));
+const PosTerminalsPage = React.lazy(() => import('./pages/platform/PosTerminalsPage'));
+const UssdWhatsAppPage = React.lazy(() => import('./pages/platform/UssdWhatsAppPage'));
+const ProviderSettlementRulesPage = React.lazy(() => import('./pages/platform/ProviderSettlementRulesPage'));
+const LedgerPage = React.lazy(() => import('./pages/platform/LedgerPage'));
+const ChannelsProductsPage = React.lazy(() => import('./pages/platform/ChannelsProductsPage'));
+const PartyRulesPage = React.lazy(() => import('./pages/platform/PartyRulesPage'));
+const WalletReportPage = React.lazy(() => import('./pages/platform/WalletReportPage'));
+const CardsPage = React.lazy(() => import('./pages/platform/CardsPage'));
+const WalletStatementPage = React.lazy(() => import('./pages/platform/WalletStatementPage'));
+const WalletBalancesPage = React.lazy(() => import('./pages/platform/WalletBalancesPage'));
+const CodesPage = React.lazy(() => import('./pages/platform/CodesPage'));
+const CasesPage = React.lazy(() => import('./pages/compliance/CasesPage'));
+const RulesPage = React.lazy(() => import('./pages/compliance/RulesPage'));
+const ScreeningPage = React.lazy(() => import('./pages/compliance/ScreeningPage'));
+const ReportsPage = React.lazy(() => import('./pages/compliance/ReportsPage'));
+const AuditPage = React.lazy(() => import('./pages/compliance/AuditPage'));
+const AuthoritiesAdminPage = React.lazy(() => import('./pages/compliance/AuthoritiesAdminPage'));
 
 function HomeRedirect() {
     const { user } = useAuth();
@@ -117,10 +115,8 @@ function PrivateRoute({ children }) {
 
 export default function App() {
     const { dark } = useTheme();
-    const muiTheme = React.useMemo(() => buildMuiTheme(dark), [dark]);
 
     return (
-        <MuiThemeProvider theme={muiTheme}>
         <>
             <Toaster
                 position="bottom-right"
@@ -142,6 +138,7 @@ export default function App() {
                 <Route path="/*" element={
                     <PrivateRoute>
                         <Shell>
+                            <React.Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><div className="spinner" /></div>}>
                                 <Routes>
                                     <Route path="/" element={<HomeRedirect />} />
                                     <Route path="/dashboard" element={<DashboardPage />} />
@@ -207,11 +204,11 @@ export default function App() {
                                     <Route path="/provider-status" element={<ProviderStatusPage />} />
                                     <Route path="*" element={<HomeRedirect />} />
                                 </Routes>
+                            </React.Suspense>
                         </Shell>
                     </PrivateRoute>
                 } />
             </Routes>
         </>
-        </MuiThemeProvider>
     );
 }
