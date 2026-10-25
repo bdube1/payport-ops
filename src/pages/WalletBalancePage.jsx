@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { RefreshCw, AlertTriangle, CheckCircle, Settings, Wallet, Zap, X, Clock } from 'lucide-react';
+import { RefreshCw, AlertTriangle, CheckCircle, Settings, Wallet, Zap, X, Clock, XCircle } from 'lucide-react';
 import { getSingleWalletBalance, getVendorBalance, opsExtraApi } from '../lib/api';
 import NetOneTools from '../components/NetOneTools';
 
@@ -114,59 +114,25 @@ export default function WalletBalancePage() {
     const loadEsolutionsBalance = useCallback(async (silent = false) => {
         if (!silent) setLoadingEsolutions(true);
         setEsolutionsError('');
+        // Each currency on its own: a balance shows only when eSolutions returned one, otherwise the reason it did not.
+        const one = async (ccy) => {
+            const at = new Date().toISOString();
+            try {
+                const r = await getVendorBalance(ccy);
+                const d = r.data?.data || {};
+                const n = Number(d.balance);
+                if (d.balance === null || d.balance === undefined || Number.isNaN(n)) {
+                    return { balance: null, currency: ccy, status: 'ERROR', message: r.data?.message || 'eSolutions returned no balance', fetchedAt: at };
+                }
+                return { balance: n, currency: ccy, status: 'OK', message: 'Success', fetchedAt: at, accountName: d.accountName, accountNumber: d.accountNumber };
+            } catch (e) {
+                return { balance: null, currency: ccy, status: 'ERROR', message: e.response?.data?.message || e.message || 'Failed to fetch', fetchedAt: at };
+            }
+        };
         try {
-            // Fetch USD balance
-            const usdResponse = await getVendorBalance('USD');
-            // Fetch ZWG balance
-            const zwgResponse = await getVendorBalance('ZWG');
-
-            const newBalances = {};
-
-            if (usdResponse.data?.success) {
-                newBalances.ESOLUTIONS_USD = {
-                    balance: usdResponse.data.data?.balance || 0,
-                    currency: 'USD',
-                    status: 'OK',
-                    message: 'Success',
-                    fetchedAt: new Date().toISOString(),
-                    accountName: usdResponse.data.data?.accountName,
-                    accountNumber: usdResponse.data.data?.accountNumber,
-                };
-            } else {
-                newBalances.ESOLUTIONS_USD = {
-                    balance: null,
-                    currency: 'USD',
-                    status: 'ERROR',
-                    message: usdResponse.data?.error || 'Failed to fetch',
-                    fetchedAt: new Date().toISOString(),
-                };
-            }
-
-            if (zwgResponse.data?.success) {
-                newBalances.ESOLUTIONS_ZWG = {
-                    balance: zwgResponse.data.data?.balance || 0,
-                    currency: 'ZWG',
-                    status: 'OK',
-                    message: 'Success',
-                    fetchedAt: new Date().toISOString(),
-                    accountName: zwgResponse.data.data?.accountName,
-                    accountNumber: zwgResponse.data.data?.accountNumber,
-                };
-            } else {
-                newBalances.ESOLUTIONS_ZWG = {
-                    balance: null,
-                    currency: 'ZWG',
-                    status: 'ERROR',
-                    message: zwgResponse.data?.error || 'Failed to fetch',
-                    fetchedAt: new Date().toISOString(),
-                };
-            }
-
-            setEsolutionsBalances(newBalances);
+            const [usd, zwg] = await Promise.all([one('USD'), one('ZWG')]);
+            setEsolutionsBalances({ ESOLUTIONS_USD: usd, ESOLUTIONS_ZWG: zwg });
             setLastEsolutionsRefresh(new Date());
-        } catch (e) {
-            setEsolutionsError(e.response?.data?.message || 'Failed to fetch eSolutions balances');
-            console.error('eSolutions balance fetch error:', e);
         } finally {
             if (!silent) setLoadingEsolutions(false);
         }
@@ -298,24 +264,6 @@ export default function WalletBalancePage() {
             )}
 
             {/* Airtime Providers Section Header */}
-            {/* Totals by currency */}
-            <div className="op-kpis" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', marginBottom: 22 }}>
-                {['USD', 'ZWG'].map(ccy => {
-                    const acc = [...PROVIDERS.filter(p => p.currency === ccy).map(p => [p.code, getBalance(p.code), thresholds[p.code]]),
-                        ...ESOLUTIONS_WALLETS.filter(w => w.currency === ccy).map(w => [w.code, getEsolutionsBalance(w.code), esolutionsThresholds[w.code]])];
-                    const known = acc.filter(([, b]) => typeof b === 'number');
-                    const low = acc.filter(([, b, t]) => typeof b === 'number' && t && b < t).length;
-                    const total = known.reduce((x, [, b]) => x + b, 0);
-                    return (
-                        <div key={ccy} className="card op-kpi">
-                            <div className="op-kpi-label">{ccy} float · {known.length} of {acc.length} accounts</div>
-                            <div className="op-kpi-value">{ccy === 'USD' ? '$' : 'ZWG '}{total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                            <div style={{ fontSize: 12.5, fontWeight: 600, color: low ? 'var(--pill-red)' : 'var(--pill-green)', marginTop: 4 }}>{low ? `${low} below minimum` : 'All above minimum'}</div>
-                        </div>
-                    );
-                })}
-            </div>
-
             <div style={{ marginBottom: 20 }}>
                 <h2 style={{ fontSize: 18, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <Zap size={20} color="var(--green)" />
@@ -400,8 +348,8 @@ export default function WalletBalancePage() {
                             {/* Integration Status */}
                             <div style={{ background: 'var(--bg-2)', borderRadius: 8, padding: '8px 12px', marginBottom: 16 }}>
                                 <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-2)', marginBottom: 4 }}>Integration Status</div>
-                                <code style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, wordBreak: 'break-all', color: isConfigured ? 'var(--green)' : 'var(--amber)' }}>
-                                    {isConfigured ? <><CheckCircle size={12} /> API Connected</> : <><Clock size={12} /> Pending Integration</>}
+                                <code style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, wordBreak: 'break-all', color: !isConfigured ? 'var(--amber)' : isOk ? 'var(--green)' : 'var(--red)' }}>
+                                    {!isConfigured ? <><Clock size={12} /> Not configured</> : isOk ? <><CheckCircle size={12} /> Balance received</> : <><XCircle size={12} /> No balance received</>}
                                 </code>
                             </div>
 

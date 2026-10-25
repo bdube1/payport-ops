@@ -17,6 +17,7 @@ import {
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import { api } from '../lib/api';
+import { errorText } from '../components/kit';
 import { useTheme } from '../lib/theme';
 
 // MUI (only this page uses it) loads with the page, not with the whole console.
@@ -70,9 +71,25 @@ function BundleManager() {
             const response = await api.get(`/bundles/admin/${provider}/all?currency=${currency}`);
             setBundles(response.data || []);
         } catch (error) {
-            showSnackbar('Failed to load bundles', 'error');
+            showSnackbar(`Failed to load bundles: ${errorText(error)}`, 'error');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const [syncing, setSyncing] = useState(false);
+    const syncNetOne = async () => {
+        setSyncing(true);
+        try {
+            const r = await api.post('/bundles/admin/NETONE/sync', null, { timeout: 120000 });
+            const d = r.data || {};
+            if (d.message) showSnackbar(d.message, 'warning');
+            else showSnackbar(`NetOne: ${d.USD ?? 0} USD and ${d.ZWG ?? 0} ZWG bundles · ${d.added ?? 0} new (switched off)`, 'success');
+            fetchBundles();
+        } catch (error) {
+            showSnackbar(`NetOne refresh failed: ${errorText(error)}`, 'error');
+        } finally {
+            setSyncing(false);
         }
     };
 
@@ -305,6 +322,17 @@ function BundleManager() {
                     >
                         Refresh
                     </Button>
+                    {provider === 'NETONE' && (
+                        <Button
+                            variant="outlined"
+                            startIcon={syncing ? <CircularProgress size={16} /> : <Refresh />}
+                            onClick={syncNetOne}
+                            disabled={syncing}
+                            sx={{ color: textColor, borderColor: 'var(--border)' }}
+                        >
+                            Refresh from NetOne
+                        </Button>
+                    )}
                     <Button
                         variant="outlined"
                         startIcon={<Download />}
