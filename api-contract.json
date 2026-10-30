@@ -1312,6 +1312,11 @@
    "access": null
   },
   {
+   "method": "GET",
+   "path": "/api/v1/admin/whatsapp/simulate/outbox",
+   "access": null
+  },
+  {
    "method": "POST",
    "path": "/api/v1/admin/whatsapp/test",
    "access": null
@@ -1564,6 +1569,16 @@
   {
    "method": "GET",
    "path": "/api/v1/callbacks/zimswitch/result",
+   "access": null
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/channel-pin/{token}",
+   "access": null
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/channel-pin/{token}",
    "access": null
   },
   {
