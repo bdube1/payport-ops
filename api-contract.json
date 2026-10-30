@@ -138,6 +138,51 @@
   },
   {
    "method": "GET",
+   "path": "/api/v1/admin/complaints",
+   "access": null
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/admin/complaints",
+   "access": null
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/admin/complaints/catalog",
+   "access": null
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/admin/complaints/summary",
+   "access": null
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/admin/complaints/trace",
+   "access": null
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/admin/complaints/{id}",
+   "access": null
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/admin/complaints/{id}/assign",
+   "access": null
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/admin/complaints/{id}/notes",
+   "access": null
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/admin/complaints/{id}/status",
+   "access": null
+  },
+  {
+   "method": "GET",
    "path": "/api/v1/admin/compliance-authorities",
    "access": null
   },
@@ -1054,6 +1099,41 @@
   {
    "method": "GET",
    "path": "/api/v1/admin/reports/consolidated",
+   "access": null
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/admin/reversal-approvals",
+   "access": null
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/admin/reversal-approvals/{ref}/approve",
+   "access": null
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/admin/reversal-approvals/{ref}/payout",
+   "access": null
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/admin/reversal-approvals/{ref}/reject",
+   "access": null
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/admin/reversals",
+   "access": null
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/admin/reversals",
+   "access": null
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/admin/reversals/trace",
    "access": null
   },
   {

@@ -19,10 +19,7 @@ export default function CustomerWalletsPage() {
     useEffect(() => { if (query && list.value?.length === 1) setOpen(list.value[0].wallet_ref); }, [query, list.value]);
     return (
         <Page title="Customer wallets" subtitle="Balances are the ledger's CUSTOMER_WALLET accounts. Freezing stops all spending at once; only compliance or an administrator unfreezes. Tier changes need KYC evidence."
-            actions={['ADMIN', 'FINANCE'].includes(role) && <FormButton label="Refund a wallet payment" title="Refund to wallet"
-                intro="Puts a payment that was paid from a wallet back into that wallet and closes the payment as REFUNDED."
-                fields={[{ name: 'reference', label: 'Payment reference', required: true }, { name: 'reason', label: 'Reason', type: 'textarea', required: true }]}
-                onSubmit={v => walletsAdminApi.refund(v.reference.trim(), v.reason)} onDone={reload} />}>
+>
             {list.error && <Notice kind="error">{list.error}</Notice>}
             {totals.value?.length > 0 && <Section title="Totals">
                 <Table rows={totals.value} columns={[{ key: 'currency', label: 'Currency' }, { key: 'wallets', label: 'Wallets' }, { key: 'frozen', label: 'Frozen' },

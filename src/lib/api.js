@@ -151,8 +151,6 @@ export const searchTransactions = (params) => api.get('/admin/transactions-searc
 export const getTransaction = (ref) => api.get(`/transactions/${ref}`);
 export const getTransactionTimeline = (ref) => api.get(`/transactions/${ref}/timeline`);
 export const retryFulfilment = (ref) => api.post(`/admin/transactions/${ref}/retry-fulfilment`);
-export const completeRefund = (ref, { refundReference, refundMethod, reason }) =>
-    api.post(`/admin/transactions/${ref}/complete-refund`, { refundReference, refundMethod, reason });
 
 // DASHBOARD
 export const getDashboardKpis = () => api.get('/admin/dashboard/kpis');
@@ -398,7 +396,6 @@ export const walletsAdminApi = {
     balances: (currency, q) => api.get('/admin/wallets/balances', { params: { ...(currency ? { currency } : {}), ...(q ? { q } : {}) } }),
     setStatus: (ref, status, reason) => api.post(`/admin/wallets/${encodeURIComponent(ref)}/status`, { status, reason }),
     setTier: (ref, tier, reason) => api.post(`/admin/wallets/${encodeURIComponent(ref)}/tier`, { tier, reason }),
-    refund: (reference, reason) => api.post(`/admin/wallets/refunds/${encodeURIComponent(reference)}`, { reason }),
 };
 
 export const codesAdminApi = {
@@ -496,7 +493,6 @@ export const opsExtraApi = {
     floatThresholds: () => api.get('/admin/float-thresholds'),
     updateFloatThresholds: (map) => api.put('/admin/float-thresholds', map),
     exportTransactionsCsv: (params) => api.get('/admin/transactions-export/csv', { params, responseType: 'blob' }),
-    startRefund: (ref, reason) => api.post(`/admin/transactions/${encodeURIComponent(ref)}/refund`, { reason }),
     resolveMerchantNote: (merchantId, noteId) => api.post(`/admin/merchants/${merchantId}/review-notes/${noteId}/resolve`),
     userHistory: (phone, page = 0, size = 20) => api.get('/admin/user-history', { params: { phone, page, size } }),
 };
@@ -513,4 +509,24 @@ export const providerToolsApi = {
     omariConfirm: (reference, otp, msisdn) => api.post('/omari/admin/test-payment', { reference, otp, msisdn }),
     omariQuery: (reference) => api.get(`/omari/admin/query/${encodeURIComponent(reference)}`),
     omariVoid: (reference) => api.post('/omari/admin/void', { reference }),
+};
+
+// Customer care: complaints and the central reversal desk.
+export const careApi = {
+    catalog: () => api.get('/admin/complaints/catalog'),
+    summary: () => api.get('/admin/complaints/summary'),
+    complaints: (status, q) => api.get('/admin/complaints', { params: { status: status || undefined, q: q || undefined } }),
+    complaint: (id) => api.get(`/admin/complaints/${id}`),
+    open: (body) => api.post('/admin/complaints', body),
+    note: (id, note) => api.post(`/admin/complaints/${id}/notes`, { note }),
+    assign: (id, to) => api.post(`/admin/complaints/${id}/assign`, { to }),
+    status: (id, status, resolution) => api.post(`/admin/complaints/${id}/status`, { status, resolution }),
+    trace: (ref) => api.get('/admin/reversals/trace', { params: { ref } }),
+    complaintTrace: (ref) => api.get('/admin/complaints/trace', { params: { ref } }),
+    reversals: (status) => api.get('/admin/reversals', { params: { status: status || undefined } }),
+    request: (kind, targetRef, reason, complaintRef) => api.post('/admin/reversals', { kind, targetRef, reason, complaintRef }),
+    approvals: () => api.get('/admin/reversal-approvals'),
+    approve: (ref, note) => api.post(`/admin/reversal-approvals/${encodeURIComponent(ref)}/approve`, { note }),
+    reject: (ref, note) => api.post(`/admin/reversal-approvals/${encodeURIComponent(ref)}/reject`, { note }),
+    payout: (ref, payoutReference, method) => api.post(`/admin/reversal-approvals/${encodeURIComponent(ref)}/payout`, { payoutReference, method }),
 };
