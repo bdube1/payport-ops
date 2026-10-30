@@ -29,6 +29,8 @@ const DisputesPage = React.lazy(() => import('./pages/DisputesPage'));
 const ReconciliationPage = React.lazy(() => import('./pages/ReconciliationPage'));
 const StatementReconciliationPage = React.lazy(() => import('./pages/StatementReconciliationPage'));
 const QueriesPage = React.lazy(() => import('./pages/QueriesPage'));
+const ComplaintsPage = React.lazy(() => import('./pages/care/ComplaintsPage'));
+const ReversalsPage = React.lazy(() => import('./pages/care/ReversalsPage'));
 const MerchantsDashboardPage = React.lazy(() => import('./pages/MerchantsDashboardPage'));
 const ConsumersDashboardPage = React.lazy(() => import('./pages/ConsumersDashboardPage'));
 const ConsumersPage = React.lazy(() => import('./pages/ConsumersPage'));
@@ -163,6 +165,9 @@ export default function App() {
                                     <Route path="/reconciliation" element={<ReconciliationPage />} />
                                     <Route path="/statement-reconciliation" element={<StatementReconciliationPage />} />
                                     <Route path="/queries" element={<QueriesPage />} />
+                                    <Route path="/complaints" element={<ComplaintsPage />} />
+                                    <Route path="/reversals" element={<ReversalsPage />} />
+                                    <Route path="/reversals/approve" element={<ReversalsPage />} />
                                     <Route path="/merchants/dashboard" element={<MerchantsDashboardPage />} />
                                     <Route path="/consumers/dashboard" element={<ConsumersDashboardPage />} />
                                     <Route path="/consumers" element={<ConsumersPage />} />

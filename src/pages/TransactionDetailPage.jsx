@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { canAccess } from '../lib/permissions'
+import { useAuth } from '../lib/auth.jsx'
 import { ChevronLeft, RefreshCw, DollarSign, Clock, CheckCircle, XCircle, Loader, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
-import { getTransaction, getTransactionTimeline, retryFulfilment, completeRefund, formatDate, STATUS_CONFIG, opsExtraApi } from '../lib/api'
+import { getTransaction, getTransactionTimeline, retryFulfilment, formatDate, STATUS_CONFIG } from '../lib/api'
 import toast from 'react-hot-toast'
 
 function fmt(amountCents, currency = 'USD') {
@@ -11,15 +13,11 @@ function fmt(amountCents, currency = 'USD') {
 
 export default function TransactionDetailPage() {
     const { ref } = useParams()
+    const { user } = useAuth()
     const [txn, setTxn] = useState(null)
     const [timeline, setTimeline] = useState([])
     const [loading, setLoading] = useState(true)
     const [retrying, setRetrying] = useState(false)
-    const [refunding, setRefunding] = useState(false)
-    const [refundReason, setRefundReason] = useState('')
-    const [refundReference, setRefundReference] = useState('')
-    const [refundMethod, setRefundMethod] = useState('ECOCASH')
-    const [showRefundForm, setShowRefundForm] = useState(false)
     const [showRawPayload, setShowRawPayload] = useState(false)
 
     const load = async () => {
@@ -53,38 +51,6 @@ export default function TransactionDetailPage() {
         }
     }
 
-    const handleStartRefund = async () => {
-        const reason = window.prompt('Reason for the refund')
-        if (!reason || !reason.trim()) return
-        setRefunding(true)
-        try {
-            await opsExtraApi.startRefund(ref, reason.trim())
-            toast.success('Refund started')
-            await load()
-        } catch (err) {
-            toast.error(err.response?.data?.message || 'Could not start the refund')
-        } finally {
-            setRefunding(false)
-        }
-    }
-
-    const handleRefund = async () => {
-        if (!refundReference.trim()) { toast.error('Please enter the refund reference'); return }
-        setRefunding(true)
-        try {
-            await completeRefund(ref, { refundReference: refundReference.trim(), refundMethod, reason: refundReason })
-            toast.success('Transaction marked as refunded')
-            setShowRefundForm(false)
-            setRefundReason('')
-            setRefundReference('')
-            await load()
-        } catch (err) {
-            toast.error(err.response?.data?.message || 'Refund failed')
-        } finally {
-            setRefunding(false)
-        }
-    }
-
     if (loading) return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
             <Loader size={32} color="var(--green)" style={{ animation: 'spin 1.2s linear infinite' }} />
@@ -103,8 +69,8 @@ export default function TransactionDetailPage() {
     // The backend's own state machine already rejects this transition
     // (neither status has a path to REFUND_PENDING at all), so this was
     // purely a frontend bug offering an action that would always fail.
-    const canRefund = ['FULFILMENT_FAILED', 'MANUAL_FULFILMENT', 'REFUND_PENDING'].includes(txn.status)
-    const canStartRefund = txn.status === 'COMPLETED'
+    // Reversals are requested on the central reversal desk (owner, 2026-10-30).
+    const canReverse = ['COMPLETED', 'FULFILMENT_FAILED', 'MANUAL_FULFILMENT', 'PAYMENT_CONFIRMED', 'FULFILMENT_RETRY'].includes(txn.status) && canAccess(user, '/reversals')
 
     // Retry only makes sense within a reasonable window of the original
     // attempt -- a fulfilment failure from weeks ago isn't something a
@@ -159,73 +125,13 @@ export default function TransactionDetailPage() {
                             Retry no longer available — past the 24-hour window
                         </span>
                     )}
-                    {canStartRefund && (
-                        <button onClick={handleStartRefund} disabled={refunding} className="btn btn-danger btn-sm">
-                            <DollarSign size={13} /> Start refund
-                        </button>
-                    )}
-                    {canRefund && !showRefundForm && (
-                        <button onClick={() => setShowRefundForm(true)} className="btn btn-danger btn-sm">
-                            <DollarSign size={13} /> Mark as Refunded
-                        </button>
+                    {canReverse && (
+                        <Link to={`/reversals?ref=${encodeURIComponent(ref)}`} className="btn btn-danger btn-sm">
+                            <DollarSign size={13} /> Request reversal
+                        </Link>
                     )}
                 </div>
             </div>
-
-            {/* Refund form */}
-            {showRefundForm && (
-                <div className="card" style={{ marginBottom: 20, border: '1px solid var(--red)', animation: 'fadeIn 0.3s ease' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                        <AlertTriangle size={16} color="var(--red)" />
-                        <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, color: 'var(--red)' }}>Mark as Refunded</h3>
-                    </div>
-                    <p style={{ fontSize: 12, color: 'var(--text-2)', marginBottom: 14, lineHeight: 1.5 }}>
-                        This records a refund you've already paid the customer manually — bank transfer, EcoCash, OneMoney,
-                        Innbucks, or Omari. It does not send any money itself.
-                    </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-                        <div>
-                            <label style={{ fontSize: 11, color: 'var(--text-2)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Refunded via</label>
-                            <select value={refundMethod} onChange={e => setRefundMethod(e.target.value)} className="input" style={{ width: '100%' }}>
-                                <option value="ECOCASH">EcoCash</option>
-                                <option value="ONEMONEY">OneMoney</option>
-                                <option value="OMARI">Omari</option>
-                                <option value="INNBUCKS">Innbucks</option>
-                                <option value="BANK">Bank transfer</option>
-                                <option value="OTHER">Other</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style={{ fontSize: 11, color: 'var(--text-2)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Refund reference (required)</label>
-                            <input
-                                value={refundReference}
-                                onChange={e => setRefundReference(e.target.value)}
-                               
-                                className="input"
-                                style={{ width: '100%' }}
-                            />
-                        </div>
-                    </div>
-                    <div style={{ marginBottom: 12 }}>
-                        <label style={{ fontSize: 11, color: 'var(--text-2)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Reason (optional)</label>
-                        <textarea
-                            value={refundReason}
-                            onChange={e => setRefundReason(e.target.value)}
-                           
-                            rows={3}
-                            className="input"
-                            style={{ width: '100%', resize: 'vertical' }}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        <button onClick={handleRefund} disabled={refunding} className="btn btn-danger">
-                            {refunding ? <Loader size={13} style={{ animation: 'spin 1s linear infinite' }} /> : <DollarSign size={13} />}
-                            Confirm — Mark as Refunded
-                        </button>
-                        <button onClick={() => { setShowRefundForm(false); setRefundReason(''); setRefundReference('') }} className="btn btn-ghost">Cancel</button>
-                    </div>
-                </div>
-            )}
 
             {/* Detail grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
