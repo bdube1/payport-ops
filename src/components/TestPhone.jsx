@@ -13,6 +13,28 @@ export default function TestPhone() {
     const [ussd, setUssd] = useState({ session: '', path: '', end: true });
     const end = useRef(null);
     useEffect(() => { end.current?.scrollIntoView({ block: 'nearest' }); }, [log]);
+    // Messages PayPort sends on its own (after the PIN page, payment updates) appear as they are sent.
+    const seen = useRef(0);
+    useEffect(() => {
+        if (mode !== 'wa') return undefined;
+        let stop = false;
+        const poll = async () => {
+            try {
+                const r = await api.get('/admin/whatsapp/simulate/outbox', { params: { phone, after: seen.current } });
+                const rows = r.data?.data || [];
+                if (!stop && rows.length) {
+                    seen.current = rows[rows.length - 1].id;
+                    setLog(l => [...l, ...rows.map(x => ({ who: 'pp', msg: x.body, at: new Date() }))]);
+                }
+            } catch { /* not on staging */ }
+        };
+        const prime = api.get('/admin/whatsapp/simulate/outbox', { params: { phone, after: 0 } })
+            .then(r => { const rows = r.data?.data || []; if (rows.length) seen.current = rows[rows.length - 1].id; }).catch(() => {});
+        const t = setInterval(() => prime.then(poll), 3000);
+        return () => { stop = true; clearInterval(t); };
+    }, [mode, phone]);
+    const linked = (msg) => String(msg).split(/(https?:\/\/\S+)/g).map((p, i) => /^https?:\/\//.test(p)
+        ? <a key={i} href={p} target="_blank" rel="noreferrer" style={{ color: 'inherit', textDecoration: 'underline', wordBreak: 'break-all' }}>{p}</a> : p);
 
     const add = (who, msg) => setLog(l => [...l, { who, msg, at: new Date() }]);
     // A reply to a PIN prompt is shown as dots.
@@ -67,7 +89,7 @@ export default function TestPhone() {
             </div>
             <div style={{ background: mode === 'wa' ? 'color-mix(in srgb, #25D366 6%, var(--bg-2))' : 'var(--bg-2)', borderRadius: 14, border: '1px solid var(--border)', height: 380, overflowY: 'auto', padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {log.length === 0 && <div style={{ margin: 'auto', color: 'var(--text-2)', fontSize: 13 }}>{mode === 'wa' ? 'Send "hi" to start' : 'Press Dial to open *699#'}</div>}
-                {log.map((m, i) => <div key={i} style={bubble(m)}>{m.msg}</div>)}
+                {log.map((m, i) => <div key={i} style={bubble(m)}>{linked(m.msg)}</div>)}
                 <div ref={end} />
             </div>
             <form onSubmit={submit} style={{ display: 'flex', gap: 8, marginTop: 10 }}>
