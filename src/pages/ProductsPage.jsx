@@ -4,6 +4,7 @@ import {
     Package, CreditCard, RefreshCw, Loader, DollarSign,
     ToggleLeft, ToggleRight, ChevronDown, ChevronRight, Edit2, Check, X, Image, Upload, Lightbulb, AlertTriangle
 } from 'lucide-react'
+import { API_BASE } from '../lib/apiBase';
 import {
     getAdminProducts, updateAdminProduct,
     getAdminPaymentMethods, updateAdminPaymentMethod
@@ -18,7 +19,6 @@ const CURRENCY_META = new Proxy(KNOWN_CURRENCY_META, {
 })
 
 // ── API helpers ──────────────────────────────────────────────────────────────
-const API_BASE = import.meta.env.VITE_API_URL || 'https://api.payport.africa'
 const authHeaders = () => ({
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${localStorage.getItem('ops_token') || ''}`,
