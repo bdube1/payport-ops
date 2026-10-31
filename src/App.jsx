@@ -10,6 +10,7 @@ import { titleFor } from './lib/nav';
 import { useIdleLogout } from './lib/idle';
 const SessionTimeoutsPage = React.lazy(() => import('./pages/platform/SessionTimeoutsPage'));
 const RolesPage = React.lazy(() => import('./pages/RolesPage'));
+const IntelligencePage = React.lazy(() => import('./pages/IntelligencePage'));
 const ReportsHubPage = React.lazy(() => import('./pages/ReportsHubPage'));
 const ProviderStatusPage = React.lazy(() => import('./pages/ProviderStatusPage'));
 import LoginPage from './pages/LoginPage';
@@ -212,6 +213,7 @@ export default function App() {
                                     <Route path="/compliance/reports" element={<ReportsPage />} />
                                     <Route path="/compliance/audit" element={<AuditPage />} />
                                     <Route path="/roles" element={<RolesPage />} />
+                                    <Route path="/intelligence" element={<IntelligencePage />} />
                                     <Route path="/session-timeouts" element={<SessionTimeoutsPage />} />
                                     <Route path="/reports" element={<ReportsHubPage />} />
                                     <Route path="/provider-status" element={<ProviderStatusPage />} />

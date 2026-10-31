@@ -67,7 +67,7 @@ function columns(withActions, user, actions) {
         { key: 'amount_minor', label: 'Amount', render: amount },
         { key: 'reason', label: 'Reason' },
         { key: 'status', label: 'Status', render: r => <span title={r.error || r.decision_note || ''}><Badge value={r.status} /></span> },
-        { key: 'requested_by', label: 'Requested by' },
+        { key: 'requested_by', label: 'Requested by', render: r => String(r.requested_by || '').startsWith('merchant:') ? 'Merchant' : show(r.requested_by) },
         { key: 'decided_by', label: 'Approved by', render: r => show(r.decided_by) },
         { key: 'complaint_ref', label: 'Complaint', render: r => show(r.complaint_ref) },
     ];

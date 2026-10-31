@@ -4,8 +4,9 @@ import { X } from 'lucide-react';
 import { careApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth.jsx';
 import { canAccess } from '../../lib/permissions';
-import { Page, Section, Table, Badge, Notice, FormButton, FormModal, useLoad, errorText, show } from '../../components/kit';
+import { Page, Section, Table, Badge, Notice, FormModal, useLoad, errorText, show } from '../../components/kit';
 import TracePanel from '../../components/TracePanel';
+import NewComplaint, { Explain } from './NewComplaint';
 
 const STATUS_FILTERS = [['ACTIVE', 'Open'], ['', 'All'], ['RESOLVED', 'Resolved'], ['CLOSED', 'Closed'], ['REJECTED', 'Rejected']];
 const AREAS = { MERCHANT: 'Merchant', AGENT: 'Agent', GENERAL: 'Wallet & general' };
@@ -26,6 +27,8 @@ export default function ComplaintsPage() {
     const [status, setStatus] = useState('ACTIVE');
     const [q, setQ] = useState('');
     const [openId, setOpenId] = useState(null);
+    const [creating, setCreating] = useState(false);
+    const assist = useLoad(() => careApi.assist(), []);
     const catalog = useLoad(() => careApi.catalog(), []);
     const summary = useLoad(() => careApi.summary(), []);
     const list = useLoad(() => careApi.complaints(status, q), [status, q]);
@@ -37,14 +40,7 @@ export default function ComplaintsPage() {
 
     return (
         <Page title="Complaints" actions={
-            <FormButton label="New complaint" title="New complaint" submitLabel="Open complaint" fields={[
-                { name: 'category', label: 'Type', type: 'select', options: categoryOptions, required: true },
-                { name: 'channel', label: 'Received by', type: 'select', initial: 'PHONE', options: (catalog.value?.channels || []).map(c => ({ value: c, label: CHANNEL_LABELS[c] || c })), required: true },
-                { name: 'customerPhone', label: 'Customer phone' },
-                { name: 'customerName', label: 'Customer name' },
-                { name: 'reference', label: 'Transaction reference' },
-                { name: 'description', label: 'What happened', type: 'textarea', required: true },
-            ]} onSubmit={v => careApi.open(v)} onDone={d => { reload(); if (d?.id) setOpenId(d.id); }} />
+            <button className="btn btn-primary" style={{ padding: '6px 12px', fontSize: 12.5 }} onClick={() => setCreating(true)}>New complaint</button>
         }>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}>
                 <Chip label="Open" value={s.open} />
@@ -70,12 +66,14 @@ export default function ComplaintsPage() {
                     { key: 'due_at', label: 'Due', render: r => <span style={{ color: r.overdue ? 'var(--pill-red)' : undefined, fontWeight: r.overdue ? 700 : 400 }}>{due(r)?.toLocaleString() || '—'}</span> },
                 ]} />}
             </Section>
-            {openId && <ComplaintDrawer id={openId} canReverse={canAccess(user, '/reversals')} onClose={() => setOpenId(null)} onChange={reload} />}
+            {openId && <ComplaintDrawer id={openId} canReverse={canAccess(user, '/reversals')} helper={!!assist.value?.helper} onClose={() => setOpenId(null)} onChange={reload} />}
+            {creating && <NewComplaint categoryOptions={categoryOptions} channels={catalog.value?.channels || []} channelLabels={CHANNEL_LABELS}
+                triage={!!assist.value?.triage} onClose={() => setCreating(false)} onDone={d => { reload(); if (d?.id) setOpenId(d.id); }} />}
         </Page>
     );
 }
 
-function ComplaintDrawer({ id, canReverse, onClose, onChange }) {
+function ComplaintDrawer({ id, canReverse, helper, onClose, onChange }) {
     const c = useLoad(() => careApi.complaint(id), [id]);
     const [note, setNote] = useState('');
     const [finish, setFinish] = useState(null);
@@ -116,6 +114,7 @@ function ComplaintDrawer({ id, canReverse, onClose, onChange }) {
                     {!open && v.status === 'RESOLVED' && <div style={{ margin: '14px 0' }}><button className="btn btn-outline" onClick={() => setFinish('CLOSED')}>Close</button></div>}
 
                     {v.trace && <Section title="What PayPort recorded">
+                        {helper && v.reference && <div style={{ marginBottom: 14 }}><Explain key={v.reference} reference={v.reference} /></div>}
                         <TracePanel trace={v.trace} onReverse={open && canReverse ? (o) => <button className="btn btn-danger" style={{ padding: '6px 12px', fontSize: 12.5 }} onClick={() => setReverse(o)}>Request reversal</button> : null} />
                     </Section>}
                     {(v.reversals || []).length > 0 && <Section title="Reversals">

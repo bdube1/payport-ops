@@ -14,6 +14,7 @@ export const ROUTE_ROLES = {
     '/config':        ['ADMIN', 'OPS'],
     '/users':         ['ADMIN'],
     '/roles':         ['ADMIN'],
+    '/intelligence':  ['ADMIN'],
     '/session-timeouts': ['ADMIN'],
     '/merchants':     ['ADMIN', 'OPS'],
     '/merchants/dashboard': ['ADMIN', 'OPS'],
