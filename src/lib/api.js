@@ -529,4 +529,13 @@ export const careApi = {
     approve: (ref, note) => api.post(`/admin/reversal-approvals/${encodeURIComponent(ref)}/approve`, { note }),
     reject: (ref, note) => api.post(`/admin/reversal-approvals/${encodeURIComponent(ref)}/reject`, { note }),
     payout: (ref, payoutReference, method) => api.post(`/admin/reversal-approvals/${encodeURIComponent(ref)}/payout`, { payoutReference, method }),
+    assist: () => api.get('/admin/complaints/assist'),
+    triage: (text) => api.post('/admin/complaints/triage', { text }),
+    explain: (ref) => api.get('/admin/complaints/explain', { params: { ref } }),
+};
+
+export const intelligenceApi = {
+    overview: () => api.get('/admin/intelligence'),
+    set: (feature, enabled) => api.post(`/admin/intelligence/features/${feature}`, { enabled }),
+    retrain: () => api.post('/admin/intelligence/triage/retrain'),
 };
