@@ -11,7 +11,7 @@ export default function BankMessagesPage() {
     const missing = Object.entries(schemas.value || {}).filter(([, ok]) => !ok).map(([k]) => k);
     const refresh = () => { statements.reload(); messages.reload(); };
     return (
-        <Page title="Bank messages (ISO 20022)" subtitle="camt.053 statements of PayPort's accounts and pain.002 payout status reports. Every file is validated against the official ISO 20022 schema; statements must balance and be for the market's own account."
+        <Page title="Bank messages (ISO 20022)" subtitle="camt.053 statements of Payport's accounts and pain.002 payout status reports. Every file is validated against the official ISO 20022 schema; statements must balance and be for the market's own account."
               actions={<>
                   <FormButton label="Upload camt.053 statement" title="Bank statement (camt.053.001.08)" fields={[{ name: 'file', label: 'XML file', type: 'file', accept: '.xml', required: true }]}
                       onSubmit={v => financeApi.isoUpload('camt053', v.file)} onDone={refresh} />

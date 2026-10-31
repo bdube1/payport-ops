@@ -113,7 +113,7 @@ function ComplaintDrawer({ id, canReverse, helper, onClose, onChange }) {
                     </div>}
                     {!open && v.status === 'RESOLVED' && <div style={{ margin: '14px 0' }}><button className="btn btn-outline" onClick={() => setFinish('CLOSED')}>Close</button></div>}
 
-                    {v.trace && <Section title="What PayPort recorded">
+                    {v.trace && <Section title="What Payport recorded">
                         {helper && v.reference && <div style={{ marginBottom: 14 }}><Explain key={v.reference} reference={v.reference} /></div>}
                         <TracePanel trace={v.trace} onReverse={open && canReverse ? (o) => <button className="btn btn-danger" style={{ padding: '6px 12px', fontSize: 12.5 }} onClick={() => setReverse(o)}>Request reversal</button> : null} />
                     </Section>}

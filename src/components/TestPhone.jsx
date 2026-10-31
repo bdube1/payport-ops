@@ -13,7 +13,7 @@ export default function TestPhone() {
     const [ussd, setUssd] = useState({ session: '', path: '', end: true });
     const end = useRef(null);
     useEffect(() => { end.current?.scrollIntoView({ block: 'nearest' }); }, [log]);
-    // Messages PayPort sends on its own (payment updates) appear as they are sent.
+    // Messages Payport sends on its own (payment updates) appear as they are sent.
     const seen = useRef(0);
     useEffect(() => {
         if (mode !== 'wa') return undefined;

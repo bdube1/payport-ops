@@ -2,7 +2,7 @@ import { providerSettlementApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth.jsx';
 import { Page, Section, Table, Notice, useLoad, Badge, FormButton, Act, minor } from '../../components/kit';
 
-/** Rules that recognise a payment rail's settlement on PayPort's bank statement (proposer ≠ approver). */
+/** Rules that recognise a payment rail's settlement on Payport's bank statement (proposer ≠ approver). */
 export default function ProviderSettlementRulesPage() {
     const { user } = useAuth();
     const role = user?.role;
@@ -30,7 +30,7 @@ export default function ProviderSettlementRulesPage() {
                     </div> },
                 ]} />
             </Section>
-            <Section title="What each provider owes PayPort">
+            <Section title="What each provider owes Payport">
                 {positions.error && <Notice kind="error">{positions.error}</Notice>}
                 <Table rows={positions.value} empty="No provider collections yet." columns={[
                     { key: 'provider_code', label: 'Provider' }, { key: 'currency', label: 'Currency' },

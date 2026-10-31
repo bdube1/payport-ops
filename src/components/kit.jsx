@@ -12,7 +12,7 @@ import { ISO_COUNTRIES, ISO_CURRENCIES } from '../lib/iso';
 export const data = (r) => r?.data?.data ?? r?.data;
 export const errorText = (e, fallback = 'Request failed') => e?.response?.data?.message || e?.message || fallback;
 
-// Countries and currencies PayPort serves (GET /api/v1/markets), loaded once per session.
+// Countries and currencies Payport serves (GET /api/v1/markets), loaded once per session.
 let marketsPromise = null;
 export function useMarkets() {
     const [markets, setMarkets] = useState([]);
