@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { platformControlsApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth.jsx';
-import { Page, Section, Table, Notice, useLoad, Badge, FormButton, Act } from '../../components/kit';
+import { Page, Section, Table, Notice, useLoad, Badge, FormButton, Act, FormModal } from '../../components/kit';
 
 export default function ChannelsProductsPage() {
     const { user } = useAuth();
@@ -9,7 +9,9 @@ export default function ChannelsProductsPage() {
     const lines = useLoad(() => platformControlsApi.serviceLines());
     const fx = useLoad(() => (['ADMIN', 'FINANCE', 'COMPLIANCE'].includes(user?.role) ? platformControlsApi.fxRates() : Promise.resolve({ data: [] })));
     const [quote, setQuote] = useState(null);
-    const reload = () => { channels.reload(); lines.reload(); fx.reload(); };
+    const ready = useLoad(() => platformControlsApi.paymentsReadiness());
+    const [goLive, setGoLive] = useState(false);
+    const reload = () => { channels.reload(); lines.reload(); fx.reload(); ready.reload(); };
     return (
         <Page title="Channels and product lines">
             <Section title="Channels">
@@ -23,6 +25,21 @@ export default function ChannelsProductsPage() {
                             confirm={`Are you sure you want to switch ${c.enabled ? 'off' : 'on'} ${c.name}?`}
                             run={() => platformControlsApi.setChannel(c.code, !c.enabled, c.enabled ? 'Switched off from the ops console' : 'Switched on from the ops console')} done={reload} />) },
                 ]} />
+            </Section>
+            <Section title="Store payments" right={user?.role === 'ADMIN' && ready.value && (ready.value.storePaymentsLive
+                ? <Act label="Back to sandbox" kind="danger" confirm="Are you sure?" run={() => platformControlsApi.setStorePaymentsLive(false, 'Back to sandbox from the ops console')} done={reload} />
+                : <button className="btn btn-success" style={{ padding: '6px 12px', fontSize: 12.5 }} disabled={!ready.value.readyForLive} onClick={() => setGoLive(true)}>Switch to live</button>)}>
+                {ready.error && <Notice kind="error">{ready.error}</Notice>}
+                {ready.value && <div style={{ marginBottom: 10 }}><Badge value={ready.value.storePaymentsLive ? 'LIVE' : 'SANDBOX'} /> <span style={{ fontSize: 12.5, color: 'var(--text-2)' }}>{ready.value.environment}</span></div>}
+                <Table rows={ready.value?.methods || []} noExport columns={[
+                    { key: 'name', label: 'Method' },
+                    { key: 'switchedOn', label: 'State', render: m => <Badge value={m.switchedOn ? 'ENABLED' : 'DISABLED'} /> },
+                    { key: 'credentialsInPlace', label: 'Provider credentials', render: m => m.credentialsInPlace ? <Badge value="READY" /> : <span style={{ fontSize: 12.5 }}>Missing: {m.missing.join(', ')}</span> },
+                ]} />
+                {goLive && <FormModal title="Switch store payments to live" submitLabel="Switch to live"
+                    fields={[{ name: 'reason', label: 'Approval', type: 'textarea', required: true }]}
+                    onSubmit={(v) => (window.confirm('Are you sure?') ? platformControlsApi.setStorePaymentsLive(true, v.reason) : Promise.reject(new Error('Cancelled')))}
+                    onClose={() => setGoLive(false)} onDone={() => { setGoLive(false); reload(); }} />}
             </Section>
             <Section title="Product lines">
                 {lines.error && <Notice kind="error">{lines.error}</Notice>}
