@@ -10,7 +10,7 @@ export default function ReconExceptionsPage() {
     const [category, setCategory] = useState('');
     const { value, error, reload } = useLoad(() => financeApi.exceptions(category || undefined), [category]);
     return (
-        <Page title="Reconciliation exceptions" subtitle="Differences between PayPort and provider or bank statements. Nothing is adjusted automatically. A late payment is only ever refunded, never delivered."
+        <Page title="Reconciliation exceptions" subtitle="Differences between Payport and provider or bank statements. Nothing is adjusted automatically. A late payment is only ever refunded, never delivered."
               actions={<FormButton label="Import provider statement" kind="ghost" title="Provider statement"
                   fields={[{ name: 'provider', label: 'Provider code', type: 'text', required: true }, { name: 'format', label: 'Format', type: 'select', options: ['NATIVE', 'CSV'], initial: 'NATIVE' },
                       { name: 'file', label: 'File', type: 'file', required: true }]}
@@ -25,7 +25,7 @@ export default function ReconExceptionsPage() {
                 {error && <Notice kind="error">{error}</Notice>}
                 <Table rows={value} columns={[
                     { key: 'id', label: 'ID' }, { key: 'category', label: 'Category', render: r => <Badge value={r.category} /> }, { key: 'provider_code', label: 'Source' },
-                    { key: 'transaction_reference', label: 'PayPort ref' }, { key: 'provider_reference', label: 'Provider ref' },
+                    { key: 'transaction_reference', label: 'Payport ref' }, { key: 'provider_reference', label: 'Provider ref' },
                     { key: 'expected_minor', label: 'Expected', render: r => minor(r.expected_minor, r.currency) }, { key: 'actual_minor', label: 'Actual', render: r => minor(r.actual_minor, r.currency) },
                     { key: 'detail', label: 'Detail' }, { key: 'created_at', label: 'Raised' },
                     { key: 'act', label: '', render: r => (

@@ -37,7 +37,7 @@ export default function IntelligencePage() {
     const fraud = v.fraud || {};
     const scored = Object.fromEntries((fraud.scored30d || []).map(r => [r.label, r.n]));
     return (
-        <Page title="PayPort Intelligence">
+        <Page title="Payport Intelligence">
             {o.error && <Notice kind="error">{o.error}</Notice>}
             <Section title="Features">
                 <Table noExport rows={(v.features || []).map(f => ({ ...f, id: f.feature }))} columns={[

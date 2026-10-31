@@ -1,10 +1,10 @@
-# PayPort Ops Console
+# Payport Ops Console
 
 Internal operations dashboard for managing transactions, attention queue, and platform health.
 
 ## Requirements
 - Node.js 18+
-- PayPort Gateway running on localhost:8080
+- Payport Gateway running on localhost:8080
 
 ## Setup & Run
 

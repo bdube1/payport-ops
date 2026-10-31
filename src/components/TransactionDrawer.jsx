@@ -12,7 +12,7 @@ const BAD = ['PAYMENT_FAILED', 'FULFILMENT_FAILED', 'PAYMENT_TIMEOUT', 'CANCELLE
 async function receiptPdf(tx) {
     const [{ jsPDF }, { default: autoTable }] = await Promise.all([import('jspdf'), import('jspdf-autotable')]);
     const doc = new jsPDF({ unit: 'pt', format: 'a5' });
-    doc.setFontSize(15); doc.text('PayPort — Transaction', 32, 40);
+    doc.setFontSize(15); doc.text('Payport — Transaction', 32, 40);
     doc.setFontSize(9); doc.text(`Printed ${new Date().toLocaleString()}`, 32, 56);
     const rows = [
         ['Reference', tx.reference], ['Status', (STATUS_CONFIG[tx.status] || {}).label || tx.status], ['Service', tx.productName || tx.productTypeCode || ''],

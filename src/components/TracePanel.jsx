@@ -1,6 +1,6 @@
 import { Table, Badge, minor, show } from './kit';
 
-/** What PayPort recorded for a reference, and the reversals it allows (each with a button supplied by the page). */
+/** What Payport recorded for a reference, and the reversals it allows (each with a button supplied by the page). */
 export default function TracePanel({ trace, onReverse }) {
     if (!trace) return null;
     if (!trace.found) return <p style={{ fontSize: 13, color: 'var(--text-2)' }}>Nothing found for {trace.reference}.</p>;
@@ -12,7 +12,7 @@ export default function TracePanel({ trace, onReverse }) {
                 { key: 'reference', label: 'Reference' },
                 { key: 'product', label: 'Trxn Type' },
                 { key: 'amount_cents', label: 'Amount', render: r => minor(r.amount_cents, r.currency) },
-                { key: 'payment_method_name', label: 'Paid with', render: r => r.paidFromWallet ? 'PayPort wallet' : show(r.payment_method_name) },
+                { key: 'payment_method_name', label: 'Paid with', render: r => r.paidFromWallet ? 'Payport wallet' : show(r.payment_method_name) },
                 { key: 'status', label: 'Status', render: r => <Badge value={r.status} /> },
                 { key: 'outcome', label: 'Customer was told', render: r => r.outcome ? <span title={r.outcomeMessage}>{r.outcome.replace(/_/g, ' ').toLowerCase()}</span> : '—' },
                 { key: 'merchant', label: 'To', render: r => show(r.merchant || r.recipient_identifier) },

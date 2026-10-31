@@ -5,7 +5,7 @@ import { Page } from '../components/kit';
 
 const NAMES = {
     ECONET: 'Econet', NETONE: 'NetOne', TELECEL: 'Telecel', ECOCASH: 'EcoCash', ONEMONEY: 'OneMoney', TELECASH: 'Telecash',
-    OMARI: "O'mari", BULAWAYO: 'City of Bulawayo', ESOLUTIONS: 'eSolutions', NYARADZO: 'Nyaradzo', MOONLIGHT: 'Moonlight', ZOL: 'ZOL', INNBUCKS: 'InnBucks', ZIMSWITCH: 'ZimSwitch', ZESA: 'ZESA', PAYPORT_WALLET: 'PayPort Wallet',
+    OMARI: "O'mari", BULAWAYO: 'City of Bulawayo', ESOLUTIONS: 'eSolutions', NYARADZO: 'Nyaradzo', MOONLIGHT: 'Moonlight', ZOL: 'ZOL', INNBUCKS: 'InnBucks', ZIMSWITCH: 'ZimSwitch', ZESA: 'ZESA', PAYPORT_WALLET: 'Payport Wallet',
 };
 const TYPES = { PAYMENT: 'Payments', FULFILMENT: 'Fulfilment', WALLET: 'Wallet', BILLER: 'Bills' };
 const STATE = {
