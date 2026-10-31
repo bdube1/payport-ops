@@ -3,8 +3,7 @@ import { ussdAdminApi, whatsappAdminApi, platformControlsApi } from '../../lib/a
 import { useAuth } from '../../lib/auth.jsx';
 import TestPhone from '../../components/TestPhone';
 import { Page, Section, Table, Notice, useLoad, Badge, FormButton, Act, KeyValues, ShowOnce, show } from '../../components/kit';
-
-const API_BASE = (import.meta.env.VITE_API_URL || 'https://api.payport.africa').replace(/\/$/, '');
+import { API_BASE } from '../../lib/apiBase';
 
 const PROTOCOL = {
     ECONET: 'Econet messaging XML',
