@@ -46,6 +46,7 @@ export const ROUTE_ROLES = {
     '/provider-tools': ['ADMIN', 'OPS', 'FINANCE'],
     '/markets':       ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
     '/channels':      ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
+    '/stores':        ['ADMIN', 'OPS', 'COMPLIANCE'],
     '/customer-wallets': ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
     '/agents':        ['ADMIN', 'OPS', 'FINANCE', 'COMPLIANCE'],
     '/pos-terminals': ['ADMIN', 'OPS', 'COMPLIANCE'],

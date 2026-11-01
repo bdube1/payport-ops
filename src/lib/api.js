@@ -314,6 +314,13 @@ export const integrationsApi = {
 
 export const marketsApi = { list: () => api.get('/admin/markets') };
 
+// Payport Store stores: disable by hand (not shown anywhere) or switch back on; automatic flags and reports.
+export const storeAdminApi = {
+    stores: (q) => api.get('/admin/store-admin/stores', { params: { q: q || undefined } }),
+    disable: (id, reason) => api.post(`/admin/store-admin/stores/${id}/disable`, { reason }),
+    enable: (id) => api.post(`/admin/store-admin/stores/${id}/enable`),
+};
+
 export const disputeTimelinesApi = {
     list: () => api.get('/admin/dispute-timelines'),
     settings: () => api.get('/admin/dispute-timelines/settings'),

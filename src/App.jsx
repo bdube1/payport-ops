@@ -59,6 +59,7 @@ const UssdWhatsAppPage = React.lazy(() => import('./pages/platform/UssdWhatsAppP
 const ProviderSettlementRulesPage = React.lazy(() => import('./pages/platform/ProviderSettlementRulesPage'));
 const LedgerPage = React.lazy(() => import('./pages/platform/LedgerPage'));
 const ChannelsProductsPage = React.lazy(() => import('./pages/platform/ChannelsProductsPage'));
+const StoresPage = React.lazy(() => import('./pages/platform/StoresPage'));
 const PartyRulesPage = React.lazy(() => import('./pages/platform/PartyRulesPage'));
 const WalletReportPage = React.lazy(() => import('./pages/platform/WalletReportPage'));
 const CardsPage = React.lazy(() => import('./pages/platform/CardsPage'));
@@ -190,6 +191,7 @@ export default function App() {
                                     <Route path="/provider-tools" element={<ProviderToolsPage />} />
                                     <Route path="/markets" element={<MarketsPage />} />
                                     <Route path="/channels" element={<ChannelsProductsPage />} />
+                                    <Route path="/stores" element={<StoresPage />} />
                                     <Route path="/customer-wallets" element={<CustomerWalletsPage />} />
                                     <Route path="/customer-wallets/report" element={<WalletReportPage />} />
                                     <Route path="/customer-wallets/cards" element={<CardsPage />} />
