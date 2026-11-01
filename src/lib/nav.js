@@ -5,7 +5,7 @@ import {
     Landmark, Banknote, ClipboardCheck, FileWarning, Scale, BookOpen, Wallet,
     FileBarChart, Percent, ScrollText, ShieldAlert, MessageCircleQuestion, Headset,
     Gavel, Search, Lock, KeyRound, ShieldCheck,
-    Package, Grid, Timer, Network, Globe, MessagesSquare, Settings, Users, UserCog, User, Undo2, Sparkles,
+    Package, Grid, Timer, Network, Globe, MessagesSquare, Settings, Users, UserCog, User, Undo2, Sparkles, Store,
 } from 'lucide-react';
 
 // The ops console menu. Every page appears exactly once; a group shows only the pages the user may open,
@@ -87,6 +87,7 @@ export const GROUPS = [
         { to: '/products', icon: Package, label: 'Products & Payment Methods' },
         { to: '/bundles', icon: Grid, label: 'Bundle Manager' },
         { to: '/channels', icon: Network, label: 'Channels & Product Lines' },
+        { to: '/stores', icon: Store, label: 'Payport Store: Stores' },
         { to: '/markets', icon: Globe, label: 'Markets & Currencies' },
         { to: '/ussd-whatsapp', icon: MessagesSquare, label: 'USSD & WhatsApp' },
         { to: '/config', icon: Settings, label: 'Configuration' },
