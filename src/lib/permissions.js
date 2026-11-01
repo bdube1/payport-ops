@@ -39,6 +39,7 @@ export const ROUTE_ROLES = {
     '/kyb':           ['ADMIN', 'OPS'],
     '/destinations':  ['ADMIN', 'OPS', 'FINANCE'],
     '/settlement-batches': ['ADMIN', 'FINANCE'],
+    '/forecasts':     ['ADMIN', 'OPS', 'FINANCE'],
     '/recon-exceptions':   ['ADMIN', 'FINANCE'],
     '/bank-messages': ['ADMIN', 'FINANCE'],
     '/provider-status': ['ADMIN', 'OPS'],
